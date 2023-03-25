@@ -1,2 +1,99 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
+{% block header%}
+<header class="masthead" style="background-image: url({{ url_for('static', filename='/assets/img/header-bg.jpg') }})">
+    <div class="container">
+        <div class="masthead-subheading">Open Robotic Platform</div>
+        <div class="masthead-heading text-uppercase">Robotics made easy with simple design rules</div>
+        <a class="btn btn-primary btn-xl text-uppercase" href="#about">Learn More</a>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<section class="page-section bg-light" id="about">
+    <div class="container">
+
+        <div class="row text-center">
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <img src="static/assets/img/circle1.png" alt="..." style="max-width: 100%; max-height: 100%;"/>
+                </span>
+                <h4 class="my-3">Hole pattern</h4>
+                <p class="text-muted">Holes are distrubted every 20mm in each direction. No more random, useless holes on your robot</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <img src="static/assets/img/circle2.png" alt="..." style="max-width: 100%; max-height: 100%;"/>
+                </span>
+                <h4 class="my-3">Materials</h4>
+                <p class="text-muted">Plates can be 3D printed, CNC machined or laser cut. You can choose the material you want to use.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <img src="static/assets/img/circle3.png" alt="..." style="max-width: 100%; max-height: 100%;"/>
+                </span>
+                <h4 class="my-3">Design and reusability</h4>
+                <p class="text-muted">Holes patter makes it easy to design any holder and modules for your robot. You can also reuse those that you already</p>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Showcase -->
+<section class="page-section" id="Projects">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Projects</h2>
+            <h3 class="section-subheading text-muted">The more rules there are the harder it is to adapt the platform to your needs. Projects get complicated and it's hard to stick to the design rules. Open Robotic Platform is about simplicity and versatility and that leads to easy implementation in various projects.</h3>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <!-- Portfolio item 1-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" href="https://youtu.be/OB4AxmelKik" target="_blank">
+                        <img class="img-fluid" src="static/assets/img/robot1.JPG" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">Pico Mars Rover</div>
+                        <div class="portfolio-caption-subheading text-muted">Educational platform</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <!-- Portfolio item 2-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" href="https://www.youtube.com/watch?v=xSrjtJ2AZqw" target="_blank">
+                        <img class="img-fluid" src="static/assets/img/robot2.JPG" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">Arduino LIDAR Robot</div>
+                        <div class="portfolio-caption-subheading text-muted">CubeMars motors research platform</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <!-- Portfolio item 3-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" href="https://www.youtube.com/watch?v=k6F_VQQY3RE" target="_blank">
+                        <img class="img-fluid" src="static/assets/img/robot3.JPG" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">Overpowered Robot</div>
+                        <div class="portfolio-caption-subheading text-muted">CubeMars motors research platform</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Parts-->
+<section class="page-section bg-light" id="parts">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Parts</h2>
+            <h3 class="section-subheading text-muted">I am considering creating a centralized system for storing all the parts designed according to the rules on the website or using external services to make it more available. There are advantages to both methods, if you have any feedback or would like to share your thoughts, feel free to do that.<br><br>More info soon :)</h3>
+        </div>
+        
+    </div>
+</section>
+{% endblock %}
