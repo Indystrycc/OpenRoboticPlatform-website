@@ -18,4 +18,14 @@ def sign_up():
         email = request.form.get('email')
         password = request.form.get('password')
         username = request.form.get('username')
+
+        if len(username) < 4:
+            flash('Username must be longer than 4 characters.', category='error')
+        elif len(username) > 20:
+            flash('Username must be shorter than 20 characters', category='error')
+        elif len(password) < 8:
+            flash('Password must be at least 8 characters long.', category='error')
+        else:
+            flash('Account created sucessfuly!', category='success')
+        
     return render_template('signup.html')
