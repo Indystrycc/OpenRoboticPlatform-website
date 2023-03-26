@@ -10,8 +10,8 @@ class Note(db.Model):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    public_id = db.Column(db.Integer, unique=True)
-    email = db.Column(db.String(150), unique=True)
+    email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(150))
-    username = db.Column(db.String(20))
+    username = db.Column(db.String(20), unique=True)
+    confirmed = db.Column(db.Boolean, default=False)
     notes = db.relationship('Note')
