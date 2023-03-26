@@ -9,3 +9,7 @@ def home():
 @views.route('/library')
 def library():
     return render_template("library.html")
+
+@views.route('/account')
+def account():
+    return render_template("account.html")
