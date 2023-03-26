@@ -11318,7 +11318,7 @@ p {
 
 @media (min-width: 768px) {
   section {
-    padding: 9rem 0;
+    padding: 0rem 0;
   }
 }
 .btn-xl {
@@ -11406,8 +11406,8 @@ p {
   }
 }
 header.masthead {
-  padding-top: 10.5rem;
-  padding-bottom: 6rem;
+  padding-top: 8rem;
+  padding-bottom: 3rem;
   text-align: center;
   color: #fff;
   background-repeat: no-repeat;
@@ -11432,8 +11432,8 @@ header.masthead .masthead-heading {
 
 @media (min-width: 768px) {
   header.masthead {
-    padding-top: 17rem;
-    padding-bottom: 12.5rem;
+    padding-top: 15rem;
+    padding-bottom: 10rem;
   }
   header.masthead .masthead-subheading {
     font-size: 2.25rem;
