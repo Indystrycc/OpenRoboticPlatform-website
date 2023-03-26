@@ -14,4 +14,5 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     username = db.Column(db.String(20), unique=True)
     confirmed = db.Column(db.Boolean, default=False)
+    description = db.Column(db.String(200))
     notes = db.relationship('Note')
