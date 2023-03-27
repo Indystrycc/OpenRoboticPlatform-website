@@ -13,3 +13,7 @@ def library():
 @views.route('/account')
 def account():
     return render_template("account.html")
+
+@views.route('/part')
+def part():
+    return render_template("part.html")
