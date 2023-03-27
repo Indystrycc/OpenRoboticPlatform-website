@@ -32,6 +32,7 @@ class Part(db.Model):
     public = db.Column(db.Boolean, default=False)
     rejected = db.Column(db.Boolean, default=False)
     downloads = db.Column(db.Integer, default=0)
+    tags = db.Column(db.String(200))
     
     
      
