@@ -1,19 +1,21 @@
 from flask import Blueprint, render_template
+from flask_login import login_required, current_user
 
 views = Blueprint('views', __name__)
 
 @views.route('/')
 def home():
-    return render_template("home.html")
+    return render_template("home.html", user = current_user)
 
 @views.route('/library')
 def library():
-    return render_template("library.html")
+    return render_template("library.html", user = current_user)
 
 @views.route('/account')
+@login_required
 def account():
-    return render_template("account.html")
+    return render_template("account.html", user = current_user)
 
 @views.route('/part')
 def part():
-    return render_template("part.html")
+    return render_template("part.html", user = current_user)
