@@ -23,3 +23,7 @@ def part():
 @views.route('/designrules')
 def designRules():
     return render_template("design-rules.html", user = current_user)
+
+@views.route('/showcase')
+def showcase():
+    return render_template("showcase.html", user = current_user)

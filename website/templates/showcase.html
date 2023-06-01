@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Showcase{% endblock %}
+{% block header %}
+<header class="masthead" style="background-image: url({{ url_for('static', filename='/assets/img/showcase.png') }})">
+    <div class="container">
+        <div class="masthead-heading text-uppercase">Showcase</div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <article style="padding: 2em; text-align: justify;">
+                        <h1>Featured projects</h1>
+                        Below you can find al the cool projects built with ORP parts! Showcase is a place where you can get inspired by other projects but also see how powerful are the simple design rules used to creat Open Robotic Platform. If you want your projects to be featured right here, let us know by email: nikodem@indystry.cc
+
+                    <h3 style="margin-top: 3em;">LIDAR robot with Arduino and ORP</h3>
+                    The robot was created to check if it is possible to use a LIDAR with an Arduino. ORP plates and mounts made it easy to design custom holders for each element and later reuse them for different projects.
+                    <img src="static/assets/img/robot2.JPG" alt="Image 1" class="img-fluid my-4" />
+  
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+<!-- ... -->
