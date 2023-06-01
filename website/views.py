@@ -19,3 +19,7 @@ def account():
 @views.route('/part')
 def part():
     return render_template("part.html", user = current_user)
+
+@views.route('/designrules')
+def designRules():
+    return render_template("design-rules.html", user = current_user)
