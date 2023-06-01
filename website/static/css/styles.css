@@ -11787,3 +11787,30 @@ section#contact form#contactForm :-ms-input-placeholder {
 .noheader{
   margin-top: 3em;
 }
+
+.search-form {
+  display: flex;
+  justify-content: center;
+}
+
+.search-form .input-group {
+  display: flex;
+  max-width: 400px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+}
+
+.search-form .form-control {
+  border: none;
+  background-color: transparent;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.search-form .btn {
+  border: none;
+  background-color: transparent;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
