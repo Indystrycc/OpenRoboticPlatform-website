@@ -15,35 +15,69 @@
 {% endblock %}
 
 
-
 {% block content %}
 <section class="mt-5">
     <div class="container">
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-            {% for post in posts %}
+            {% for part in parts.items %}
             <div class="col">
                 <div class="card">
-                    <img src="{{ post.image }}" alt="Post Image" class="card-img-top" />
+                    <div class="card-img-container">
+                        <a href ="/part:{{part.id}}"><img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" /></a>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">{{ post.title }}</h5>
-                        <table class="table table-bordered table-responsive">
+                        <h5 class="card-title"><a href ="/part:{{part.id}}" class="text-decoration-none">{{ part.name }}</a></h5>
+                        <!-- <table class="table table-bordered table-responsive">
                             <tbody>
                                 <tr>
                                     <td class="text-center">
-                                        <i class="fas fa-eye"></i> {{ post.views }}
+                                        <i class="fas fa-eye"></i> 5
                                     </td>
                                     <td class="text-center">
-                                        <i class="fas fa-heart"></i> {{ post.likes }}
+                                        <i class="fas fa-heart"></i> 3
                                     </td>
                                 </tr>
                             </tbody>
-                        </table>
-                        <a href="#" class="btn btn-primary w-100">Read More</a>
+                        </table> -->
+                        <!-- Additional details and buttons for each part -->
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
+        
+
+        <!-- Pagination -->
+<nav aria-label="Page navigation" style="margin-top: 2em;">
+    <ul class="pagination justify-content-center">
+        {% if parts.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('views.library', page=parts.prev_num) }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in parts.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
+        {% if num %}
+        <li class="page-item {% if num == parts.page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('views.library', page=num) }}">{{ num }}</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+        {% endif %}
+        {% endfor %}
+
+        {% if parts.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('views.library', page=parts.next_num) }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+
     </div>
 </section>
 {% endblock %}
