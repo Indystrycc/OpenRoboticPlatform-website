@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for
+from flask import Blueprint, render_template, request, redirect, flash, url_for, abort
 from flask_login import login_required, current_user
-from .models import Part
+from .models import Part, File
 from . import db
 import os
 from werkzeug.utils import secure_filename
@@ -103,9 +103,16 @@ def account():
     recent_parts = Part.query.filter_by(user_id=current_user.id).order_by(Part.date.desc()).limit(5).all()
     return render_template("account.html", user = current_user, recent_parts = recent_parts)
 
-@views.route('/part')
-def part():
-    return render_template("part.html", user = current_user)
+@views.route('/part:<int:part_number>')
+def part(part_number):
+    part = Part.query.filter_by(id=part_number).first()
+    files_list = File.query.filter_by(part_id=part_number).all()
+    for f in files_list:
+        print(f.file_name)
+    if not part:
+        abort(404)
+    
+    return render_template('part.html', part=part, user=current_user, files_list2=files_list)
 
 @views.route('/designrules')
 def designRules():
@@ -141,13 +148,16 @@ def addPart():
         if image:
             print('saving image')
             image_filename = save_image(image, part.id, current_user.id)
-            part.picture = image_filename
+            part.image = image_filename
 
         # Process and save the files
         for file in files:
             print('saving file')
             file_filename = save_file(file, part.id, current_user.id)  # Implement the save_file function
             part.file_name = file_filename
+            db_file = File(part_id = part.id, file_name = file_filename)
+            db.session.add(db_file)
+            db.session.commit()
         db.session.commit()
 
         flash('Part added successfully!', 'success')
@@ -160,7 +170,7 @@ def addPart():
 
 def save_image(image, part_id, user_id):
     # Specify the directory where you want to save the images
-    upload_folder = 'uploads/images'
+    upload_folder = 'website/static/uploads/images'
 
     # Create the directory if it doesn't exist
     if not os.path.exists(upload_folder):
@@ -177,7 +187,7 @@ def save_image(image, part_id, user_id):
 
 def save_file(file, part_id, user_id):
     # Specify the directory where you want to save the files
-    upload_folder = 'uploads/files'
+    upload_folder = 'website/static/uploads/files'
 
     # Create the directory if it doesn't exist
     if not os.path.exists(upload_folder):

@@ -107,7 +107,9 @@
     function handleFilePreview() {
         filePreview.innerHTML = '';
 
-        for (const file of fileInput.files) {
+        const files = Array.from(fileInput.files).slice(0, 10);
+
+        for (const file of files) {
             const fileItem = document.createElement('div');
             fileItem.classList.add('file-preview-item');
 
@@ -124,7 +126,7 @@
             filePreview.appendChild(fileItem);
         }
 
-        if (fileInput.files.length === 0) {
+        if (files.length === 0) {
             const noFileItem = document.createElement('div');
             noFileItem.classList.add('file-preview-item');
             noFileItem.innerHTML = '<div class="file-preview-icon"><i class="fas fa-file"></i></div><div class="file-preview-name">No file selected</div>';
