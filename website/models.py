@@ -18,6 +18,7 @@ class User(db.Model, UserMixin):
     notes = db.relationship('Note')
 
 class Part(db.Model):
+    #instead of autoincrementing it shoud be a random 5 digit hex value
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     description = db.Column(db.String(5000))
@@ -33,6 +34,3 @@ class Part(db.Model):
     rejected = db.Column(db.Boolean, default=False)
     downloads = db.Column(db.Integer, default=0)
     tags = db.Column(db.String(200))
-    
-    
-     
