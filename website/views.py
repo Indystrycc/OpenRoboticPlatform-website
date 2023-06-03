@@ -1,5 +1,9 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, flash, url_for
 from flask_login import login_required, current_user
+from .models import Part
+from . import db
+import os
+from werkzeug.utils import secure_filename
 
 views = Blueprint('views', __name__)
 
@@ -110,7 +114,79 @@ def designRules():
 def showcase():
     return render_template("showcase.html", user = current_user)
 
-@views.route('/addpart')
+@views.route('/addpart', methods=['GET', 'POST'])
 @login_required
 def addPart():
-    return render_template("addpart.html", user = current_user)
+    if request.method == 'POST':
+        # Retrieve the form data
+        name = request.form.get('name')
+        description = request.form.get('description')
+        category = request.form.get('category')
+        tags = request.form.get('tags')
+        image = request.files.get('image')
+        files = request.files.getlist('files')
+
+        # Validate the form data (add your validation logic here)
+        if not name or not description or not category:
+            flash('Please fill in all required fields.', 'error')
+            return redirect(url_for('views.addPart'))
+
+        # Save the part details to the database
+        part = Part(name=name, description=description, category=category, tags=tags, user_id=current_user.id)
+        db.session.add(part)
+        db.session.commit()
+
+        # Process and save the image
+        if image:
+            print('saving image')
+            image_filename = save_image(image, part.id, current_user.id)
+            part.picture = image_filename
+
+        # Process and save the files
+        for file in files:
+            print('saving file')
+            file_filename = save_file(file, part.id, current_user.id)  # Implement the save_file function
+            part.file_name = file_filename
+        db.session.commit()
+
+        flash('Part added successfully!', 'success')
+        return redirect(url_for('views.addPart'))
+
+    # Render the addpart.html template for GET requests
+    return render_template('addpart.html', user=current_user)
+
+
+
+def save_image(image, part_id, user_id):
+    # Specify the directory where you want to save the images
+    upload_folder = 'uploads/images'
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
+    # Generate a secure filename and save the image to the upload folder
+    filename = secure_filename(image.filename)
+    filename = f'part_{user_id}_{part_id}_{filename}'
+    save_path = os.path.join(upload_folder, filename)
+    image.save(save_path)
+
+    # Return the saved filename or unique identifier
+    return filename
+
+def save_file(file, part_id, user_id):
+    # Specify the directory where you want to save the files
+    upload_folder = 'uploads/files'
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
+    # Generate a secure filename and save the file to the upload folder
+    filename = secure_filename(file.filename)
+    filename = f'part_{user_id}_{part_id}_{filename}'
+    save_path = os.path.join(upload_folder, filename)
+    file.save(save_path)
+
+    # Return the saved filename or unique identifier
+    return filename
