@@ -100,7 +100,8 @@ def library():
 @views.route('/account')
 @login_required
 def account():
-    return render_template("account.html", user = current_user)
+    recent_parts = Part.query.filter_by(user_id=current_user.id).order_by(Part.date.desc()).limit(5).all()
+    return render_template("account.html", user = current_user, recent_parts = recent_parts)
 
 @views.route('/part')
 def part():

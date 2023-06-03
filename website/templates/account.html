@@ -15,11 +15,11 @@
             <div class="card-body text-center">
               <img src="static/assets/img/default_avatar.png" alt="avatar"
                 class="rounded-circle img-fluid" style="width: 150px;">
-              <h5 class="my-3">Nikodem Bartnik</h5>
-              <p class="text-muted mb-1">Owner at Indystry, student at SUT</p>
+              <h5 class="my-3">{{ current_user.username }}</h5>
+              <p class="text-muted mb-1">{{ current_user.description }}</p>
             </div>
           </div>
-          <div class="card mb-4 mb-lg-0">
+          <!-- <div class="card mb-4 mb-lg-0">
             <div class="card-body p-0">
               <ul class="list-group list-group-flush rounded-3">
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
@@ -28,7 +28,7 @@
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-github fa-lg" style="color: #333333;"></i>
-                  <p class="mb-0">nikodembartnik</p>
+                  <p class="mb-0">{{ current_user.username }}</p>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-youtube fa-lg" style="color: #e22323;"></i>
@@ -40,7 +40,7 @@
                 </li>
               </ul>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="col-lg-8">
           <div class="card mb-4">
@@ -50,7 +50,7 @@
                   <p class="mb-0">Username</p>
                 </div>
                 <div class="col-sm-9">
-                  <p class="text-muted mb-0">NikodemBartnik</p>
+                  <p class="text-muted mb-0">{{ current_user.username }}</p>
                 </div>
               </div>
               <hr>
@@ -59,7 +59,7 @@
                   <p class="mb-0">Email</p>
                 </div>
                 <div class="col-sm-9">
-                  <p class="text-muted mb-0">nikodem@indystry.cc</p>
+                  <p class="text-muted mb-0">{{ current_user.email }}</p>
                 </div>
               </div>
               <hr>
@@ -76,20 +76,15 @@
           <div class="row">
             <div class="col-md-6">
               <div class="card mb-4 mb-md-0">
-                <div class="card-body">
-                  <p class="mb-4">Recent parts</p>
-                  <p class="mb-1" style="font-size: 1rem;">300mm plate</p>
-                  <hr>
-                  <p class="mb-1" style="font-size: 1rem;">HCSR04 holder</p>
-                  <hr>
-                  <p class="mb-1" style="font-size: 1rem;">Arduino holder</p>
-                  <hr>
-                  <p class="mb-1" style="font-size: 1rem;">NVIDIA Jetson nano holder</p>
-                  <hr>
-                  <p class="mb-1" style="font-size: 1rem;">Nema17 holder</p>
-                </div>
+                  <div class="card-body">
+                      <p class="mb-4">Recent parts</p>
+                      {% for part in recent_parts %}
+                      <p class="mb-1" style="font-size: 1rem;">{{ part.name }}</p>
+                      <hr>
+                      {% endfor %}
+                  </div>
               </div>
-            </div>
+          </div>
             <div class="col-md-6">
               <div class="card mb-4 mb-md-0">
                 <div class="card-body">
@@ -98,7 +93,7 @@
                   <hr>
                   <p class="mt-4 mb-1" style="font-size: 1.5rem;">Your parts: 24</p>
                   <hr>
-                  <p class="mt-4 mb-1" style="font-size: 1.5rem;">Your contributtion: 0.68%</p>
+                  <p class="mt-4 mb-1" style="font-size: 1.5rem;">Your contribution: 0.68%</p>
                 </div>
               </div>
               
