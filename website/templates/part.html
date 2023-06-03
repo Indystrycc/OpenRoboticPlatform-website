@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Part{% endblock %}
+{% block header%}
+<header class="masthead" style="background-color: #ffc800; padding-bottom: 0.5em; padding-top: 6em">
+        <div class="masthead-heading text-uppercase">Part</div>
+</header>
+{% endblock %}
+{% block content%}
+    <section style="background-color: #eee;">
+        <div class="container py-5">
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card mb-4">
+                <div class="card-body text-center">
+                  <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+                    class="rounded-circle img-fluid" style="width: 150px;">
+                </div>
+              </div>
+              <div class="card mb-4 mb-lg-0">
+                <div class="card-body p-0">
+                  <ul class="list-group list-group-flush rounded-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                      Type
+                      <p class="mb-0">Plate</p>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                      Size
+                      <p class="mb-0">Diameter: 300mm</p>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                      Verified
+                      <p class="mb-0">No</p>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                      Tags
+                      <p class="mb-0">plate, turtlebot, circular</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-8">
+                <h4>300mm Circular Plate</h4>
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="row">
+                    <h5>Description</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                  </div>
+                </div>
+              </div>
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <p class="mb-4"><b>Files</b></p>
+                      <p class="mb-1" style="font-size: 1rem;">3plate.dxf</p>
+                      <hr>
+                      <p class="mb-1" style="font-size: 1rem;">plate.3mf</p>
+                      <hr>
+                      <p class="mb-1" style="font-size: 1rem;">plate.step</p>
+                    </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+{% endblock %}

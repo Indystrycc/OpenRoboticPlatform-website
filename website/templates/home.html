@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block header%}
+<header class="masthead" style="background-image: url({{ url_for('static', filename='/assets/img/header-bg.jpg') }})">
+    <div class="container">
+        <div class="masthead-subheading">Open Robotic Platform</div>
+        <div class="masthead-heading text-uppercase">Robotics made easy with simple design rules</div>
+        <a class="btn btn-primary btn-xl text-uppercase" href="#about">Learn More</a>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<section class="page-section bg-light" id="about">
+    <div class="container">
+
+        <div class="row text-center">
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <img src="static/assets/img/circle1.png" alt="..." style="max-width: 100%; max-height: 100%;"/>
+                </span>
+                <h4 class="my-3">Hole pattern</h4>
+                <p class="text-muted">Holes are distrubted every 20mm in each direction. No more random, useless holes on your robot</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <img src="static/assets/img/circle2.png" alt="..." style="max-width: 100%; max-height: 100%;"/>
+                </span>
+                <h4 class="my-3">Materials</h4>
+                <p class="text-muted">Plates can be 3D printed, CNC machined or laser cut. You can choose the material you want to use.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <img src="static/assets/img/circle3.png" alt="..." style="max-width: 100%; max-height: 100%;"/>
+                </span>
+                <h4 class="my-3">Design and reusability</h4>
+                <p class="text-muted">Holes patter makes it easy to design any holder and modules for your robot. You can also reuse those that you already</p>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Projects Section -->
+<section class="page-section" id="projects">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Featured Projects</h2>
+            <h3 class="section-subheading text-muted">Explore some of the amazing projects built with Open Robotic Platform</h3>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card project-card">
+                    <img class="card-img-top" src="static/assets/img/robot1.JPG" alt="Pico Mars Rover" />
+                    <div class="card-body">
+                        <h5 class="card-title">Pico Mars Rover</h5>
+                        <p class="card-text">An educational platform designed to inspire young minds in robotics and space exploration.</p>
+                        <a href="https://youtu.be/OB4AxmelKik" target="_blank" class="btn btn-primary">Watch Video</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card project-card">
+                    <img class="card-img-top" src="static/assets/img/robot2.JPG" alt="Arduino LIDAR Robot" />
+                    <div class="card-body">
+                        <h5 class="card-title">Arduino LIDAR Robot</h5>
+                        <p class="card-text">A research platform powered by CubeMars motors, enabling precise mapping and navigation using LIDAR technology.</p>
+                        <a href="https://www.youtube.com/watch?v=xSrjtJ2AZqw" target="_blank" class="btn btn-primary">Watch Video</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card project-card">
+                    <img class="card-img-top" src="static/assets/img/robot3.JPG" alt="Overpowered Robot" />
+                    <div class="card-body">
+                        <h5 class="card-title">Overpowered Robot</h5>
+                        <p class="card-text">A versatile research platform utilizing the robust CubeMars motors for high-performance robotic applications.</p>
+                        <a href="https://www.youtube.com/watch?v=k6F_VQQY3RE" target="_blank" class="btn btn-primary">Watch Video</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newest Parts Section -->
+<section class="page-section" id="newest-parts">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Newest Parts</h2>
+            <h3 class="section-subheading text-muted">Check out the newest parts uploaded by users</h3>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
+            {% for part in newest_parts %}
+            <div class="col">
+                <div class="card">
+                    <img src="{{ part.image }}" alt="Part Image" class="card-img-top" />
+                    <div class="card-body">
+                        <h5 class="card-title">{{ part.title }}</h5>
+                        <p class="card-text text-muted">{{ part.description }}</p>
+                        <a href="#" class="btn btn-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

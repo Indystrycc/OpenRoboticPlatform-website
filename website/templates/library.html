@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Library{% endblock %}
+{% block header%}
+<header class="masthead" style="background-image: url({{ url_for('static', filename='/assets/img/library-bg3.png') }})">
+    <div class="container">
+        <div class="masthead-heading text-uppercase">Library</div>
+        <form class="search-form mt-3">
+            <div class="input-group">
+                <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
+            </div>
+        </form>
+    </div>
+</header>
+{% endblock %}
+
+
+
+{% block content %}
+<section class="mt-5">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for post in posts %}
+            <div class="col">
+                <div class="card">
+                    <img src="{{ post.image }}" alt="Post Image" class="card-img-top" />
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <table class="table table-bordered table-responsive">
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">
+                                        <i class="fas fa-eye"></i> {{ post.views }}
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="fas fa-heart"></i> {{ post.likes }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <a href="#" class="btn btn-primary w-100">Read More</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
