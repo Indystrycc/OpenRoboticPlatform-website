@@ -10,39 +10,8 @@ views = Blueprint('views', __name__)
 
 @views.route('/')
 def home():
-    posts = [
-        {
-            'image': 'static/assets/img/robot2.jpg',
-            'title': '300mm plate',
-            'views': 10,
-            'likes': 5
-        },
-        {
-            'image': 'static/assets/img/robot2.jpg',
-            'title': '200mm plate',
-            'views': 5,
-            'likes': 0
-        },
-        {
-            'image': 'static/assets/img/robot2.jpg',
-            'title': '150mm plate',
-            'views': 7,
-            'likes': 2
-        },
-        {
-            'image': 'static/assets/img/robot2.jpg',
-            'title': 'Jetson Nano holder',
-            'views': 59,
-            'likes': 20
-        },
-         {
-            'image': 'static/assets/img/robot2.jpg',
-            'title': '300mm plate',
-            'views': 10,
-            'likes': 5
-        }
-    ]
-    return render_template("home.html", user = current_user, newest_parts = posts)
+    parts = Part.query.order_by(Part.date.desc()).limit(5).all()
+    return render_template("home.html", user = current_user, parts = parts)
 
 @views.route('/library')
 def library():
