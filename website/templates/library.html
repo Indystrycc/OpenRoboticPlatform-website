@@ -7,12 +7,41 @@
         <form class="search-form mt-3">
             <div class="input-group">
                 <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
+                <button class="btn btn-light" type="submit" data-toggle="popover" title="Search Functionality" data-content="Enter keywords to search for specific parts"><i class="fas fa-search"></i></button>
+                <button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fas fa-question-circle"></i></button>
             </div>
         </form>
     </div>
 </header>
+
+<!-- Info Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">How to Use the Search Functionality</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Parts are stored in the database with the name of the part, description and tags. Tags are the most important so if you want to
+                    look for plates of a specific dimension it's best to type "plate 300" which will show you all the plates of dimension 300mm or
+                    related parts. 
+                </p>
+                <p>
+                    Seach also looks at the description of the part and trys to find the parts where provided keywords match.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
+
+
+
+
+
 
 
 {% block content %}
@@ -21,12 +50,13 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for part in parts.items %}
             <div class="col">
+                <a href ="/part:{{part.id}}" class="text-decoration-none">
                 <div class="card">
                     <div class="card-img-container">
-                        <a href ="/part:{{part.id}}"><img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" /></a>
+                       <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" />
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title"><a href ="/part:{{part.id}}" class="text-decoration-none">{{ part.name }}</a></h5>
+                        <h5 class="card-title">{{ part.name }}</h5>
                         <!-- <table class="table table-bordered table-responsive">
                             <tbody>
                                 <tr>
@@ -42,6 +72,7 @@
                         <!-- Additional details and buttons for each part -->
                     </div>
                 </div>
+            </a>
             </div>
             {% endfor %}
         </div>
