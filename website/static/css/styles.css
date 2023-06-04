@@ -11814,3 +11814,17 @@ section#contact form#contactForm :-ms-input-placeholder {
   border-bottom-left-radius: 20px;
 }
 
+.card-img-container {
+    position: relative;
+    padding-top: 75%; /* 4:3 aspect ratio (3 / 4 * 100) */
+    overflow: hidden;
+}
+
+.card-img-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
