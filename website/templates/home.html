@@ -89,16 +89,17 @@
             <h3 class="section-subheading text-muted">Check out the newest parts uploaded by users</h3>
         </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
-            {% for part in newest_parts %}
+            {% for part in parts %}
             <div class="col">
+                <a href ="/part:{{part.id}}" class="text-decoration-none">
                 <div class="card">
                     <img src="{{ part.image }}" alt="Part Image" class="card-img-top" />
                     <div class="card-body">
-                        <h5 class="card-title">{{ part.title }}</h5>
-                        <p class="card-text text-muted">{{ part.description }}</p>
-                        <a href="#" class="btn btn-primary w-100">View Details</a>
+                        <h5 class="card-title">{{ part.name }}</h5>
+                        <!-- <a href="#" class="btn btn-primary w-100">View Details</a> -->
                     </div>
                 </div>
+                </a>
             </div>
             {% endfor %}
         </div>
