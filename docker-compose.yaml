@@ -8,11 +8,15 @@ services:
     container_name: website
     depends_on:
       - db
+    environment:
+      - SECRETS_FILE=/run/secrets/website_secrets.py
     volumes:
       - ./website/static/uploads:/app/website/static/uploads
       - dbsock:/run/mysqld
     ports:
       - 127.0.0.1:5004:5004
+    secrets:
+      - website_secrets.py
 
   db:
     image: mariadb:10
@@ -32,3 +36,7 @@ services:
 volumes:
   dbdata:
   dbsock:
+
+secrets:
+  website_secrets.py:
+    file: website/secret.py

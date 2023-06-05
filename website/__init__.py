@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
-from .secret import *
+from .secrets_manager import *
 from flask_recaptcha import ReCaptcha
 from sqlalchemy.exc import OperationalError
 
