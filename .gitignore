@@ -135,3 +135,6 @@ dmypy.json
 /website/static/uploads
 
 secret.py
+
+.vscode/*
+!/.vscode/extensions.json

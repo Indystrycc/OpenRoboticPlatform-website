@@ -1,6 +1,7 @@
-from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+
+from . import db
 
 
 class User(db.Model, UserMixin):
@@ -16,16 +17,15 @@ class User(db.Model, UserMixin):
     name_instagram = db.Column(db.String(100))
 
 
-
 class Part(db.Model):
-    #instead of autoincrementing it shoud be a random 5 digit hex value
+    # instead of autoincrementing it shoud be a random 5 digit hex value
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     description = db.Column(db.String(5000))
     image = db.Column(db.String(100), unique=True)
-    #category examples: plates, wheels, other, holders & adapters for: sensors, microcontrollers & SBCs, motors, cameras 
+    # category examples: plates, wheels, other, holders & adapters for: sensors, microcontrollers & SBCs, motors, cameras
     category = db.Column(db.Integer)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     verified = db.Column(db.Boolean, default=False)
     featured = db.Column(db.Boolean, default=False)
@@ -37,7 +37,7 @@ class Part(db.Model):
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    part_id = db.Column(db.Integer, db.ForeignKey('part.id'))
+    part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
     file_name = db.Column(db.String(100), unique=True)
 
-    part = db.relationship('Part', backref=db.backref('files', lazy=True))
+    part = db.relationship("Part", backref=db.backref("files", lazy=True))
