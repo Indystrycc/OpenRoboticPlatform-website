@@ -93,7 +93,9 @@
             <div class="col">
                 <a href ="/part:{{part.id}}" class="text-decoration-none">
                 <div class="card">
-                    <img src="{{ part.image }}" alt="Part Image" class="card-img-top" />
+                    <div class="card-img-container">
+                        <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" />
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ part.name }}</h5>
                         <!-- <a href="#" class="btn btn-primary w-100">View Details</a> -->
