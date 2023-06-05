@@ -1,0 +1,67 @@
+ORP Numbering System:
+
+Numbering system is developed in a similar manner to IP addresses:
+XXX.XXX.XXX
+
+Where each X can be any number from 0-9.
+Meaing of each digit going from left to right:
+Group 1:
+    Dig 1 - Type - type of the part: 
+        1: Plates
+        2: Holders
+        3: Wheels
+        4: Connection rods
+
+    Dig 2 - Category - category of the part:
+        For type 1 (Plates):
+            1: Rectangular
+            2: Circular
+            3: Oval
+            4: Special
+            5: Weird
+        For type 2 (Holders):
+            1: Motors
+            2: Sensors
+            3: Microcontrollers and SBCs
+            4: Cameras
+            5: Batteries
+            6: Other
+            7: Special
+        For type 3 (Wheels):
+            1. Smooth
+            2. Normal
+            3. Terrain
+            4. Spikes
+            5. Special 
+        For type 4 (Connection rods):
+            1. One hole
+            2. Multi holes
+            3. Special
+
+    Dig 3 - Sub category - additional sub cattegory describing each part:
+
+Group 2:
+    Dig 1 - Manufacturing - methods using which the part can be manufactured:
+        Coded in binary and displayed in decimal, 1 if possible 0 otherwise:
+            Bit 1: 3D printing
+            Bit 2: CNC machining
+            Bit 3: laser cutting
+
+            When all methods are allowed = 7
+            When only 3D printing = 1
+            3D printing + cnc machining = 3
+            Only laser cutting = 4
+
+    Dig 2 - number of subparts:
+        range: 1-9, if number of subparts is bigger then 9 should be used
+
+    Dig 3 - Custom fields
+
+Group 3:
+    All digits used to code the most important dimension in milimeters.
+    Plates - diameter or diagonal.
+    Holders - diameter or diagonal.
+    Wheels - diameter.
+    Connection rods - height.
+
+        
