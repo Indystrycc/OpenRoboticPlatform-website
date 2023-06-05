@@ -11,6 +11,9 @@ class User(db.Model, UserMixin):
     confirmed = db.Column(db.Boolean, default=False)
     description = db.Column(db.String(500))
     image = db.Column(db.String(100))
+    name_github = db.Column(db.String(100))
+    name_youtube = db.Column(db.String(100))
+    name_instagram = db.Column(db.String(100))
 
 
 

@@ -14,36 +14,42 @@
           <div class="card mb-4">
             <div class="card-body text-center">
               {% if user.image %}
-                  <img src="{{ url_for('static', filename='uploads/profile_images/' + user.image) }}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+                  <img src="{{ url_for('static', filename='uploads/profile_images/' + user.image) }}" alt="avatar" class="rounded-circle img-fluid" style="width: 250px; height: 250px; object-fit: cover; object-position: center;"">
               {% else %}
-                  <img src="static/assets/img/default_avatar.png" alt="default avatar" class="rounded-circle img-fluid" style="width: 150px;">
+                  <img src="static/assets/img/default_avatar.png" alt="default avatar" class="rounded-circle img-fluid" style="width: 300px; height: 300px; object-fit: cover; object-position: center;">
               {% endif %}
               <h5 class="my-3">{{ user.username }}</h5>
               <p class="text-muted mb-1">{{ user.description }}</p>
             </div>
           </div>
-          <!-- <div class="card mb-4 mb-lg-0">
+          <div class="card mb-4 mb-lg-0">
             <div class="card-body p-0">
               <ul class="list-group list-group-flush rounded-3">
-                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                <!-- <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fas fa-globe fa-lg text-warning"></i>
                   <p class="mb-0">https://indystry.cc</p>
-                </li>
+                </li> -->
+                {% if user.name_github %}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-github fa-lg" style="color: #333333;"></i>
-                  <p class="mb-0">{{ user.username }}</p>
+                  <p class="mb-0"><a href="https://github.com/{{ user.name_github }}" target="_blank">{{user.name_github}}</a></p>
                 </li>
+                {% endif %}
+                {% if user.name_youtube %}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-youtube fa-lg" style="color: #e22323;"></i>
-                  <p class="mb-0">@nikodembartnik</p>
+                  <p class="mb-0"><a href="https://youtube.com/@{{ user.name_youtube }}" target="_blank">{{user.name_youtube}}</a></p>
                 </li>
+                {% endif %}
+                {% if user.name_instagram %}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                  <p class="mb-0">nikodembartnik</p>
+                  <p class="mb-0"><a href="https://instagram.com/{{ user.name_instagram }}" target="_blank">{{user.name_instagram}}</a></p>
                 </li>
+                {% endif %}
               </ul>
             </div>
-          </div> -->
+          </div>
         </div>
         <div class="col-lg-8">
           <div class="card mb-4">
