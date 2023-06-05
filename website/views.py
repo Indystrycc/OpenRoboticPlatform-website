@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for, abort
+from flask import Blueprint, render_template, request, redirect, flash, url_for, abort, Markup
 from flask_login import login_required, current_user
 from .models import Part, File
 from . import db
@@ -46,6 +46,8 @@ def accountsettings():
             current_user.image = save_profile_image(image, current_user.id)
 
         db.session.commit()
+        message = Markup('Settings saved!, <a href="/account">Go to your account.</a>')
+        flash(message, 'success')
     return render_template("accountsettings.html", user = current_user)
 
 @views.route('/part:<int:part_number>')
