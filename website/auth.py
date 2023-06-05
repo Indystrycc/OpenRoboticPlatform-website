@@ -5,11 +5,9 @@ from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_recaptcha import ReCaptcha
 from .secret import *
-
+import requests
 
 auth = Blueprint('auth', __name__)
-recaptcha = ReCaptcha()
-recaptcha.init_app(app)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -43,8 +41,16 @@ def sign_up():
         password = request.form.get('password')
         username = request.form.get('username')
         recaptcha_response = request.form.get('g-recaptcha-response')
+        
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        data = {
+            'secret': RECAPTCHA_PRIVATE_KEY,
+            'response': recaptcha_response
+        }
+        response = requests.post(url, data=data)
+        captcha_result = response.json()
 
-        if recaptcha_response.verify():
+        if captcha_result['success']:
             user = User.query.filter_by(email=email).first()
             if user:
                 flash('This email is already registered', category='error')

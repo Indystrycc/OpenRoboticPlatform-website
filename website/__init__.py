@@ -4,9 +4,12 @@ from os import path
 from flask_login import LoginManager
 from flask_mysqldb import MySQL
 from .secret import *
+from flask_recaptcha import ReCaptcha
 
 #DB_NAME = 'database.db'
 db = SQLAlchemy()
+recaptcha = ReCaptcha()
+
 
 def create_app():
     app = Flask(__name__)
