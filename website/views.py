@@ -34,8 +34,13 @@ def accountsettings():
     if request.method == 'POST':
         image = request.files.get('image')
         description = clean(request.form.get('description'))
-
+        link_github = clean(request.form.get('name_github'))
+        link_youtube = clean(request.form.get('name_youtube'))
+        link_instagram = clean(request.form.get('name_instagram'))
         current_user.description = description[:75]
+        current_user.name_github = link_github
+        current_user.name_youtube = link_youtube
+        current_user.name_instagram = link_instagram
 
         if image and image.filename != '':
             current_user.image = save_profile_image(image, current_user.id)
