@@ -4,9 +4,9 @@
 <header class="masthead" style="background-image: url({{ url_for('static', filename='/assets/img/library-bg3.png') }})">
     <div class="container">
         <div class="masthead-heading text-uppercase">Library</div>
-        <form class="search-form mt-3">
+        <form class="search-form mt-3" method="GET">
             <div class="input-group">
-                <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+                <input class="form-control" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request.args.get('search', '') }}">
                 <button class="btn btn-light" type="submit" data-toggle="popover" title="Search Functionality" data-content="Enter keywords to search for specific parts"><i class="fas fa-search"></i></button>
                 <button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fas fa-question-circle"></i></button>
             </div>
@@ -24,12 +24,10 @@
             </div>
             <div class="modal-body">
                 <p>
-                    Parts are stored in the database with the name of the part, description and tags. Tags are the most important so if you want to
-                    look for plates of a specific dimension it's best to type "plate 300" which will show you all the plates of dimension 300mm or
-                    related parts. 
+                    Parts are stored in the database with the name of the part, description, and tags. Tags are the most important, so if you want to look for plates of a specific dimension, it's best to type "plate 300" which will show you all the plates of dimension 300mm or related parts.
                 </p>
                 <p>
-                    Seach also looks at the description of the part and trys to find the parts where provided keywords match.
+                    Search also looks at the description of the part and tries to find the parts where provided keywords match.
                 </p>
             </div>
         </div>
@@ -38,77 +36,57 @@
 
 {% endblock %}
 
-
-
-
-
-
-
 {% block content %}
 <section class="mt-5">
     <div class="container">
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for part in parts.items %}
             <div class="col">
-                <a href ="/part:{{part.id}}" class="text-decoration-none">
+                <a href="/part:{{part.id}}" class="text-decoration-none">
                 <div class="card">
                     <div class="card-img-container">
                        <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" />
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ part.name }}</h5>
-                        <!-- <table class="table table-bordered table-responsive">
-                            <tbody>
-                                <tr>
-                                    <td class="text-center">
-                                        <i class="fas fa-eye"></i> 5
-                                    </td>
-                                    <td class="text-center">
-                                        <i class="fas fa-heart"></i> 3
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table> -->
                         <!-- Additional details and buttons for each part -->
                     </div>
                 </div>
-            </a>
+                </a>
             </div>
             {% endfor %}
         </div>
-        
 
         <!-- Pagination -->
-<nav aria-label="Page navigation" style="margin-top: 2em;">
-    <ul class="pagination justify-content-center">
-        {% if parts.has_prev %}
-        <li class="page-item">
-            <a class="page-link" href="{{ url_for('views.library', page=parts.prev_num) }}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-        {% endif %}
+        <nav aria-label="Page navigation" style="margin-top: 2em;">
+            <ul class="pagination justify-content-center">
+                {% if parts.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('views.library', page=parts.prev_num) }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
 
-        {% for num in parts.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
-        {% if num %}
-        <li class="page-item {% if num == parts.page %}active{% endif %}">
-            <a class="page-link" href="{{ url_for('views.library', page=num) }}">{{ num }}</a>
-        </li>
-        {% else %}
-        <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
-        {% endif %}
-        {% endfor %}
+                {% for num in parts.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
+                {% if num %}
+                <li class="page-item {% if num == parts.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('views.library', page=num) }}">{{ num }}</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                {% endif %}
+                {% endfor %}
 
-        {% if parts.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="{{ url_for('views.library', page=parts.next_num) }}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-        {% endif %}
-    </ul>
-</nav>
-
+                {% if parts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('views.library', page=parts.next_num) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 </section>
 {% endblock %}
