@@ -3,13 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 from flask_mysqldb import MySQL
+from .secret import *
 
 #DB_NAME = 'database.db'
 db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'yi?o^E>Id(3R!)ry,ogfVrZ5dqP#+_Q9'
+    app.config['SECRET_KEY'] = SECRET_KEY
+    app.config['RECAPTCHA_PUBLIC_KEY'] = RECAPTCHA_PUBLIC_KEY
+    app.config['RECAPTCHA_PRIVATE_KEY'] = RECAPTCHA_PRIVATE_KEY
     #app.config["SQLALCHEMY_DATABASE_URI"] = f'sqlite:///{DB_NAME}'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:rootroot@localhost/orp_db'
     #db = SQLAlchemy(app)
