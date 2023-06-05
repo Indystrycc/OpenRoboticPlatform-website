@@ -13,8 +13,11 @@
         <div class="col-lg-4">
           <div class="card mb-4">
             <div class="card-body text-center">
-              <img src="static/assets/img/default_avatar.png" alt="avatar"
-                class="rounded-circle img-fluid" style="width: 150px;">
+              {% if user.image %}
+                  <img src="{{ url_for('static', filename='uploads/profile_images/' + user.image) }}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+              {% else %}
+                  <img src="static/assets/img/default_avatar.png" alt="default avatar" class="rounded-circle img-fluid" style="width: 150px;">
+              {% endif %}
               <h5 class="my-3">{{ user.username }}</h5>
               <p class="text-muted mb-1">{{ user.description }}</p>
             </div>
@@ -98,7 +101,7 @@
               </div>
               
               <div class="card-body text-center">
-                <a href="">Edit profile</a>
+                <a href="/accountsettings">Edit profile</a>
               </div>
             </div>
           </div>

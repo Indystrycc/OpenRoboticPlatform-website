@@ -9,7 +9,9 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     username = db.Column(db.String(20), unique=True)
     confirmed = db.Column(db.Boolean, default=False)
-    description = db.Column(db.String(200))
+    description = db.Column(db.String(500))
+    image = db.Column(db.String(100))
+
 
 
 class Part(db.Model):
@@ -17,7 +19,7 @@ class Part(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     description = db.Column(db.String(5000))
-    image = db.Column(db.String(20), unique=True)
+    image = db.Column(db.String(100), unique=True)
     #category examples: plates, wheels, other, holders & adapters for: sensors, microcontrollers & SBCs, motors, cameras 
     category = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

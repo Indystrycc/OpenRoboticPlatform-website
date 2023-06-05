@@ -5,6 +5,8 @@ from . import db
 import os
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import Pagination
+from bleach import clean
+import random
 
 views = Blueprint('views', __name__)
 
@@ -25,6 +27,21 @@ def library():
 def account():
     recent_parts = Part.query.filter_by(user_id=current_user.id).order_by(Part.date.desc()).limit(5).all()
     return render_template("account.html", user = current_user, recent_parts = recent_parts)
+
+@views.route('/accountsettings', methods=['GET', 'POST'])
+@login_required
+def accountsettings():
+    if request.method == 'POST':
+        image = request.files.get('image')
+        description = clean(request.form.get('description'))
+
+        current_user.description = description[:75]
+
+        if image and image.filename != '':
+            current_user.image = save_profile_image(image, current_user.id)
+
+        db.session.commit()
+    return render_template("accountsettings.html", user = current_user)
 
 @views.route('/part:<int:part_number>')
 def part(part_number):
@@ -50,10 +67,10 @@ def showcase():
 def addPart():
     if request.method == 'POST':
         # Retrieve the form data
-        name = request.form.get('name')
-        description = request.form.get('description')
-        category = request.form.get('category')
-        tags = request.form.get('tags')
+        name = clean(request.form.get('name'))
+        description = clean(request.form.get('description'))
+        category = clean(request.form.get('category'))
+        tags = clean(request.form.get('tags'))
         image = request.files.get('image')
         files = request.files.getlist('files')
 
@@ -69,13 +86,11 @@ def addPart():
 
         # Process and save the image
         if image:
-            print('saving image')
             image_filename = save_image(image, part.id, current_user.id)
             part.image = image_filename
 
         # Process and save the files
         for file in files:
-            print('saving file')
             file_filename = save_file(file, part.id, current_user.id)  # Implement the save_file function
             part.file_name = file_filename
             db_file = File(part_id = part.id, file_name = file_filename)
@@ -101,7 +116,24 @@ def save_image(image, part_id, user_id):
 
     # Generate a secure filename and save the image to the upload folder
     filename = secure_filename(image.filename)
-    filename = f'part_{user_id}_{part_id}_{filename}'
+    filename = f'part_{user_id}_{part_id}_{"%030x" % random.randrange(16**20)}'
+    save_path = os.path.join(upload_folder, filename)
+    image.save(save_path)
+
+    # Return the saved filename or unique identifier
+    return filename
+
+def save_profile_image(image, user_id):
+    # Specify the directory where you want to save the images
+    upload_folder = 'website/static/uploads/profile_images'
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
+    # Generate a secure filename and save the image to the upload folder
+    filename = secure_filename(image.filename)
+    filename = f'pi_{user_id}_{"%030x" % random.randrange(16**20)}'
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
