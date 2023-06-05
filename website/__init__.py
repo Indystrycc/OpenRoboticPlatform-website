@@ -1,9 +1,11 @@
+from time import sleep
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 from .secret import *
 from flask_recaptcha import ReCaptcha
+from sqlalchemy.exc import OperationalError
 
 #DB_NAME = 'database.db'
 db = SQLAlchemy()
@@ -29,7 +31,16 @@ def create_app():
     from . import models
 
     with app.app_context():
-        db.create_all()
+        for _ in range(5):
+            try:
+                db.create_all()
+                break
+            except OperationalError as err:
+                # 2002 is connection error - db may not be running yet
+                if err.orig.args[0] == 2002:
+                    sleep(3)
+                else:
+                    raise
         db.session.commit()
 
     login_manager = LoginManager()

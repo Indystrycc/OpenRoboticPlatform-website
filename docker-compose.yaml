@@ -1,0 +1,34 @@
+name: openroboticplatform
+
+services:
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    container_name: website
+    depends_on:
+      - db
+    volumes:
+      - ./website/static/uploads:/app/website/static/uploads
+      - dbsock:/run/mysqld
+    ports:
+      - 127.0.0.1:5004:5004
+
+  db:
+    image: mariadb:10
+    container_name: db
+    environment:
+      - MARIADB_ROOT_PASSWORD=rootroot
+      - MARIADB_DATABASE=orp_db
+    volumes:
+      - dbdata:/var/lib/mysql
+      - dbsock:/run/mysqld
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password="rootroot" --silent']
+      interval: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  dbdata:
+  dbsock:
