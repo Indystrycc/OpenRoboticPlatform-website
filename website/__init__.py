@@ -1,7 +1,7 @@
 from time import sleep
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from os import path
+from os import environ
 from flask_login import LoginManager
 from .secrets_manager import *
 from flask_recaptcha import ReCaptcha
@@ -18,7 +18,7 @@ def create_app():
     app.config['RECAPTCHA_PUBLIC_KEY'] = RECAPTCHA_PUBLIC_KEY
     app.config['RECAPTCHA_PRIVATE_KEY'] = RECAPTCHA_PRIVATE_KEY
     #app.config["SQLALCHEMY_DATABASE_URI"] = f'sqlite:///{DB_NAME}'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:rootroot@localhost/orp_db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://root:rootroot@{environ.get("DB_HOST") or "127.0.0.1"}:3306/orp_db'
     #db = SQLAlchemy(app)
     db.init_app(app)
 

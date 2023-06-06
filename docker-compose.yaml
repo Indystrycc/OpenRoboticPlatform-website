@@ -10,9 +10,9 @@ services:
       - db
     environment:
       - SECRETS_FILE=/run/secrets/website_secrets.py
+      - DB_HOST=db
     volumes:
       - ./website/static/uploads:/app/website/static/uploads
-      - dbsock:/run/mysqld
     ports:
       - 127.0.0.1:5004:5004
     secrets:
@@ -26,7 +26,6 @@ services:
       - MARIADB_DATABASE=orp_db
     volumes:
       - dbdata:/var/lib/mysql
-      - dbsock:/run/mysqld
     ports:
       - 127.0.0.1:3306:3306
     healthcheck:
@@ -37,7 +36,6 @@ services:
 
 volumes:
   dbdata:
-  dbsock:
 
 secrets:
   website_secrets.py:
