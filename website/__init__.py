@@ -4,12 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from flask_login import LoginManager
 from .secrets_manager import *
-from flask_recaptcha import ReCaptcha
 from sqlalchemy.exc import OperationalError
 
 #DB_NAME = 'database.db'
 db = SQLAlchemy()
-recaptcha = ReCaptcha()
 
 
 def create_app():

@@ -1,7 +1,6 @@
 flask>=2.3.2
 Flask-SQLAlchemy>=3.0.3
 Flask-Login>=0.6.2
-Flask-reCaptcha>=0.4.2
 bleach>=6.0.0
 
 # DB driver required by SQLAlchemy
