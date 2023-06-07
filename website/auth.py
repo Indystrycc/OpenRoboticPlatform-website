@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_recaptcha import ReCaptcha
-from .secret import *
+from .secrets_manager import *
 import requests
 
 auth = Blueprint('auth', __name__)
@@ -41,7 +41,7 @@ def sign_up():
         password = request.form.get('password')
         username = request.form.get('username')
         recaptcha_response = request.form.get('g-recaptcha-response')
-        
+
         url = 'https://www.google.com/recaptcha/api/siteverify'
         data = {
             'secret': RECAPTCHA_PRIVATE_KEY,

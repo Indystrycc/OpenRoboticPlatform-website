@@ -1,0 +1,37 @@
+# Precompiled files
+**/__pycache__
+**/*.py[cod]
+**/*.so
+
+# Logs
+**/*.log
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Editor settings
+.idea
+.vscode
+
+# User uploads
+/website/static/uploads
+
+# Don't embed in the image, can be mounted as a secret
+website/secret.py
+
+# Repository/project configuration
+.gitignore
+.dockerignore
+Dockerfile*
+docker-compose.yaml
+
+# Docs
+**/*.md
+**/*.txt
+!requirements.txt
