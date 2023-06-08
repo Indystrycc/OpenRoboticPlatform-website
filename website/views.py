@@ -23,7 +23,7 @@ def library():
 
     # Filter parts based on search query
     if search_query:
-        parts = Part.query.filter(Part.name.ilike(f'%{search_query}%') | Part.description.ilike(f'%{search_query}%') | Part.tags.ilike(f'%{search_query}%'))
+        parts = Part.query.filter(Part.name.icontains(search_query, autoescape=True) | Part.description.icontains(search_query, autoescape=True) | Part.tags.icontains(search_query, autoescape=True))
     else:
         parts = Part.query
 
@@ -66,7 +66,7 @@ def part(part_number):
         print(f.file_name)
     if not part:
         abort(404)
-    
+
     return render_template('part.html', part=part, user=current_user, files_list2=files_list)
 
 @views.route('/designrules')
