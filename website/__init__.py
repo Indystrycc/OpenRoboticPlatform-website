@@ -5,6 +5,7 @@ from os import environ
 from flask_login import LoginManager
 from .secrets_manager import *
 from sqlalchemy.exc import OperationalError
+from MySQLdb.constants.CR import CONNECTION_ERROR
 
 #DB_NAME = 'database.db'
 db = SQLAlchemy()
@@ -34,8 +35,8 @@ def create_app():
                 db.create_all()
                 break
             except OperationalError as err:
-                # 2002 is connection error - db may not be running yet
-                if err.orig.args[0] == 2002:
+                # db may not be running yet
+                if err.orig.args[0] == CONNECTION_ERROR:
                     sleep(3)
                 else:
                     raise

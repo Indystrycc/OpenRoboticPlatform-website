@@ -65,7 +65,7 @@ def part(part_number):
     files_list = File.query.filter_by(part_id=part_number).all()
     if not part:
         abort(404)
-        
+
     return render_template('part.html', part=part, user=current_user, files_list=files_list, author=author)
 
 @views.route('/designrules')
@@ -118,6 +118,13 @@ def addPart():
     # Render the addpart.html template for GET requests
     return render_template('addpart.html', user=current_user)
 
+@views.route('/user:<string:user_name>')
+def userView(user_name):
+    display_user = User.query.filter_by(username=user_name).first()
+    if not display_user:
+        abort(404)
+    recent_parts = Part.query.filter_by(user_id=display_user.id).order_by(Part.date.desc()).limit(10).all()
+    return render_template('user.html', user = current_user, display_user = display_user, recent_parts=recent_parts)
 
 
 def save_image(image, part_id, user_id):
