@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, flash, url_for, abort, Markup
 from flask_login import login_required, current_user
-from .models import Part, File
+from .models import Part, File, User
 from . import db
 import os
 from werkzeug.utils import secure_filename
@@ -53,13 +53,12 @@ def accountsettings():
 @views.route('/part:<int:part_number>')
 def part(part_number):
     part = Part.query.filter_by(id=part_number).first()
+    author = User.query.filter_by(id = part.user_id).first()
     files_list = File.query.filter_by(part_id=part_number).all()
-    for f in files_list:
-        print(f.file_name)
     if not part:
         abort(404)
     
-    return render_template('part.html', part=part, user=current_user, files_list2=files_list)
+    return render_template('part.html', part=part, user=current_user, files_list=files_list, author = author)
 
 @views.route('/designrules')
 def designRules():
