@@ -19,8 +19,16 @@ def home():
 def library():
     page = request.args.get('page', 1, type=int)
     per_page = 20
-    parts = Part.query.paginate(page=page, per_page=per_page)
-    return render_template('library.html', user = current_user, parts=parts)
+    search_query = request.args.get('search', '')
+
+    # Filter parts based on search query
+    if search_query:
+        parts = Part.query.filter(Part.name.icontains(search_query, autoescape=True) | Part.description.icontains(search_query, autoescape=True) | Part.tags.icontains(search_query, autoescape=True))
+    else:
+        parts = Part.query
+
+    parts = parts.paginate(page=page, per_page=per_page)
+    return render_template('library.html', user=current_user, parts=parts)
 
 @views.route('/account')
 @login_required
@@ -57,7 +65,7 @@ def part(part_number):
     files_list = File.query.filter_by(part_id=part_number).all()
     if not part:
         abort(404)
-    
+        
     return render_template('part.html', part=part, user=current_user, files_list=files_list, author=author)
 
 @views.route('/designrules')
