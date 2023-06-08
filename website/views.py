@@ -19,8 +19,16 @@ def home():
 def library():
     page = request.args.get('page', 1, type=int)
     per_page = 20
-    parts = Part.query.paginate(page=page, per_page=per_page)
-    return render_template('library.html', user = current_user, parts=parts)
+    search_query = request.args.get('search', '')
+
+    # Filter parts based on search query
+    if search_query:
+        parts = Part.query.filter(Part.name.ilike(f'%{search_query}%') | Part.description.ilike(f'%{search_query}%') | Part.tags.ilike(f'%{search_query}%'))
+    else:
+        parts = Part.query
+
+    parts = parts.paginate(page=page, per_page=per_page)
+    return render_template('library.html', user=current_user, parts=parts)
 
 @views.route('/account')
 @login_required
