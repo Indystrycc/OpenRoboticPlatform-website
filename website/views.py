@@ -1,64 +1,88 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for, abort, Markup
-from flask_login import login_required, current_user
-from .models import Part, File, User
-from . import db
 import os
-from werkzeug.utils import secure_filename
-from flask_sqlalchemy import Pagination
-from bleach import clean
 import random
 
-views = Blueprint('views', __name__)
+from bleach import clean
+from flask import (
+    Blueprint,
+    Markup,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask_login import current_user, login_required
+from werkzeug.utils import secure_filename
 
-@views.route('/')
+from . import db
+from .models import File, Part, User
+
+views = Blueprint("views", __name__)
+
+
+@views.route("/")
 def home():
     parts = Part.query.order_by(Part.date.desc()).limit(5).all()
-    return render_template("home.html", user = current_user, parts = parts)
+    return render_template("home.html", user=current_user, parts=parts)
 
-@views.route('/library')
+
+@views.route("/library")
 def library():
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get("page", 1, type=int)
     per_page = 20
-    search_query = request.args.get('search', '')
+    search_query = request.args.get("search", "")
 
     # Filter parts based on search query
     if search_query:
-        parts = Part.query.filter(Part.name.icontains(search_query, autoescape=True) | Part.description.icontains(search_query, autoescape=True) | Part.tags.icontains(search_query, autoescape=True))
+        parts = Part.query.filter(
+            Part.name.icontains(search_query, autoescape=True)
+            | Part.description.icontains(search_query, autoescape=True)
+            | Part.tags.icontains(search_query, autoescape=True)
+        )
     else:
         parts = Part.query
 
     parts = parts.paginate(page=page, per_page=per_page)
-    return render_template('library.html', user=current_user, parts=parts)
+    return render_template("library.html", user=current_user, parts=parts)
 
-@views.route('/account')
+
+@views.route("/account")
 @login_required
 def account():
-    recent_parts = Part.query.filter_by(user_id=current_user.id).order_by(Part.date.desc()).limit(5).all()
-    return render_template("account.html", user = current_user, recent_parts = recent_parts)
+    recent_parts = (
+        Part.query.filter_by(user_id=current_user.id)
+        .order_by(Part.date.desc())
+        .limit(5)
+        .all()
+    )
+    return render_template("account.html", user=current_user, recent_parts=recent_parts)
 
-@views.route('/accountsettings', methods=['GET', 'POST'])
+
+@views.route("/accountsettings", methods=["GET", "POST"])
 @login_required
 def accountsettings():
-    if request.method == 'POST':
-        image = request.files.get('image')
-        description = clean(request.form.get('description'))
-        link_github = clean(request.form.get('name_github'))
-        link_youtube = clean(request.form.get('name_youtube'))
-        link_instagram = clean(request.form.get('name_instagram'))
+    if request.method == "POST":
+        image = request.files.get("image")
+        description = clean(request.form.get("description"))
+        link_github = clean(request.form.get("name_github"))
+        link_youtube = clean(request.form.get("name_youtube"))
+        link_instagram = clean(request.form.get("name_instagram"))
         current_user.description = description[:75]
         current_user.name_github = link_github
         current_user.name_youtube = link_youtube
         current_user.name_instagram = link_instagram
 
-        if image and image.filename != '':
+        if image and image.filename != "":
             current_user.image = save_profile_image(image, current_user.id)
 
         db.session.commit()
         message = Markup('Settings saved!, <a href="/account">Go to your account.</a>')
-        flash(message, 'success')
-    return render_template("accountsettings.html", user = current_user)
+        flash(message, "success")
+    return render_template("accountsettings.html", user=current_user)
 
-@views.route('/part:<int:part_number>')
+
+@views.route("/part:<int:part_number>")
 def part(part_number):
     part = Part.query.filter_by(id=part_number).first()
     author = User.query.filter_by(id=part.user_id).first()
@@ -66,35 +90,46 @@ def part(part_number):
     if not part:
         abort(404)
 
-    return render_template('part.html', part=part, user=current_user, files_list=files_list, author=author)
+    return render_template(
+        "part.html", part=part, user=current_user, files_list=files_list, author=author
+    )
 
-@views.route('/designrules')
+
+@views.route("/designrules")
 def designRules():
-    return render_template("design-rules.html", user = current_user)
+    return render_template("design-rules.html", user=current_user)
 
-@views.route('/showcase')
+
+@views.route("/showcase")
 def showcase():
-    return render_template("showcase.html", user = current_user)
+    return render_template("showcase.html", user=current_user)
 
-@views.route('/addpart', methods=['GET', 'POST'])
+
+@views.route("/addpart", methods=["GET", "POST"])
 @login_required
 def addPart():
-    if request.method == 'POST':
+    if request.method == "POST":
         # Retrieve the form data
-        name = clean(request.form.get('name'))
-        description = clean(request.form.get('description'))
-        category = clean(request.form.get('category'))
-        tags = clean(request.form.get('tags'))
-        image = request.files.get('image')
-        files = request.files.getlist('files')
+        name = clean(request.form.get("name"))
+        description = clean(request.form.get("description"))
+        category = clean(request.form.get("category"))
+        tags = clean(request.form.get("tags"))
+        image = request.files.get("image")
+        files = request.files.getlist("files")
 
         # Validate the form data (add your validation logic here)
         if not name or not description or not category:
-            flash('Please fill in all required fields.', 'error')
-            return redirect(url_for('views.addPart'))
+            flash("Please fill in all required fields.", "error")
+            return redirect(url_for("views.addPart"))
 
         # Save the part details to the database
-        part = Part(name=name, description=description, category=category, tags=tags, user_id=current_user.id)
+        part = Part(
+            name=name,
+            description=description,
+            category=category,
+            tags=tags,
+            user_id=current_user.id,
+        )
         db.session.add(part)
         db.session.commit()
 
@@ -105,31 +140,44 @@ def addPart():
 
         # Process and save the files
         for file in files:
-            file_filename = save_file(file, part.id, current_user.id)  # Implement the save_file function
+            file_filename = save_file(
+                file, part.id, current_user.id
+            )  # Implement the save_file function
             part.file_name = file_filename
-            db_file = File(part_id = part.id, file_name = file_filename)
+            db_file = File(part_id=part.id, file_name=file_filename)
             db.session.add(db_file)
             db.session.commit()
         db.session.commit()
 
-        flash('Part added successfully!', 'success')
-        return redirect(url_for('views.addPart'))
+        flash("Part added successfully!", "success")
+        return redirect(url_for("views.addPart"))
 
     # Render the addpart.html template for GET requests
-    return render_template('addpart.html', user=current_user)
+    return render_template("addpart.html", user=current_user)
 
-@views.route('/user:<string:user_name>')
+
+@views.route("/user:<string:user_name>")
 def userView(user_name):
     display_user = User.query.filter_by(username=user_name).first()
     if not display_user:
         abort(404)
-    recent_parts = Part.query.filter_by(user_id=display_user.id).order_by(Part.date.desc()).limit(10).all()
-    return render_template('user.html', user = current_user, display_user = display_user, recent_parts=recent_parts)
+    recent_parts = (
+        Part.query.filter_by(user_id=display_user.id)
+        .order_by(Part.date.desc())
+        .limit(10)
+        .all()
+    )
+    return render_template(
+        "user.html",
+        user=current_user,
+        display_user=display_user,
+        recent_parts=recent_parts,
+    )
 
 
 def save_image(image, part_id, user_id):
     # Specify the directory where you want to save the images
-    upload_folder = 'website/static/uploads/images'
+    upload_folder = "website/static/uploads/images"
 
     # Create the directory if it doesn't exist
     if not os.path.exists(upload_folder):
@@ -144,9 +192,10 @@ def save_image(image, part_id, user_id):
     # Return the saved filename or unique identifier
     return filename
 
+
 def save_profile_image(image, user_id):
     # Specify the directory where you want to save the images
-    upload_folder = 'website/static/uploads/profile_images'
+    upload_folder = "website/static/uploads/profile_images"
 
     # Create the directory if it doesn't exist
     if not os.path.exists(upload_folder):
@@ -161,9 +210,10 @@ def save_profile_image(image, user_id):
     # Return the saved filename or unique identifier
     return filename
 
+
 def save_file(file, part_id, user_id):
     # Specify the directory where you want to save the files
-    upload_folder = 'website/static/uploads/files'
+    upload_folder = "website/static/uploads/files"
 
     # Create the directory if it doesn't exist
     if not os.path.exists(upload_folder):
@@ -171,7 +221,7 @@ def save_file(file, part_id, user_id):
 
     # Generate a secure filename and save the file to the upload folder
     filename = secure_filename(file.filename)
-    filename = f'part_{user_id}_{part_id}_{filename}'
+    filename = f"part_{user_id}_{part_id}_{filename}"
     save_path = os.path.join(upload_folder, filename)
     file.save(save_path)
 
