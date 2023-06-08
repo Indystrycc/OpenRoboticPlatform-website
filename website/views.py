@@ -58,7 +58,7 @@ def part(part_number):
     if not part:
         abort(404)
     
-    return render_template('part.html', part=part, user=current_user, files_list=files_list, author = author)
+    return render_template('part.html', part=part, user=current_user, files_list=files_list, author=author)
 
 @views.route('/designrules')
 def designRules():
