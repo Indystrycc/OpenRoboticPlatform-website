@@ -4,7 +4,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 from .secrets_manager import *
+from sqlalchemy.exc import IntegrityError
+from MySQLdb.constants.ER import DUP_ENTRY
 import requests
+import sys
+import re
+
+USERNAME_PATTERN = re.compile(r"[\w-]+", flags=re.ASCII)
 
 auth = Blueprint('auth', __name__)
 
@@ -52,20 +58,32 @@ def sign_up():
         if captcha_result['success']:
             user = User.query.filter_by(email=email).first()
             if user:
-                flash('This email is already registered', category='error')
+                flash('This email is already registered.', category='error')
             elif len(username) < 4:
                 flash('Username must be longer than 4 characters.', category='error')
             elif len(username) > 20:
-                flash('Username must be shorter than 20 characters', category='error')
+                flash('Username must not be longer than 20 characters.', category='error')
+            elif not USERNAME_PATTERN.fullmatch(username):
+                flash('Username can contain only alphanumeric characters, \'_\' and \'-\'.', category='error')
             elif len(password) < 8:
                 flash('Password must be at least 8 characters long.', category='error')
+            # A completely arbitrary length limit
+            elif len(password.encode("utf-8")) > 128:
+                flash('Password must not be longer than 128 bytes.', category='error')
             else:
-                new_user_data = User(email=email, username=username, password=generate_password_hash(password, method='sha256'))
-                db.session.add(new_user_data)
-                db.session.commit()
-                login_user(new_user_data, remember=True)
-                flash('Account created sucessfuly!', category='success')
-                return redirect(url_for('views.home'))
+                try:
+                    new_user_data = User(email=email, username=username, password=generate_password_hash(password, method='scrypt:131072:8:1'))
+                    db.session.add(new_user_data)
+                    db.session.commit()
+                    login_user(new_user_data, remember=True)
+                    flash('Account created successfully!', category='success')
+                    return redirect(url_for('views.home'))
+                except IntegrityError as e:
+                    if e.orig.args[0] == DUP_ENTRY:
+                        flash('This username is already registered.', category='error')
+                    else:
+                        print(e, file=sys.stderr)
+                        flash('Something went wrong. Please try again later.', category='error')
         else:
             flash('CAPTCHA validation failed. Please try again.', category='error')
     return render_template('signup.html', user = current_user, recaptcha_site_key = RECAPTCHA_PUBLIC_KEY)
