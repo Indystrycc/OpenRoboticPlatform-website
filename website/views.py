@@ -118,6 +118,11 @@ def addPart():
     # Render the addpart.html template for GET requests
     return render_template('addpart.html', user=current_user)
 
+@views.route('/user:<string:user_name>')
+def userView(user_name):
+    display_user = User.query.filter_by(username=user_name).first()
+    recent_parts = Part.query.filter_by(user_id=display_user.id).order_by(Part.date.desc()).limit(10).all()
+    return render_template('user.html', user = current_user, display_user = display_user, recent_parts=recent_parts)
 
 
 def save_image(image, part_id, user_id):
