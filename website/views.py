@@ -53,7 +53,7 @@ def accountsettings():
 @views.route('/part:<int:part_number>')
 def part(part_number):
     part = Part.query.filter_by(id=part_number).first()
-    author = User.query.filter_by(id = part.user_id).first()
+    author = User.query.filter_by(id=part.user_id).first()
     files_list = File.query.filter_by(part_id=part_number).all()
     if not part:
         abort(404)
