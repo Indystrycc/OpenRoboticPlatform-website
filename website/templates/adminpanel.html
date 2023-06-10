@@ -5,9 +5,8 @@
     <div class="masthead-heading text-uppercase">Admin Panel</div>
 </header>
 {% endblock %}
-
 {% block content %}
-<div class="container">
+<div class="container container-all">
   <h2>Manage Parts</h2>
   <table class="table">
     <thead>
@@ -26,21 +25,21 @@
       </tr>
     </thead>
     <tbody>
-      {% for part in parts%}
+      {% for part in parts %}
       <tr>
-        <td>{{ part.id }}</td>
-        <td>{{ part.name }}</td>
-        <td>{{ part.category }}</td>
-        <td>{{ part.user_id }}</td>
+        <td name="id">{{ part.id }}</td>
+        <td class="editable-cell" name="name"><a href="/part:{{part.id}}">{{ part.name }}</a></td>
+        <td class="editable-cell">{{ part.category }}</td>
+        <td >{{ part.user_id }}</td>
         <td>{{ part.views }}</td>
-        <td>{{ part.verified }}</td>
-        <td>{{ part.featured }}</td>
-        <td>{{ part.public }}</td>
-        <td>{{ part.rejected }}</td>
-        <td>{{ part.tags }}</td>
+        <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.verified|int }}</td>
+        <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.featured|int }}</td>
+        <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.public|int }}</td>
+        <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.rejected|int }}</td>
+        <td class="editable-cell">{{ part.tags }}</td>
         <td>
-          <a href="#">Edit</a>
-          <a href="#">Delete</a>
+          <button class="btn btn-primary btn-sm edit-button">Edit</button>
+          <button class="btn btn-success btn-sm save-button" style="display: none;">Save</button>
         </td>
       </tr>
       {% endfor %}
@@ -89,4 +88,75 @@
     </ul>
   </nav>
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // Edit button click event delegation
+    $(document).on('click', '.edit-button', function() {
+      var row = $(this).closest('tr');
+      
+      // Disable edit button and enable save button for the row
+      row.find('.edit-button').prop('disabled', true);
+      row.find('.save-button').show();
+      
+      // Enable editing of each editable cell in the row
+      row.find('.editable-cell').each(function() {
+        var cell = $(this);
+        var value = cell.text();
+        var input = $('<input>').addClass('form-control').val(value);
+        cell.html(input);
+      });
+    });
+    
+    // Save button click event delegation
+    $(document).on('click', '.save-button', function() {
+      var row = $(this).closest('tr');
+      
+      // Disable save button and enable edit button for the row
+      row.find('.save-button').prop('disabled', true);
+      row.find('.edit-button').prop('disabled', false);
+      
+      // Get the updated values from each input field in the editable cells
+      var updatedValues = {};
+      row.find('.editable-cell').each(function() {
+        var cell = $(this);
+        var input = cell.find('input');
+        var value = input.val();
+        updatedValues[cell.index()] = value;
+        cell.html(value);
+      });
+
+      function displaySuccessMessage(message) {
+      var successMessage = $('<div>').addClass('alert alert-success').text(message);
+        $('.container-all').prepend(successMessage);
+      
+      setTimeout(function() {
+        successMessage.fadeOut('slow', function() {
+          successMessage.remove();
+        });
+      }, 3000);
+    }
+      
+      // Send the updated values to the server using AJAX
+      $.ajax({
+        url: '/admin-update-part',  // Update this URL with your server endpoint
+        method: 'POST',
+        data: {
+          id: row.find('td:first-child').text(),  // Example: Get the ID from the first cell
+          values: JSON.stringify(updatedValues)
+        },
+        success: function(response) {
+          displaySuccessMessage('Update successful');
+        },
+        error: function(xhr, status, error) {
+          // Handle the error response if needed
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}
+

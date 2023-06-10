@@ -13,6 +13,7 @@ from flask import (
     render_template,
     request,
     url_for,
+    jsonify,
 )
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
@@ -209,13 +210,46 @@ views.route("/adminpanel")
 
 @login_required
 def adminPanel():
-    print(current_user)
     if current_user.is_admin:
         page = request.args.get("page", 1, type=int)
         per_page = 20
         parts = Part.query
         parts = parts.paginate(page=page, per_page=per_page)
         return render_template("adminpanel.html", user=current_user, parts=parts)
+    else:
+        abort(404)
+
+
+@views.route("/admin-update-part", methods=["POST"])
+@login_required
+def adminUpdatePart():
+    if current_user.is_admin:
+        part_id = request.form.get("id")
+        updated_values = request.form.get("values")
+
+        # Update the part with the new values using the provided part_id and updated_values
+        part = Part.query.get(part_id)
+        if part:
+            # Convert the updated_values from JSON to a dictionary
+            updated_values_dict = json.loads(updated_values)
+
+            # Update the part attributes
+            print(updated_values_dict)
+            part.name = updated_values_dict.get("1")
+            part.category = updated_values_dict.get("2")
+            part.verified = bool(int(updated_values_dict.get("5")))
+            part.featured = bool(int(updated_values_dict.get("6")))
+            part.public = bool(int(updated_values_dict.get("7")))
+            part.rejected = bool(int(updated_values_dict.get("8")))
+            part.tags = updated_values_dict.get("9")
+
+            # Save the changes to the database
+            db.session.commit()
+
+            # Return a success response
+            return jsonify({"message": "Part updated successfully"})
+        else:
+            return jsonify({"message": "Part not found"})
     else:
         abort(404)
 
