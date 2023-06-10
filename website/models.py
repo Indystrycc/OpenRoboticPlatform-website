@@ -17,6 +17,7 @@ class User(db.Model, UserMixin):
     name_github = db.Column(db.String(100))
     name_youtube = db.Column(db.String(100))
     name_instagram = db.Column(db.String(100))
+    is_admin = db.Column(db.Boolean, default=False)
 
 
 class Part(db.Model):

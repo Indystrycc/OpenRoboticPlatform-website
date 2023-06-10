@@ -204,7 +204,24 @@ def userView(user_name):
     )
 
 
+views.route("/adminpanel")
+
+
+@login_required
+def adminPanel():
+    print(current_user)
+    if current_user.is_admin:
+        page = request.args.get("page", 1, type=int)
+        per_page = 20
+        parts = Part.query
+        parts = parts.paginate(page=page, per_page=per_page)
+        return render_template("adminpanel.html", user=current_user, parts=parts)
+    else:
+        abort(404)
+
+
 def save_image(image, part_id, username):
+    # Specify the directory where you want to save the images
     upload_folder = "website/static/uploads/images"
 
     # Create the directory if it doesn't exist

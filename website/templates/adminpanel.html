@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block header%}
+<header class="masthead" style="background-color: #ffc800; padding-bottom: 0.5em; padding-top: 6em">
+    <div class="masthead-heading text-uppercase">Admin Panel</div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Manage Parts</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Author</th>
+        <th>Views</th>
+        <th>Verified</th>
+        <th>Featured</th>
+        <th>Public</th>
+        <th>Rejected</th>
+        <th>Tags</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for part in parts%}
+      <tr>
+        <td>{{ part.id }}</td>
+        <td>{{ part.name }}</td>
+        <td>{{ part.category }}</td>
+        <td>{{ part.user_id }}</td>
+        <td>{{ part.views }}</td>
+        <td>{{ part.verified }}</td>
+        <td>{{ part.featured }}</td>
+        <td>{{ part.public }}</td>
+        <td>{{ part.rejected }}</td>
+        <td>{{ part.tags }}</td>
+        <td>
+          <a href="#">Edit</a>
+          <a href="#">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <nav aria-label="Pagination">
+    <ul class="pagination">
+      {% if parts.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('adminPanel', page=parts.prev_num) }}">Previous</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">Previous</span>
+      </li>
+      {% endif %}
+
+      {% for num in parts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if num %}
+          {% if parts.page == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('adminPanel', page=num) }}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if parts.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('adminPanel', page=parts.next_num) }}">Next</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">Next</span>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% endblock %}
