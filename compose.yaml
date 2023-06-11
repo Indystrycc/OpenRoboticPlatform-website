@@ -23,12 +23,12 @@ x-website: &website-base
   build:
     context: .
   container_name: website
-  environment:
-    - SECRETS_FILE=/run/secrets/website_secrets.py
-    - DB_HOST=db
+  environment: &website-base-env
+    SECRETS_FILE: /run/secrets/website_secrets.py
+    DB_HOST: db
   secrets:
     - website_secrets.py
-  networks:
+  networks: &website-base-net
     dbnet:
 
 
@@ -53,13 +53,16 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db-prod
+    environment:
+      <<: *website-base-env
+      TRUSTED_PROXIES: "1"
     volumes:
       - uploads:/app/website/static/uploads
     expose:
       - 8000
     networks:
+      <<: *website-base-net
       internal:
-      dbnet:
     profiles:
       - prod
 

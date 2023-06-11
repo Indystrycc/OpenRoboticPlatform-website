@@ -1,12 +1,12 @@
-from os import environ
+from os import getenv
 from time import sleep
 
 from flask import Flask, Response
 from flask_login import LoginManager
-from .secrets_manager import *
 from flask_sqlalchemy import SQLAlchemy
 from MySQLdb.constants.CR import CONNECTION_ERROR
 from sqlalchemy.exc import OperationalError
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
 
@@ -20,14 +20,12 @@ def create_app():
     app.config["RECAPTCHA_PUBLIC_KEY"] = RECAPTCHA_PUBLIC_KEY
     app.config["RECAPTCHA_PRIVATE_KEY"] = RECAPTCHA_PRIVATE_KEY
 
-    if True:
-        from werkzeug.middleware.proxy_fix import ProxyFix
-
+    if getenv("TRUSTED_PROXIES", "0") == "1":
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     app.config[
         "SQLALCHEMY_DATABASE_URI"
-    ] = f'mysql://root:rootroot@{environ.get("DB_HOST") or "127.0.0.1"}:3306/orp_db'
+    ] = f'mysql://root:rootroot@{getenv("DB_HOST", "127.0.0.1")}:3306/orp_db'
     db.init_app(app)
 
     from .auth import auth
