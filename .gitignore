@@ -135,6 +135,9 @@ dmypy.json
 /website/static/uploads
 
 secret.py
+/scripts/secret
+/prod/nginx/certs
+*.pem
 
 .vscode/*
 !/.vscode/extensions.json

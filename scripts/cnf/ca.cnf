@@ -1,0 +1,87 @@
+####################################################################
+[ ca ]
+default_ca    = CA_default      # The default ca section
+
+[ CA_default ]
+
+default_days     = 3650         # How long to certify for
+default_crl_days = 30           # How long before next CRL
+default_md       = sha256       # Use public key default MD
+preserve         = no           # Keep passed DN ordering
+
+x509_extensions = casign_extensions # The extensions to add to the cert
+
+email_in_dn     = no            # Don't concat the email in the DN
+copy_extensions = copy          # Required to copy SANs from CSR to cert
+
+base_dir      = .
+certificate   = $base_dir/cacert.pem   # The CA certificate
+private_key   = $base_dir/cakey.pem    # The CA private key
+new_certs_dir = $base_dir              # Location for new certs after signing
+database      = $base_dir/index.txt    # Database index file
+serial        = $base_dir/serial.txt   # The current serial number
+
+unique_subject = no  # Set to 'no' to allow creation of
+                     # several certificates with same subject.
+
+policy = signing_policy  # Signing policy section
+
+####################################################################
+[ req ]
+default_bits       = 4096
+default_keyfile    = cakey.pem
+distinguished_name = ca_distinguished_name
+x509_extensions    = ca_extensions
+string_mask        = utf8only
+prompt             = no
+
+####################################################################
+[ ca_distinguished_name ]
+# countryName         = Country Name (2 letter code)
+# countryName_default = PL
+C = PL
+
+# stateOrProvinceName         = State or Province Name (full name)
+# stateOrProvinceName_default = Silesia
+ST = Silesia
+
+# organizationName            = Organization Name (eg, company)
+# organizationName_default    = Indystrycc
+O = Indystrycc
+
+# commonName         = Common Name (e.g. server FQDN or YOUR name)
+# commonName_default = Open Robotic Platform CA
+CN = Open Robotic Platform CA
+
+####################################################################
+[ ca_extensions ]
+
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always, issuer
+basicConstraints       = critical,CA:true
+keyUsage               = keyCertSign, cRLSign
+
+####################################################################
+[ casign_extensions ]
+
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always, issuer
+basicConstraints       = critical,CA:FALSE
+keyUsage               = critical,digitalSignature, keyEncipherment
+
+####################################################################
+[ signing_policy ]
+countryName            = optional
+stateOrProvinceName    = optional
+localityName           = optional
+organizationName       = optional
+organizationalUnitName = optional
+commonName             = supplied
+emailAddress           = optional
+
+####################################################################
+[ signing_req ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+basicConstraints       = critical,CA:FALSE
+keyUsage               = critical,digitalSignature, keyEncipherment

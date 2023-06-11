@@ -1,0 +1,44 @@
+####################################################################
+[ req ]
+default_bits       = 4096
+default_keyfile    = serverkey.pem
+distinguished_name = server_distinguished_name
+req_extensions     = server_req_extensions
+string_mask        = utf8only
+prompt             = no
+
+####################################################################
+[ server_distinguished_name ]
+# countryName         = Country Name (2 letter code)
+# countryName_default = PL
+C = PL
+
+# stateOrProvinceName         = State or Province Name (full name)
+# stateOrProvinceName_default = Silesia
+ST = Silesia
+
+# organizationName            = Organization Name (eg, company)
+# organizationName_default    = Indystrycc
+O = Indystrycc
+
+# commonName           = Common Name (e.g. server FQDN or YOUR name)
+# commonName_default   = orp.localhost
+CN = orp.localhost
+
+####################################################################
+[ server_req_extensions ]
+
+subjectKeyIdentifier = hash
+basicConstraints     = critical,CA:FALSE
+keyUsage             = critical,digitalSignature, keyEncipherment
+subjectAltName       = @alternate_names
+nsComment            = "OpenSSL Generated Certificate for ORP dev"
+
+####################################################################
+[ alternate_names ]
+
+DNS.1  = orp.localhost
+DNS.2  = localhost
+
+IP.1 = 127.0.0.1
+IP.2 = ::1
