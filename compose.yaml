@@ -58,11 +58,9 @@ services:
       TRUSTED_PROXIES: "1"
     volumes:
       - uploads:/app/website/static/uploads
+      - proxy-conn-sock:/run/gunicorn
     expose:
       - 8000
-    networks:
-      <<: *website-base-net
-      internal:
     profiles:
       - prod
 
@@ -94,14 +92,12 @@ services:
       - NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
     volumes:
       - uploads:/data/static/uploads
+      - proxy-conn-sock:/run/gunicorn
     secrets:
       - chain
       - fullchain
       - privkey
-    # network_mode: host
-    networks:
-      - internal
-      - outside
+    network_mode: host
     restart: on-failure
     profiles:
       - prod
@@ -110,13 +106,10 @@ services:
 volumes:
   dbdata:
   uploads:
+  proxy-conn-sock:
 
 networks:
   dbnet:
-  internal:
-  outside:
-    external: true
-    name: host
 
 secrets:
   website_secrets.py:

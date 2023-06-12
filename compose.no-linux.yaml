@@ -4,11 +4,4 @@ services:
       - 0.0.0.0:80:80
       - 0.0.0.0:443:443/tcp
       - 0.0.0.0:443:443/udp
-    # network_mode: bridge
-    # command: /bin/bash -c "sed -i 's_http://127.0.0.1:3000_http://server:3000_' /etc/nginx/conf.d/default.conf && nginx -g \"daemon off;\""
-
-
-networks:
-  outside:
-    name: "outside"
-    external: false
+    network_mode: bridge

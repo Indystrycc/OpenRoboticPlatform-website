@@ -21,7 +21,8 @@ RUN chmod +x /docker-entrypoint.d/15-local-resolvers.envsh
 COPY prod/nginx /etc/nginx
 
 # Prepare static files
-COPY website/static /data/static
-RUN find /data/static -type f -not -empty -exec sh -c "gzip -c -9 {} > {}.gz" \;
+COPY --chmod=644 website/static /data/static
+RUN find /data/static -type f -not -empty -exec sh -c "gzip -c -9 {} > {}.gz" \; && \
+    find /data/static -type d -exec chmod 755 "{}" \;
 
 EXPOSE 80 443
