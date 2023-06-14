@@ -17,12 +17,12 @@
                         <form method="POST" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
-                                <input type="file" class="form-control" id="image" name="image" accept="image/*" required onchange="displayImage(event)">
+                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" required onchange="displayImage(event)">
                                 <div id="image-preview"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="files" class="form-label">Files</label>
-                                <input type="file" class="form-control" name="files" id="file-upload" accept=".3mf, .stl, .step" multiple required>
+                                <input type="file" class="form-control" name="files" id="file-upload" accept="{{ part_extensions|join(', ') }}" multiple required>
                                 <div id="file-preview" class="mt-2">
                                     <div class="file-preview-item">
                                         <div class="file-preview-icon"><i class="fas fa-file"></i></div>

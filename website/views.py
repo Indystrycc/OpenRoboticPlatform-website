@@ -1,5 +1,6 @@
 import os
 import random
+import mimetypes
 
 from bleach import clean
 from flask import (
@@ -18,6 +19,7 @@ from werkzeug.utils import secure_filename
 from . import db
 from .models import File, Part, User
 
+ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
 
 
@@ -73,13 +75,19 @@ def accountsettings():
         current_user.name_youtube = link_youtube
         current_user.name_instagram = link_instagram
 
-        if image and image.filename != "":
+        if (
+            image
+            and image.filename
+            and mimetypes.guess_type(image.filename)[0] in ALLOWED_IMAGE_MIME
+        ):
             current_user.image = save_profile_image(image, current_user.id)
 
         db.session.commit()
         message = Markup('Settings saved!, <a href="/account">Go to your account.</a>')
         flash(message, "success")
-    return render_template("accountsettings.html", user=current_user)
+    return render_template(
+        "accountsettings.html", user=current_user, image_types=ALLOWED_IMAGE_MIME
+    )
 
 
 @views.route("/part:<int:part_number>")
@@ -108,6 +116,7 @@ def showcase():
 @views.route("/addpart", methods=["GET", "POST"])
 @login_required
 def addPart():
+    ALLOWED_PART_EXTENSIONS = [".3mf", ".stl", ".step"]
     if request.method == "POST":
         # Retrieve the form data
         name = clean(request.form.get("name"))
@@ -135,11 +144,16 @@ def addPart():
 
         # Process and save the image
         if image:
+            if not mimetypes.guess_type(image.filename)[0] in ALLOWED_IMAGE_MIME:
+                abort(400)
             image_filename = save_image(image, part.id, current_user.id)
             part.image = image_filename
 
         # Process and save the files
         for file in files:
+            if os.path.splitext(file.filename)[1] not in ALLOWED_PART_EXTENSIONS:
+                abort(400)
+                # TODO: Remove image and other files from this upload
             file_filename = save_file(
                 file, part.id, current_user.id
             )  # Implement the save_file function
@@ -153,7 +167,12 @@ def addPart():
         return redirect(url_for("views.addPart"))
 
     # Render the addpart.html template for GET requests
-    return render_template("addpart.html", user=current_user)
+    return render_template(
+        "addpart.html",
+        user=current_user,
+        part_extensions=ALLOWED_PART_EXTENSIONS,
+        image_types=ALLOWED_IMAGE_MIME,
+    )
 
 
 @views.route("/user:<string:user_name>")
@@ -185,7 +204,8 @@ def save_image(image, part_id, user_id):
 
     # Generate a secure filename and save the image to the upload folder
     filename = secure_filename(image.filename)
-    filename = f'part_{user_id}_{part_id}_{"%030x" % random.randrange(16**20)}'
+    ext = os.path.splitext(filename)[1]
+    filename = f'part_{user_id}_{part_id}_{"%030x" % random.randrange(16**20)}{ext}'
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
@@ -202,7 +222,7 @@ def save_profile_image(image, user_id):
         os.makedirs(upload_folder)
 
     # Generate a secure filename and save the image to the upload folder
-    filename = secure_filename(image.filename)
+    # filename = secure_filename(image.filename)
     filename = f'pi_{user_id}_{"%030x" % random.randrange(16**20)}'
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
