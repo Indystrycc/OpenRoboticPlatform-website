@@ -80,7 +80,11 @@ def accountsettings():
             and image.filename
             and mimetypes.guess_type(image.filename)[0] in ALLOWED_IMAGE_MIME
         ):
+            previous_image = current_user.image
             current_user.image = save_profile_image(image, current_user.id)
+
+        if previous_image:
+            delete_profile_image(previous_image)
 
         db.session.commit()
         message = Markup('Settings saved!, <a href="/account">Go to your account.</a>')
@@ -229,6 +233,16 @@ def save_profile_image(image, user_id):
 
     # Return the saved filename or unique identifier
     return filename
+
+
+def delete_profile_image(filename: str):
+    upload_folder = "website/static/uploads/profile_images"
+
+    try:
+        image_path = os.path.join(upload_folder, filename)
+        os.remove(image_path)
+    except FileNotFoundError:
+        pass
 
 
 def save_file(file, part_id, user_id):
