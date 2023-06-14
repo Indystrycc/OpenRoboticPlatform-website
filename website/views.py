@@ -203,7 +203,6 @@ def userView(user_name):
 
 
 def save_image(image, part_id, user_id):
-    # Specify the directory where you want to save the images
     upload_folder = "website/static/uploads/images"
 
     # Create the directory if it doesn't exist
@@ -217,12 +216,10 @@ def save_image(image, part_id, user_id):
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
-    # Return the saved filename or unique identifier
     return filename
 
 
 def save_profile_image(image, user_id):
-    # Specify the directory where you want to save the images
     upload_folder = "website/static/uploads/profile_images"
 
     # Create the directory if it doesn't exist
@@ -230,12 +227,10 @@ def save_profile_image(image, user_id):
         os.makedirs(upload_folder)
 
     # Generate a secure filename and save the image to the upload folder
-    # filename = secure_filename(image.filename)
     filename = f'pi_{user_id}_{"%030x" % random.randrange(16**20)}'
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
-    # Return the saved filename or unique identifier
     return filename
 
 
@@ -250,7 +245,6 @@ def delete_profile_image(filename: str):
 
 
 def save_file(file, part_id, user_id):
-    # Specify the directory where you want to save the files
     upload_folder = "website/static/uploads/files"
 
     # Create the directory if it doesn't exist
@@ -263,7 +257,6 @@ def save_file(file, part_id, user_id):
     save_path = os.path.join(upload_folder, filename)
     file.save(save_path)
 
-    # Return the saved filename or unique identifier
     return filename
 
 
