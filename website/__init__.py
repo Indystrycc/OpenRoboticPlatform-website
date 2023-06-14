@@ -1,12 +1,12 @@
 from os import environ
 from time import sleep
 
-from flask import Flask
+from flask import Flask, Response
 from flask_login import LoginManager
 from .secrets_manager import *
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import OperationalError
 from MySQLdb.constants.CR import CONNECTION_ERROR
+from sqlalchemy.exc import OperationalError
 
 from .secrets_manager import *
 
@@ -54,5 +54,10 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return models.User.query.get(int(id))
+
+    @app.after_request
+    def set_important_headers(response: Response):
+        response.headers.set("X-Content-Type-Options", "nosniff")
+        return response
 
     return app

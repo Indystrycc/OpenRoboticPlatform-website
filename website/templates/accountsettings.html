@@ -17,7 +17,7 @@
                         <form method="POST" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label for="image" class="form-label">Profile image</label>
-                                <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="displayImage(event)">
+                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" onchange="displayImage(event)">
                                 <div id="image-preview"></div>
                             </div>
                             <div class="mb-3">
