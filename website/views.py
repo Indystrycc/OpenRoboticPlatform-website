@@ -1,6 +1,7 @@
+import mimetypes
 import os
 import random
-import mimetypes
+from pathlib import Path
 
 from bleach import clean
 from flask import (
@@ -144,27 +145,30 @@ def addPart():
             user_id=current_user.id,
         )
         db.session.add(part)
-        db.session.commit()
+        db.session.flush()
 
         # Process and save the image
-        if image:
-            if not mimetypes.guess_type(image.filename)[0] in ALLOWED_IMAGE_MIME:
-                abort(400)
-            image_filename = save_image(image, part.id, current_user.id)
-            part.image = image_filename
+        if (
+            not image
+            or mimetypes.guess_type(image.filename)[0] not in ALLOWED_IMAGE_MIME
+        ):
+            db.session.rollback()
+            return abort(400)
+        image_filename = save_image(image, part.id, current_user.id)
+        part.image = image_filename
 
         # Process and save the files
         for file in files:
             if os.path.splitext(file.filename)[1] not in ALLOWED_PART_EXTENSIONS:
-                abort(400)
-                # TODO: Remove image and other files from this upload
+                delete_part_uploads(part.id, current_user.id)
+                db.session.rollback()
+                return abort(400)
             file_filename = save_file(
                 file, part.id, current_user.id
             )  # Implement the save_file function
             part.file_name = file_filename
             db_file = File(part_id=part.id, file_name=file_filename)
             db.session.add(db_file)
-            db.session.commit()
         db.session.commit()
 
         flash("Part added successfully!", "success")
@@ -261,3 +265,14 @@ def save_file(file, part_id, user_id):
 
     # Return the saved filename or unique identifier
     return filename
+
+
+def delete_part_uploads(part_id: int, user_id: int):
+    image_uploads_dir = Path("website/static/uploads/images")
+    file_uploads_dir = Path("website/static/uploads/files")
+
+    for img in image_uploads_dir.glob(f"part_{user_id}_{part_id}_*"):
+        img.unlink()
+
+    for file in file_uploads_dir.glob(f"part_{user_id}_{part_id}_*"):
+        file.unlink()

@@ -5,8 +5,8 @@ from flask import Flask, Response
 from flask_login import LoginManager
 from .secrets_manager import *
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import OperationalError
 from MySQLdb.constants.CR import CONNECTION_ERROR
+from sqlalchemy.exc import OperationalError
 
 from .secrets_manager import *
 
