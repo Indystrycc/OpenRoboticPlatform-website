@@ -9,6 +9,23 @@ server {
     }
 }
 
+types {
+    # https://www.iana.org/assignments/media-types/model/stl
+    model/stl  stl;
+    # https://www.iana.org/assignments/media-types/model/3mf
+    model/3mf  3mf;
+    # https://www.iana.org/assignments/media-types/model/step
+    model/step step;
+}
+
+map $sent_http_content_type $expires {
+    default                 off;
+    application/javascript  10d;
+    text/css                10d;
+    ~image/                 180d;
+    ~model/                 180d;
+}
+
 server {
     listen 443 quic reuseport;
     listen 443 ssl;
@@ -48,8 +65,8 @@ server {
     add_header Alt-Svc 'h3=":443"; ma=86400';
 
     # TODO:
-    # 1. Configure caching
-    # 2. CSP?
+    # 1. Configure caching (make it longer for images and styles if we're going to use cache busting)
+    # 2. CSP? (requires fixing styles and scripts)
     # 3. Serve precompressed (static) files - compress user files?
 
     location / {
@@ -63,5 +80,6 @@ server {
     location /static {
         root /data;
         gzip_static on;
+        expires $expires;
     }
 }
