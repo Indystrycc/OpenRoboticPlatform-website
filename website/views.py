@@ -1,6 +1,7 @@
 import mimetypes
 import os
 import random
+import uuid
 from pathlib import Path
 
 from bleach import clean
@@ -83,7 +84,7 @@ def accountsettings():
             and mimetypes.guess_type(image.filename)[0] in ALLOWED_IMAGE_MIME
         ):
             previous_image = current_user.image
-            current_user.image = save_profile_image(image, current_user.id)
+            current_user.image = save_profile_image(image)
 
         if previous_image:
             delete_profile_image(previous_image)
@@ -161,12 +162,10 @@ def addPart():
         # Process and save the files
         for file in files:
             if os.path.splitext(file.filename)[1] not in ALLOWED_PART_EXTENSIONS:
-                delete_part_uploads(part.id, current_user.id)
+                delete_part_uploads(part.id, current_user.username)
                 db.session.rollback()
                 return abort(400)
-            file_filename = save_file(
-                file, part.id, current_user.id
-            )  # Implement the save_file function
+            file_filename = save_file(file, part.id, current_user.username)
             part.file_name = file_filename
             db_file = File(part_id=part.id, file_name=file_filename)
             db.session.add(db_file)
@@ -216,14 +215,14 @@ def save_image(image, part_id, user_id):
     # Generate a secure filename and save the image to the upload folder
     filename = secure_filename(image.filename)
     ext = os.path.splitext(filename)[1]
-    filename = f'part_{user_id}_{part_id}_{"%030x" % random.randrange(16**20)}{ext}'
+    filename = f'part_{part_id}_{"%030x" % random.randrange(16**20)}{ext}'
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
     return filename
 
 
-def save_profile_image(image, user_id):
+def save_profile_image(image):
     upload_folder = "website/static/uploads/profile_images"
 
     # Create the directory if it doesn't exist
@@ -231,7 +230,7 @@ def save_profile_image(image, user_id):
         os.makedirs(upload_folder)
 
     # Generate a secure filename and save the image to the upload folder
-    filename = f'pi_{user_id}_{"%030x" % random.randrange(16**20)}'
+    filename = f"pi_{uuid.uuid4()}"
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
@@ -248,7 +247,7 @@ def delete_profile_image(filename: str):
         pass
 
 
-def save_file(file, part_id, user_id):
+def save_file(file, part_id, username):
     upload_folder = "website/static/uploads/files"
 
     # Create the directory if it doesn't exist
@@ -257,19 +256,19 @@ def save_file(file, part_id, user_id):
 
     # Generate a secure filename and save the file to the upload folder
     filename = secure_filename(file.filename)
-    filename = f"part_{user_id}_{part_id}_{filename}"
+    filename = f"{username}_{part_id}_{filename}"
     save_path = os.path.join(upload_folder, filename)
     file.save(save_path)
 
     return filename
 
 
-def delete_part_uploads(part_id: int, user_id: int):
+def delete_part_uploads(part_id: int, username: str):
     image_uploads_dir = Path("website/static/uploads/images")
     file_uploads_dir = Path("website/static/uploads/files")
 
-    for img in image_uploads_dir.glob(f"part_{user_id}_{part_id}_*"):
+    for img in image_uploads_dir.glob(f"part_{part_id}_*"):
         img.unlink()
 
-    for file in file_uploads_dir.glob(f"part_{user_id}_{part_id}_*"):
+    for file in file_uploads_dir.glob(f"{username}_{part_id}_*"):
         file.unlink()
