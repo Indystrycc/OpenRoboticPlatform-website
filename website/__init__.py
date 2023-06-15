@@ -1,3 +1,4 @@
+from concurrent.futures import ProcessPoolExecutor
 from os import getenv
 from time import sleep
 
@@ -10,8 +11,10 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
 
-# DB_NAME = 'database.db'
 db = SQLAlchemy()
+compression_process = (
+    ProcessPoolExecutor(1) if getenv("FLASK_ENV") == "production" else None
+)
 
 
 def create_app():

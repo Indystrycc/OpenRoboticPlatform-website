@@ -17,7 +17,8 @@ from flask import (
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
-from . import db
+from . import compression_process, db
+from .compression import compress_uploads
 from .models import File, Part, User
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
@@ -170,6 +171,9 @@ def addPart():
             db_file = File(part_id=part.id, file_name=file_filename)
             db.session.add(db_file)
         db.session.commit()
+
+        if compression_process:
+            compression_process.submit(compress_uploads, part.id, current_user.id)
 
         flash("Part added successfully!", "success")
         return redirect(url_for("views.addPart"))
