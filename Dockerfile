@@ -48,6 +48,4 @@ COPY prod/gunicorn.conf.py .
 COPY main.py .
 COPY website website/
 
-EXPOSE 8000
 CMD [ "gunicorn" ]
-# CMD [ "sleep", "999999" ]

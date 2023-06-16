@@ -60,8 +60,6 @@ services:
     volumes:
       - uploads:/app/website/static/uploads
       - proxy-conn-sock:/run/gunicorn
-    expose:
-      - 8000
     profiles:
       - prod
 
