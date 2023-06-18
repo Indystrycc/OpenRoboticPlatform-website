@@ -6,7 +6,7 @@ from . import db
 
 class User(db.Model, UserMixin):
     id = db.Column(
-        db.UUID(as_uuid=True), primary_key=True, unique=True, default=uuid.uuid4()
+        db.UUID(as_uuid=True), primary_key=True, unique=True, default=uuid.uuid4
     )
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(163))
