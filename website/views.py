@@ -85,8 +85,8 @@ def accountsettings():
             previous_image = current_user.image
             current_user.image = save_profile_image(image, current_user.username)
 
-        if previous_image:
-            delete_profile_image(previous_image)
+            if previous_image:
+                delete_profile_image(previous_image)
 
         db.session.commit()
         message = Markup('Settings saved!, <a href="/account">Go to your account.</a>')
