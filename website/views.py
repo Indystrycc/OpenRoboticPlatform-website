@@ -84,7 +84,7 @@ def accountsettings():
             and mimetypes.guess_type(image.filename)[0] in ALLOWED_IMAGE_MIME
         ):
             previous_image = current_user.image
-            current_user.image = save_profile_image(image)
+            current_user.image = save_profile_image(image, current_user.username)
 
         if previous_image:
             delete_profile_image(previous_image)
@@ -156,7 +156,7 @@ def addPart():
         ):
             db.session.rollback()
             return abort(400)
-        image_filename = save_image(image, part.id, current_user.id)
+        image_filename = save_image(image, part.id, current_user.username)
         part.image = image_filename
 
         # Process and save the files
@@ -205,7 +205,7 @@ def userView(user_name):
     )
 
 
-def save_image(image, part_id, user_id):
+def save_image(image, part_id, username):
     upload_folder = "website/static/uploads/images"
 
     # Create the directory if it doesn't exist
@@ -215,22 +215,22 @@ def save_image(image, part_id, user_id):
     # Generate a secure filename and save the image to the upload folder
     filename = secure_filename(image.filename)
     ext = os.path.splitext(filename)[1]
-    filename = f'part_{part_id}_{"%030x" % random.randrange(16**20)}{ext}'
+    filename = f"part_{username}_{part_id}_{uuid.uuid4()}{ext}"
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
     return filename
 
 
-def save_profile_image(image):
+def save_profile_image(image, username):
     upload_folder = "website/static/uploads/profile_images"
-
+    filename, file_extension = os.path.splitext(image.filename)
     # Create the directory if it doesn't exist
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
 
     # Generate a secure filename and save the image to the upload folder
-    filename = f"pi_{uuid.uuid4()}"
+    filename = f"pi_{username}_{uuid.uuid4()}{file_extension}"
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
