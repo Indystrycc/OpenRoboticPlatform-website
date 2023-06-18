@@ -1,6 +1,5 @@
 import mimetypes
 import os
-import random
 import uuid
 from pathlib import Path
 
