@@ -267,7 +267,7 @@ def delete_part_uploads(part_id: int, username: str):
     image_uploads_dir = Path("website/static/uploads/images")
     file_uploads_dir = Path("website/static/uploads/files")
 
-    for img in image_uploads_dir.glob(f"part_{part_id}_*"):
+    for img in image_uploads_dir.glob(f"part_{username}_{part_id}_*"):
         img.unlink()
 
     for file in file_uploads_dir.glob(f"{username}_{part_id}_*"):
