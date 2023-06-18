@@ -6,7 +6,7 @@ from . import db
 
 class User(db.Model, UserMixin):
     id = db.Column(
-        db.String(36), primary_key=True, unique=True, default=str(uuid.uuid4())
+        db.UUID(as_uuid=True), primary_key=True, unique=True, default=uuid.uuid4()
     )
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(163))
@@ -27,7 +27,7 @@ class Part(db.Model):
     image = db.Column(db.String(100), unique=True)
     # category examples: plates, wheels, other, holders & adapters for: sensors, microcontrollers & SBCs, motors, cameras
     category = db.Column(db.Integer)
-    user_id = db.Column(db.String(36), db.ForeignKey("user.id"))
+    user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     verified = db.Column(db.Boolean, default=False)
     featured = db.Column(db.Boolean, default=False)

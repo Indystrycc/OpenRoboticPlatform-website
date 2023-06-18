@@ -10,6 +10,7 @@ from sqlalchemy.exc import OperationalError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
+import uuid
 
 db = SQLAlchemy()
 compression_process = (
@@ -58,7 +59,7 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(id):
-        return models.User.query.get(id)
+        return models.User.query.get(uuid.UUID(id))
 
     @app.after_request
     def set_important_headers(response: Response):
