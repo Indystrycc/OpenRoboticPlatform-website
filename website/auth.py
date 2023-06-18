@@ -12,7 +12,7 @@ from . import db
 from .models import User
 from .secrets_manager import *
 
-USERNAME_PATTERN = re.compile(r"[\w-]+", flags=re.ASCII)
+USERNAME_PATTERN = re.compile(r"[\w]+", flags=re.ASCII)
 
 auth = Blueprint("auth", __name__)
 
@@ -69,7 +69,7 @@ def sign_up():
                 )
             elif not USERNAME_PATTERN.fullmatch(username):
                 flash(
-                    "Username can contain only alphanumeric characters, '_' and '-'.",
+                    "Username can contain only alphanumeric characters and '-'.",
                     category="error",
                 )
             elif len(password) < 8:
