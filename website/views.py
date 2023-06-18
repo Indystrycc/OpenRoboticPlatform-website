@@ -214,7 +214,7 @@ def save_image(image, part_id, username):
     # Generate a secure filename and save the image to the upload folder
     filename = secure_filename(image.filename)
     ext = os.path.splitext(filename)[1]
-    filename = f"part_{username}_{part_id}_{uuid.uuid4()}{ext}"
+    filename = f"part-{username}-{part_id}-{uuid.uuid4()}{ext}"
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
@@ -229,7 +229,7 @@ def save_profile_image(image, username):
         os.makedirs(upload_folder)
 
     # Generate a secure filename and save the image to the upload folder
-    filename = f"pi_{username}_{uuid.uuid4()}{file_extension}"
+    filename = f"pi-{username}-{uuid.uuid4()}{file_extension}"
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
@@ -255,7 +255,7 @@ def save_file(file, part_id, username):
 
     # Generate a secure filename and save the file to the upload folder
     filename = secure_filename(file.filename)
-    filename = f"{username}_{part_id}_{filename}"
+    filename = f"{username}-{part_id}-{filename}"
     save_path = os.path.join(upload_folder, filename)
     file.save(save_path)
 
@@ -266,8 +266,8 @@ def delete_part_uploads(part_id: int, username: str):
     image_uploads_dir = Path("website/static/uploads/images")
     file_uploads_dir = Path("website/static/uploads/files")
 
-    for img in image_uploads_dir.glob(f"part_{username}_{part_id}_*"):
+    for img in image_uploads_dir.glob(f"part-{username}-{part_id}-*"):
         img.unlink()
 
-    for file in file_uploads_dir.glob(f"{username}_{part_id}_*"):
+    for file in file_uploads_dir.glob(f"{username}-{part_id}-*"):
         file.unlink()

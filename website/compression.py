@@ -8,7 +8,7 @@ def compress_uploads(part_id: int, username: str):
     SUPPORTED_EXTENSIONS = (".stl", ".step")
     uploads_path = Path("website/static/uploads/files")
     for path in uploads_path.glob(
-        f"{username}_{part_id}_*[{','.join(SUPPORTED_EXTENSIONS)}]"
+        f"{username}-{part_id}-*[{','.join(SUPPORTED_EXTENSIONS)}]"
     ):
         with open(path, "rb") as in_file:
             with gzip.open(path.with_suffix(path.suffix + ".gz"), "wb") as out_file:
