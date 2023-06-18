@@ -1,17 +1,20 @@
-from os import environ
+from concurrent.futures import ProcessPoolExecutor
+from os import getenv
 from time import sleep
 
 from flask import Flask, Response
 from flask_login import LoginManager
-from .secrets_manager import *
 from flask_sqlalchemy import SQLAlchemy
 from MySQLdb.constants.CR import CONNECTION_ERROR
 from sqlalchemy.exc import OperationalError
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
 
-# DB_NAME = 'database.db'
 db = SQLAlchemy()
+compression_process = (
+    ProcessPoolExecutor(1) if getenv("FLASK_ENV") == "production" else None
+)
 
 
 def create_app():
@@ -19,11 +22,13 @@ def create_app():
     app.config["SECRET_KEY"] = SECRET_KEY
     app.config["RECAPTCHA_PUBLIC_KEY"] = RECAPTCHA_PUBLIC_KEY
     app.config["RECAPTCHA_PRIVATE_KEY"] = RECAPTCHA_PRIVATE_KEY
-    # app.config["SQLALCHEMY_DATABASE_URI"] = f'sqlite:///{DB_NAME}'
+
+    if getenv("TRUSTED_PROXIES", "0") == "1":
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
     app.config[
         "SQLALCHEMY_DATABASE_URI"
-    ] = f'mysql://root:rootroot@{environ.get("DB_HOST") or "127.0.0.1"}:3306/orp_db'
-    # db = SQLAlchemy(app)
+    ] = f'mysql://root:rootroot@{getenv("DB_HOST", "127.0.0.1")}:3306/orp_db'
     db.init_app(app)
 
     from .auth import auth

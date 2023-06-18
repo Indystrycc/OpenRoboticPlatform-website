@@ -1,0 +1,121 @@
+name: openroboticplatform
+
+x-database: &db-base
+  image: mariadb:10
+  container_name: db
+  environment:
+    - MARIADB_ROOT_PASSWORD=rootroot
+    - MARIADB_DATABASE=orp_db
+  volumes:
+    # separating prod and dev dbs would be a good idea, but I don't think anyone will try both on the same host
+    - dbdata:/var/lib/mysql
+  healthcheck:
+    test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password="rootroot" --silent']
+    interval: 3s
+    retries: 5
+    start_period: 5s
+  networks:
+    dbnet:
+      aliases:
+        - db
+
+x-website: &website-base
+  build:
+    context: .
+  container_name: website
+  environment: &website-base-env
+    SECRETS_FILE: /run/secrets/website_secrets.py
+    DB_HOST: db
+  secrets:
+    - website_secrets.py
+  networks: &website-base-net
+    dbnet:
+
+
+services:
+  website-dev:
+    <<: *website-base
+    build:
+      dockerfile: dev.Dockerfile
+    stop_signal: SIGINT
+    depends_on:
+      - db-dev
+    volumes:
+      - ./website/static/uploads:/app/website/static/uploads
+    ports:
+      - 127.0.0.1:5004:5004
+    profiles:
+      - dev
+
+  website-prod:
+    <<: *website-base
+    build:
+      dockerfile: Dockerfile
+    depends_on:
+      - db-prod
+    environment:
+      <<: *website-base-env
+      TRUSTED_PROXIES: "1"
+      FLASK_ENV: "production"
+    volumes:
+      - uploads:/app/website/static/uploads
+      - proxy-conn-sock:/run/gunicorn
+    profiles:
+      - prod
+
+  db-dev:
+    <<: *db-base
+    ports:
+      - 127.0.0.1:3306:3306
+    profiles:
+      - dev
+
+  # same as dev, but the port is not available on the host
+  db-prod:
+    <<: *db-base
+    expose:
+      - 3306
+    profiles:
+      - prod
+
+  proxy:
+    build:
+      context: .
+      dockerfile: prod/nginx/Dockerfile
+    container_name: proxy
+    # nginx uses SIGQUIT for graceful shutdown, default SIGTERM is fast shutdown
+    stop_signal: SIGQUIT
+    depends_on:
+      - website-prod
+    environment:
+      - NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
+    volumes:
+      - uploads:/data/static/uploads
+      - proxy-conn-sock:/run/gunicorn
+    secrets:
+      - chain
+      - fullchain
+      - privkey
+    network_mode: host
+    restart: on-failure
+    profiles:
+      - prod
+
+
+volumes:
+  dbdata:
+  uploads:
+  proxy-conn-sock:
+
+networks:
+  dbnet:
+
+secrets:
+  website_secrets.py:
+    file: website/secret.py
+  chain:
+    file: prod/nginx/certs/chain.pem
+  fullchain:
+    file: prod/nginx/certs/fullchain.pem
+  privkey:
+    file: prod/nginx/certs/privkey.pem

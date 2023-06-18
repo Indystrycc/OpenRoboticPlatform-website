@@ -23,15 +23,19 @@ venv.bak/
 /website/static/uploads
 
 # Don't embed in the image, can be mounted as a secret
-website/secret.py
+/website/secret.py
+/prod/nginx/certs
 
 # Repository/project configuration
 .gitignore
 .dockerignore
-Dockerfile*
+**/Dockerfile
+**/*.Dockerfile
 docker-compose.yaml
+/scripts
 
 # Docs
 **/*.md
 **/*.txt
 !requirements.txt
+!prod/**/*.txt
