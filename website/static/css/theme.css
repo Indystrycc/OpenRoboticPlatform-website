@@ -11318,7 +11318,7 @@ p {
 
 @media (min-width: 768px) {
   section {
-    padding: 0rem 0;
+    padding: 9rem 0;
   }
 }
 .btn-xl {
@@ -11341,7 +11341,7 @@ p {
 #mainNav {
   padding-top: 1rem;
   padding-bottom: 1rem;
-  background-color: #ffc800;
+  background-color: #212529;
 }
 #mainNav .navbar-toggler {
   padding: 0.75rem;
@@ -11383,20 +11383,20 @@ p {
     transition: font-size 0.3s ease-in-out;
   }
   #mainNav .navbar-brand img {
-    height: 4rem;
+    height: 2rem;
     transition: height 0.3s ease-in-out;
   }
   #mainNav.navbar-shrink {
     padding-top: 1rem;
     padding-bottom: 1rem;
-    background-color: #ffc800;
+    background-color: #212529;
   }
   #mainNav.navbar-shrink .navbar-brand {
     font-size: 1.25em;
   }
   #mainNav.navbar-shrink .navbar-brand svg,
 #mainNav.navbar-shrink .navbar-brand img {
-    height: 3rem;
+    height: 1.5rem;
   }
   #mainNav .navbar-nav .nav-item {
     margin-right: 1rem;
@@ -11406,10 +11406,11 @@ p {
   }
 }
 header.masthead {
-  padding-top: 8rem;
-  padding-bottom: 3rem;
+  padding-top: 10.5rem;
+  padding-bottom: 6rem;
   text-align: center;
   color: #fff;
+  background-image: url("../assets/img/header-bg.jpg");
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-position: center center;
@@ -11432,8 +11433,8 @@ header.masthead .masthead-heading {
 
 @media (min-width: 768px) {
   header.masthead {
-    padding-top: 15rem;
-    padding-bottom: 10rem;
+    padding-top: 17rem;
+    padding-bottom: 12.5rem;
   }
   header.masthead .masthead-subheading {
     font-size: 2.25rem;
