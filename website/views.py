@@ -172,7 +172,7 @@ def addPart():
         db.session.commit()
 
         if compression_process:
-            compression_process.submit(compress_uploads, part.id, current_user.id)
+            compression_process.submit(compress_uploads, part.id, current_user.username)
 
         flash("Part added successfully!", "success")
         return redirect(url_for("views.addPart"))
