@@ -10,6 +10,7 @@
     overflow: hidden;
 }
 
+/* Can be replaced with "position-absolute top-0 start-0 w-100 h-100 object-fit-cover" after Bootstrap update */
 .card-img-container img {
     position: absolute;
     top: 0;
