@@ -205,16 +205,18 @@ def userView(user_name):
     )
 
 
-views.route("/adminpanel")
-
-
+@views.route("/adminpanel")
 @login_required
 def adminPanel():
     if current_user.is_admin:
         page = request.args.get("page", 1, type=int)
         per_page = 20
-        parts = Part.query
-        parts = parts.paginate(page=page, per_page=per_page)
+        parts = (
+            db.session.query(Part, User.username)
+            .join(User, User.id == Part.user_id)
+            .with_entities(Part, User.username)
+            .paginate(page=page, per_page=per_page)
+        )
         return render_template("adminpanel.html", user=current_user, parts=parts)
     else:
         abort(404)

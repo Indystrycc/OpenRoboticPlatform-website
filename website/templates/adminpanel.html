@@ -25,12 +25,12 @@
       </tr>
     </thead>
     <tbody>
-      {% for part in parts %}
+      {% for part, username in parts %}
       <tr>
         <td name="id">{{ part.id }}</td>
         <td class="editable-cell" name="name"><a href="/part:{{part.id}}">{{ part.name }}</a></td>
         <td class="editable-cell">{{ part.category }}</td>
-        <td >{{ part.user_id }}</td>
+        <td >{{ username }}</td>
         <td>{{ part.views }}</td>
         <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.verified|int }}</td>
         <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.featured|int }}</td>
