@@ -3,11 +3,10 @@
 //
 
 header.masthead {
-    padding-top: 6rem + 4.5rem;
-    padding-bottom: 6rem;
+    padding-top: 8rem;
+    padding-bottom: 3rem;
     text-align: center;
     color: $white;
-    background-image: url("../assets/img/header-bg.jpg");
     background-repeat: no-repeat;
     background-attachment: scroll;
     background-position: center center;
@@ -32,8 +31,8 @@ header.masthead {
 
 @include media-breakpoint-up(md) {
     header.masthead {
-        padding-top: 12.5rem + 4.5rem;
-        padding-bottom: 12.5rem;
+        padding-top: 15rem;
+        padding-bottom: 10rem;
 
         .masthead-subheading {
             font-size: 2.25rem;

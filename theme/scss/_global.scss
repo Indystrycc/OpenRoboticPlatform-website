@@ -1,10 +1,10 @@
-// 
+//
 // Global theme styling
-// 
+//
 
 // Scroll padding for all scroll targets on page used with
 // native CSS smooth scrolling
-// 
+//
 // https://caniuse.com/?search=scroll-padding
 
 html {
@@ -40,14 +40,5 @@ p {
         font-style: italic;
         font-family: $subheadings-font-family;
         margin-bottom: 4rem;
-    }
-}
-
-// Increase the padding on sections when screen size is greater
-// than the medium breakpoint (set by Bootstrap)
-
-@include media-breakpoint-up(md) {
-    section {
-        padding: 9rem 0;
     }
 }

@@ -10803,11 +10803,6 @@ p {
   margin-bottom: 4rem;
 }
 
-@media (min-width: 768px) {
-  section {
-    padding: 9rem 0;
-  }
-}
 .btn-xl {
   padding: 1.25rem 2.5rem;
   font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -10828,7 +10823,7 @@ p {
 #mainNav {
   padding-top: 1rem;
   padding-bottom: 1rem;
-  background-color: #212529;
+  background-color: #8c6e00;
 }
 #mainNav .navbar-toggler {
   padding: 0.75rem;
@@ -10845,7 +10840,7 @@ p {
   text-transform: uppercase;
 }
 #mainNav .navbar-brand img {
-  height: 1.5rem;
+  height: 4rem;
 }
 #mainNav .navbar-nav .nav-item .nav-link {
   font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -10876,14 +10871,14 @@ p {
   #mainNav.navbar-shrink {
     padding-top: 1rem;
     padding-bottom: 1rem;
-    background-color: #212529;
+    background-color: #8c6e00;
   }
   #mainNav.navbar-shrink .navbar-brand {
     font-size: 1.25em;
   }
   #mainNav.navbar-shrink .navbar-brand svg,
   #mainNav.navbar-shrink .navbar-brand img {
-    height: 1.5rem;
+    height: 3rem;
   }
   #mainNav .navbar-nav .nav-item {
     margin-right: 1rem;
@@ -10893,11 +10888,10 @@ p {
   }
 }
 header.masthead {
-  padding-top: 10.5rem;
-  padding-bottom: 6rem;
+  padding-top: 8rem;
+  padding-bottom: 3rem;
   text-align: center;
   color: #fff;
-  background-image: url("../assets/img/header-bg.jpg");
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-position: center center;
@@ -10920,8 +10914,8 @@ header.masthead .masthead-heading {
 
 @media (min-width: 768px) {
   header.masthead {
-    padding-top: 17rem;
-    padding-bottom: 12.5rem;
+    padding-top: 15rem;
+    padding-bottom: 10rem;
   }
   header.masthead .masthead-subheading {
     font-size: 2.25rem;

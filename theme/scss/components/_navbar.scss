@@ -2,10 +2,13 @@
 // Navbar
 //
 
+// it was $yellow, but this one is more readable, $yellow-800 can be used too
+$navbar-bg-color: shade-color($primary, 45%);
+
 #mainNav {
     padding-top: 1rem;
     padding-bottom: 1rem;
-    background-color: $gray-900;
+    background-color: $navbar-bg-color;
 
     .navbar-toggler {
 
@@ -24,7 +27,7 @@
         text-transform: uppercase;
 
         img {
-            height: 1.5rem;
+            height: 4rem;
         }
     }
 
@@ -69,14 +72,14 @@
         &.navbar-shrink {
             padding-top: 1rem;
             padding-bottom: 1rem;
-            background-color: $gray-900;
+            background-color: $navbar-bg-color;
 
             .navbar-brand {
                 font-size: 1.25em;
 
                 svg,
                 img {
-                    height: 1.5rem;
+                    height: 3rem;
                 }
             }
         }
