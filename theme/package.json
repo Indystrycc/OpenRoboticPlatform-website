@@ -1,0 +1,41 @@
+{
+    "title": "Agency",
+    "name": "startbootstrap-agency",
+    "version": "7.0.12-orp",
+    "type": "module",
+    "scripts": {
+        "build": "npm run clean && npm run build:scss",
+        "build:scss": "node scripts/render-scss.js",
+        "clean": "node scripts/clean.js",
+        "deploy": "npm run build && node scripts/copy-theme.js"
+    },
+    "description": "Agency is a one page HTML theme for Bootstrap.",
+    "keywords": [
+        "css",
+        "sass",
+        "responsive",
+        "theme"
+    ],
+    "homepage": "https://startbootstrap.com/theme/agency",
+    "bugs": {
+        "url": "https://github.com/StartBootstrap/startbootstrap-agency/issues",
+        "email": "feedback@startbootstrap.com"
+    },
+    "license": "MIT",
+    "author": "Start Bootstrap",
+    "contributors": [
+        "David Miller (https://davidmiller.io/)"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/StartBootstrap/startbootstrap-agency.git"
+    },
+    "dependencies": {
+        "bootstrap": "5.2.3"
+    },
+    "devDependencies": {
+        "autoprefixer": "10.4.14",
+        "postcss": "8.4.24",
+        "sass": "1.63.4"
+    }
+}

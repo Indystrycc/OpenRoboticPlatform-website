@@ -1,4 +1,13 @@
 # syntax=docker/dockerfile:1
+FROM node:current-slim as theme
+
+WORKDIR /theme
+COPY /theme .
+
+RUN --mount=type=cache,target=/root/.npm npm install
+
+RUN npm run build
+
 FROM python:3.11-slim as build
 
 # install mysqlclient requirements
@@ -46,6 +55,9 @@ COPY --from=build /app .
 # copy remaining files
 COPY main.py .
 COPY website website/
+
+# copy the theme and overwrite
+COPY --from=theme /theme/dist/styles.css website/static/css/theme.css
 
 EXPOSE 5004
 CMD [ "flask", "--app", "main", "run", "--host=0.0.0.0", "--port=5004", "--debug" ]

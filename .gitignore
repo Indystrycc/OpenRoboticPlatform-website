@@ -141,3 +141,7 @@ secret.py
 
 .vscode/*
 !/.vscode/extensions.json
+
+# Theme build and dependencies
+**/node_modules
+**/dist

@@ -1,4 +1,13 @@
 # syntax=docker/dockerfile:1
+FROM node:current-slim as theme
+
+WORKDIR /theme
+COPY /theme .
+
+RUN --mount=type=cache,target=/root/.npm npm install
+
+RUN npm run build
+
 FROM python:3.11-slim as build
 
 # install mysqlclient requirements
@@ -47,5 +56,8 @@ COPY --from=build /app .
 COPY prod/gunicorn.conf.py .
 COPY main.py .
 COPY website website/
+
+# copy the theme and overwrite
+COPY --from=theme /theme/dist/styles.css website/static/css/theme.css
 
 CMD [ "gunicorn" ]
