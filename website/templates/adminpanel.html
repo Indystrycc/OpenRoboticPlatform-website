@@ -10,41 +10,53 @@
   <h2>Manage Parts</h2>
   <table class="table">
     <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Author</th>
-        <th>Views</th>
-        <th>Verified</th>
-        <th>Featured</th>
-        <th>Public</th>
-        <th>Rejected</th>
-        <th>Tags</th>
-        <th>Actions</th>
-      </tr>
+        <tr>
+            <th>Image</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Author</th>
+            <th>Views</th>
+            <th>Verified</th>
+            <th>Featured</th>
+            <th>Public</th>
+            <th>Rejected</th>
+            <th>Actions</th>
+        </tr>
     </thead>
     <tbody>
-      {% for part, username in parts %}
-      <tr>
-        <td name="id">{{ part.id }}</td>
-        <td class="editable-cell" name="name"><a href="/part:{{part.id}}">{{ part.name }}</a></td>
-        <td class="editable-cell">{{ part.category }}</td>
-        <td >{{ username }}</td>
-        <td>{{ part.views }}</td>
-        <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.verified|int }}</td>
-        <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.featured|int }}</td>
-        <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.public|int }}</td>
-        <td class="editable-cell" data-value="{{ part.verified|int }}">{{ part.rejected|int }}</td>
-        <td class="editable-cell">{{ part.tags }}</td>
-        <td>
-          <button class="btn btn-primary btn-sm edit-button">Edit</button>
-          <button class="btn btn-success btn-sm save-button" style="display: none;">Save</button>
-        </td>
-      </tr>
-      {% endfor %}
+        {% for part, username in parts %}
+        <tr>
+            <td name="image">
+              <div class="card-img-container">
+                <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" />
+             </div>
+            </td>
+            <td name="id">{{ part.id }}</td>
+            <td name="name"><a href="/part:{{ part.id }}">{{ part.name }}</a></td>
+            <td>{{ part.category }}</td>
+            <td>{{ username }}</td>
+            <td>{{ part.views }}</td>
+            <td>
+              <input class="form-check-input" type="radio" {% if part.verified %}checked{% endif %} disabled>
+            </td>
+            <td>
+              <input class="form-check-input" type="radio" {% if part.featured %}checked{% endif %} disabled>
+            </td>
+            <td>
+              <input class="form-check-input" type="radio" {% if part.public %}checked{% endif %} disabled>
+            </td>
+            <td>
+              <input class="form-check-input" type="radio" {% if part.rejected %}checked{% endif %} disabled>
+            </td>
+            <td>
+                <button class="btn btn-primary btn-sm edit-button">Edit</button>
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
-  </table>
+</table>
+
 
   <nav aria-label="Pagination">
     <ul class="pagination">
@@ -88,75 +100,4 @@
     </ul>
   </nav>
 </div>
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  $(document).ready(function() {
-    // Edit button click event delegation
-    $(document).on('click', '.edit-button', function() {
-      var row = $(this).closest('tr');
-      
-      // Disable edit button and enable save button for the row
-      row.find('.edit-button').prop('disabled', true);
-      row.find('.save-button').show();
-      
-      // Enable editing of each editable cell in the row
-      row.find('.editable-cell').each(function() {
-        var cell = $(this);
-        var value = cell.text();
-        var input = $('<input>').addClass('form-control').val(value);
-        cell.html(input);
-      });
-    });
-    
-    // Save button click event delegation
-    $(document).on('click', '.save-button', function() {
-      var row = $(this).closest('tr');
-      
-      // Disable save button and enable edit button for the row
-      row.find('.save-button').prop('disabled', true);
-      row.find('.edit-button').prop('disabled', false);
-      
-      // Get the updated values from each input field in the editable cells
-      var updatedValues = {};
-      row.find('.editable-cell').each(function() {
-        var cell = $(this);
-        var input = cell.find('input');
-        var value = input.val();
-        updatedValues[cell.index()] = value;
-        cell.html(value);
-      });
-
-      function displaySuccessMessage(message) {
-      var successMessage = $('<div>').addClass('alert alert-success').text(message);
-        $('.container-all').prepend(successMessage);
-      
-      setTimeout(function() {
-        successMessage.fadeOut('slow', function() {
-          successMessage.remove();
-        });
-      }, 3000);
-    }
-      
-      // Send the updated values to the server using AJAX
-      $.ajax({
-        url: '/admin-update-part',  // Update this URL with your server endpoint
-        method: 'POST',
-        data: {
-          id: row.find('td:first-child').text(),  // Example: Get the ID from the first cell
-          values: JSON.stringify(updatedValues)
-        },
-        success: function(response) {
-          displaySuccessMessage('Update successful');
-        },
-        error: function(xhr, status, error) {
-          // Handle the error response if needed
-        }
-      });
-    });
-  });
-</script>
 {% endblock %}
-
