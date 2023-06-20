@@ -27,7 +27,7 @@ $navbar-bg-color: shade-color($primary, 45%);
         text-transform: uppercase;
 
         img {
-            height: 4rem;
+            height: 1.5rem;
         }
     }
 
@@ -63,7 +63,7 @@ $navbar-bg-color: shade-color($primary, 45%);
             transition: font-size 0.3s ease-in-out;
 
             img {
-                height: 2rem;
+                height: 4rem;
                 transition: height 0.3s ease-in-out;
             }
         }

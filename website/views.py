@@ -91,7 +91,9 @@ def accountsettings():
                 delete_profile_image(previous_image)
 
         db.session.commit()
-        message = Markup('Settings saved!, <a href="/account">Go to your account.</a>')
+        message = Markup(
+            'Settings saved! <a href="/account" class="link-success">Go to your account.</a>'
+        )
         flash(message, "success")
     return render_template(
         "accountsettings.html", user=current_user, image_types=ALLOWED_IMAGE_MIME
