@@ -10820,6 +10820,22 @@ p {
   border-radius: 100%;
 }
 
+.card-img-container {
+  position: relative;
+  padding-top: 75%;
+  /* 4:3 aspect ratio (3 / 4 * 100) */
+  overflow: hidden;
+}
+.card-img-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
 #mainNav {
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -10887,6 +10903,14 @@ p {
     margin-right: 0;
   }
 }
+.search-form .input-group {
+  max-width: 25rem;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+.search-form .btn {
+  --bs-btn-hover-color: #ffc800;
+}
+
 header.masthead {
   padding-top: 8rem;
   padding-bottom: 3rem;
