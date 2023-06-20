@@ -21,16 +21,18 @@ const entryPoint = `/*!
 @import "${stylesPath}"
 `
 
-const results = sass.compileString(entryPoint, {
-    loadPaths: [
-        path.resolve(__dirname, "../node_modules")
-    ]
-});
+export async function renderSCSS() {
+    const results = sass.compileString(entryPoint, {
+        loadPaths: [
+            path.resolve(__dirname, "../node_modules")
+        ]
+    });
 
-const destPathDirname = path.dirname(destPath);
-await mkdir(destPathDirname, { recursive: true });
-const prefixed = await postcss([autoprefixer]).process(results.css, { from: 'styles.css', to: 'styles.css' });
-for (const warn of prefixed.warnings()) {
-    console.warn(warn.toString());
+    const destPathDirname = path.dirname(destPath);
+    await mkdir(destPathDirname, { recursive: true });
+    const prefixed = await postcss([autoprefixer]).process(results.css, { from: 'styles.css', to: 'styles.css' });
+    for (const warn of prefixed.warnings()) {
+        console.warn(warn.toString());
+    }
+    await writeFile(destPath, prefixed.css.toString());
 }
-await writeFile(destPath, prefixed.css.toString());

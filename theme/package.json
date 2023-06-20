@@ -5,9 +5,10 @@
     "type": "module",
     "scripts": {
         "build": "npm run clean && npm run build:scss",
-        "build:scss": "node scripts/render-scss.js",
+        "build:scss": "node scripts/build.js",
         "clean": "node scripts/clean.js",
-        "deploy": "npm run build && node scripts/copy-theme.js"
+        "deploy": "npm run build && node scripts/copy.js",
+        "watch": "node scripts/watch.js"
     },
     "description": "Agency is a one page HTML theme for Bootstrap.",
     "keywords": [
