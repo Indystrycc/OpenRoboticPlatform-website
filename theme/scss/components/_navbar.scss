@@ -2,16 +2,16 @@
 // Navbar
 //
 
-// it was $yellow, but this one is more readable, $yellow-800 can be used too
-$navbar-bg-color: shade-color($primary, 45%);
+$navbar-bg-color: $yellow;
+$navbar-text-color: $yellow-800;
 
 #mainNav {
     padding-top: 1rem;
     padding-bottom: 1rem;
     background-color: $navbar-bg-color;
+    --bs-navbar-color: #{$navbar-text-color};
 
     .navbar-toggler {
-
         padding: 0.75rem;
         font-size: 0.75rem;
         font-family: $headings-font-family;
@@ -36,12 +36,11 @@ $navbar-bg-color: shade-color($primary, 45%);
             .nav-link {
                 font-family: $headings-font-family;
                 font-size: 0.95rem;
-                color: $white;
                 letter-spacing: $headings-letter-spacing;
 
                 &.active,
                 &:hover {
-                    color: $primary;
+                    color: $white;
                 }
             }
         }
@@ -57,6 +56,7 @@ $navbar-bg-color: shade-color($primary, 45%);
         background-color: transparent;
         transition: padding-top 0.3s ease-in-out,
             padding-bottom 0.3s ease-in-out;
+        --bs-navbar-color: #{$white};
 
         .navbar-brand {
             font-size: 1.5em;
@@ -82,6 +82,15 @@ $navbar-bg-color: shade-color($primary, 45%);
                     height: 3rem;
                 }
             }
+
+            .navbar-nav .nav-item .nav-link {
+                color: $navbar-text-color;
+
+                &.active,
+                &:hover {
+                    color: $white;
+                }
+            }
         }
 
         .navbar-nav .nav-item {
@@ -89,6 +98,13 @@ $navbar-bg-color: shade-color($primary, 45%);
 
             &:last-child {
                 margin-right: 0;
+            }
+
+            .nav-link{
+                &.active,
+                &:hover {
+                    color: $primary;
+                }
             }
         }
     }
