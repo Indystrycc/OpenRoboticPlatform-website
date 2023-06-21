@@ -26,8 +26,16 @@ $navbar-text-color: $yellow-800;
         letter-spacing: $headings-letter-spacing;
         text-transform: uppercase;
 
+        svg,
         img {
             height: 1.5rem;
+            --logo-color: var(--bs-navbar-color);
+            stroke: var(--logo-color);
+            fill: var(--logo-color);
+        }
+
+        &:hover svg {
+            --logo-color: #{$white};
         }
     }
 
@@ -62,9 +70,14 @@ $navbar-text-color: $yellow-800;
             font-size: 1.5em;
             transition: font-size 0.3s ease-in-out;
 
+            svg,
             img {
                 height: 4rem;
                 transition: height 0.3s ease-in-out;
+            }
+
+            &:hover svg {
+                --logo-color: #{$primary};
             }
         }
 
@@ -79,7 +92,12 @@ $navbar-text-color: $yellow-800;
 
                 svg,
                 img {
+                    --logo-color: #{$navbar-text-color};
                     height: 3rem;
+                }
+
+                &:hover svg {
+                    --logo-color: #{$white};
                 }
             }
 
@@ -100,7 +118,7 @@ $navbar-text-color: $yellow-800;
                 margin-right: 0;
             }
 
-            .nav-link{
+            .nav-link {
                 &.active,
                 &:hover {
                     color: $primary;
