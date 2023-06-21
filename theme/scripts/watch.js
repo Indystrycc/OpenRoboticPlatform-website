@@ -20,11 +20,15 @@ process.on("SIGINT", () => {
 
 try {
     for await (const event of watcher) {
-        const { eventType, filename } = event;
-        process.stdout.write(`${eventType}: ${filename} `);
-        await renderSCSS();
-        copyTheme();
-        console.log("rebuilt");
+        try {
+            const { eventType, filename } = event;
+            process.stdout.write(`${eventType}: ${filename} `);
+            await renderSCSS();
+            copyTheme();
+            console.log("rebuilt");
+        } catch (e) {
+            console.error(e);
+        }
     }
 } catch (e) {
     if (e.name === "AbortError") process.exit(0);
