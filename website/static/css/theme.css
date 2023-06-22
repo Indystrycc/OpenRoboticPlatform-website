@@ -12188,6 +12188,17 @@ p {
   color: #ac2bac;
 }
 
+article.fp-article {
+  padding: 2rem;
+  text-align: justify;
+}
+article.fp-article section {
+  margin-top: 2rem;
+}
+article.fp-article section:first-of-type {
+  margin-top: 0;
+}
+
 header.masthead {
   padding-top: 8rem;
   padding-bottom: 3rem;
