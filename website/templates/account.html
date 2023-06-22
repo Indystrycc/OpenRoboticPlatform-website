@@ -15,9 +15,9 @@
           <div class="card mb-4">
             <div class="card-body text-center">
               {% if user.image %}
-                  <img src="{{ url_for('static', filename='uploads/profile_images/' + user.image) }}" alt="avatar" class="rounded-circle img-fluid" style="width: 250px; height: 250px; object-fit: cover; object-position: center;">
+                  <img src="{{ url_for('static', filename='uploads/profile_images/' + user.image) }}" alt="avatar" class="profile-img">
               {% else %}
-                  <img src="static/assets/img/default_avatar.png" alt="default avatar" class="rounded-circle img-fluid" style="width: 300px; height: 300px; object-fit: cover; object-position: center;">
+                  <img src="static/assets/img/default_avatar.png" alt="default avatar" class="profile-img">
               {% endif %}
               <h5 class="my-3">{{ user.username }}</h5>
               <p class="text-body-secondary mb-1">{{ user.description }}</p>

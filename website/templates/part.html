@@ -65,9 +65,9 @@
                             <div class="col-md-6">
                                 <h5 class="mb-4">Author: <a href ="{{ url_for('views.userView', user_name=author.username) }}">{{ author.username }}</a></h5>
                                 {% if author.image %}
-                                    <img src="{{ url_for('static', filename='uploads/profile_images/' + author.image) }}" alt="avatar" class="rounded-circle img-fluid" style="width: 200px; height: 200px; object-fit: cover; object-position: center;">
+                                    <img src="{{ url_for('static', filename='uploads/profile_images/' + author.image) }}" alt="avatar" class="profile-img pi-sm">
                                 {% else %}
-                                    <img src="static/assets/img/default_avatar.png" alt="default avatar" class="rounded-circle img-fluid" style="width: 200px; height: 200px; object-fit: cover; object-position: center;">
+                                    <img src="static/assets/img/default_avatar.png" alt="default avatar" class="profile-img pi-sm">
                                 {% endif %}
                             </div>
                             <div class="col-md-6">

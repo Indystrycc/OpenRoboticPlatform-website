@@ -12154,6 +12154,20 @@ p {
     color: #ffc800;
   }
 }
+.profile-img {
+  width: 250px;
+  height: 250px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
+  border-radius: 50%;
+}
+.profile-img.pi-sm {
+  width: 200px;
+  height: 200px;
+}
+
 .search-form .input-group {
   max-width: 25rem;
   background-color: rgba(255, 255, 255, 0.9);
