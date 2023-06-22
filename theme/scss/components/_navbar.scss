@@ -111,6 +111,28 @@ $navbar-text-color: $yellow-800;
             }
         }
 
+        // In case the header below does not have an image background
+        &.masthead-no-img {
+            .navbar-brand {
+                svg {
+                    --logo-color: #{$navbar-text-color};
+                }
+
+                &:hover svg {
+                    --logo-color: #{$white};
+                }
+            }
+
+            .navbar-nav .nav-item .nav-link {
+                color: $navbar-text-color;
+
+                &.active,
+                &:hover {
+                    color: $white;
+                }
+            }
+        }
+
         .navbar-nav .nav-item {
             margin-right: 1rem;
 

@@ -12,6 +12,12 @@ header.masthead {
     background-position: center center;
     background-size: cover;
 
+    &.masthead-no-img {
+        background-color: $primary;
+        padding-top: 6rem;
+        padding-bottom: 0.5rem;
+    }
+
     .masthead-subheading {
         font-size: 1.5rem;
         font-style: italic;

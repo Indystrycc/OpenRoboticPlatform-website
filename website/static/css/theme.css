@@ -12132,6 +12132,18 @@ p {
   #mainNav.navbar-shrink .navbar-nav .nav-item .nav-link.active, #mainNav.navbar-shrink .navbar-nav .nav-item .nav-link:hover {
     color: #fff;
   }
+  #mainNav.masthead-no-img .navbar-brand svg {
+    --logo-color: #665000;
+  }
+  #mainNav.masthead-no-img .navbar-brand:hover svg {
+    --logo-color: #fff;
+  }
+  #mainNav.masthead-no-img .navbar-nav .nav-item .nav-link {
+    color: #665000;
+  }
+  #mainNav.masthead-no-img .navbar-nav .nav-item .nav-link.active, #mainNav.masthead-no-img .navbar-nav .nav-item .nav-link:hover {
+    color: #fff;
+  }
   #mainNav .navbar-nav .nav-item {
     margin-right: 1rem;
   }
@@ -12159,6 +12171,11 @@ header.masthead {
   background-attachment: scroll;
   background-position: center center;
   background-size: cover;
+}
+header.masthead.masthead-no-img {
+  background-color: #ffc800;
+  padding-top: 6rem;
+  padding-bottom: 0.5rem;
 }
 header.masthead .masthead-subheading {
   font-size: 1.5rem;
