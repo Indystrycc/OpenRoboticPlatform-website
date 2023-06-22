@@ -55,7 +55,7 @@
                   <div class="card-body">
                       <p class="mb-4">Recent parts</p>
                       {% for part in recent_parts %}
-                      <p class="mb-1" style="font-size: 1rem;"><a href ="/part:{{part.id}}">{{ part.name }}</a></p>
+                      <p class="mb-1 fs-6"><a href ="/part:{{part.id}}">{{ part.name }}</a></p>
                       <hr>
                       {% endfor %}
                   </div>
@@ -65,11 +65,11 @@
               <div class="card mb-4 mb-md-0">
                 <div class="card-body">
                   <p class="mb-4">{{ display_user.username }} contribution</p>
-                  <p class="mb-1" style="font-size: 1.5rem;">Total parts: 3489</p>
+                  <p class="mb-1 fs-4">Total parts: 3489</p>
                   <hr>
-                  <p class="mt-4 mb-1" style="font-size: 1.5rem;">Your parts: 24</p>
+                  <p class="mt-4 mb-1 fs-4">Your parts: 24</p>
                   <hr>
-                  <p class="mt-4 mb-1" style="font-size: 1.5rem;">Your contribution: 0.68%</p>
+                  <p class="mt-4 mb-1 fs-4">Your contribution: 0.68%</p>
                 </div>
               </div>
             </div>
