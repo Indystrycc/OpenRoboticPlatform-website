@@ -32,19 +32,19 @@
                 </li> -->
                 {% if user.name_github %}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                  <i class="fab fa-github fa-lg" style="color: #333333;"></i>
+                  <i class="fab fa-github fa-lg social-gh"></i>
                   <p class="mb-0"><a href="https://github.com/{{ user.name_github }}" target="_blank">{{user.name_github}}</a></p>
                 </li>
                 {% endif %}
                 {% if user.name_youtube %}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                  <i class="fab fa-youtube fa-lg" style="color: #e22323;"></i>
+                  <i class="fab fa-youtube fa-lg social-yt"></i>
                   <p class="mb-0"><a href="https://youtube.com/@{{ user.name_youtube }}" target="_blank">{{user.name_youtube}}</a></p>
                 </li>
                 {% endif %}
                 {% if user.name_instagram %}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                  <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
+                  <i class="fab fa-instagram fa-lg social-ig"></i>
                   <p class="mb-0"><a href="https://instagram.com/{{ user.name_instagram }}" target="_blank">{{user.name_instagram}}</a></p>
                 </li>
                 {% endif %}

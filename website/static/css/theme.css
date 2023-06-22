@@ -12162,6 +12162,18 @@ p {
   --bs-btn-hover-color: #ffc800;
 }
 
+.social-gh {
+  color: #333333;
+}
+
+.social-yt {
+  color: #e22323;
+}
+
+.social-ig {
+  color: #ac2bac;
+}
+
 header.masthead {
   padding-top: 8rem;
   padding-bottom: 3rem;
