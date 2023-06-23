@@ -1,0 +1,17 @@
+// Spacing utilities modifications
+
+// Add py-6 with 5*$spacer, because we don't need all spacers to have x-6
+$utilities: map-merge(
+    $utilities,
+    (
+        "padding-y": map-merge(
+            map-get($utilities, "padding-y"),
+            (
+                values: map-merge(
+                    map-get(map-get($utilities, "padding-y"), "values"),
+                    (6: $spacer * 5)
+                ),
+            ),
+        ),
+    )
+);
