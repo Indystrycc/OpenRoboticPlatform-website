@@ -222,36 +222,56 @@ def adminPanel():
         abort(404)
 
 
-@views.route("/admin-update-part", methods=["POST"])
+@views.route("/admineditpart:<int:part_number>", methods=["GET", "POST"])
 @login_required
-def adminUpdatePart():
+def adminUpdatePart(part_number):
     if current_user.is_admin:
-        part_id = request.form.get("id")
-        updated_values = request.form.get("values")
+        if request.method == "POST":
+            name = clean(request.form.get("name"))
+            description = clean(request.form.get("description"))
+            category = clean(request.form.get("category"))
+            tags = clean(request.form.get("tags"))
+            image = request.files.get("image")
+            verified = request.form.get("verified")
+            public = request.form.get("public")
+            rejected = request.form.get("rejected")
+            featured = request.form.get("featured")
+            category = request.form.get("category")
 
-        # Update the part with the new values using the provided part_id and updated_values
-        part = Part.query.get(part_id)
-        if part:
-            # Convert the updated_values from JSON to a dictionary
-            updated_values_dict = json.loads(updated_values)
+            print("name: ", name)
+            print("description: ", description)
+            print("category: ", category)
+            print("tags: ", tags)
+            print("verified: ", verified)
+            print("public: ", public)
+            print("rejected: ", rejected)
+            print("featured: ", featured)
 
-            # Update the part attributes
-            print(updated_values_dict)
-            part.name = updated_values_dict.get("1")
-            part.category = updated_values_dict.get("2")
-            part.verified = bool(int(updated_values_dict.get("5")))
-            part.featured = bool(int(updated_values_dict.get("6")))
-            part.public = bool(int(updated_values_dict.get("7")))
-            part.rejected = bool(int(updated_values_dict.get("8")))
-            part.tags = updated_values_dict.get("9")
+            # Update the part with the new values using the provided part_id and updated_values
+            part = Part.query.get(part_number)
+            if part:
+                part.name = name
+                part.description = description
+                part.category = category
+                part.verified = True if verified == "on" else False
+                part.featured = True if featured == "on" else False
+                part.public = True if public == "on" else False
+                part.rejected = True if rejected == "on" else False
+                part.tags = tags
 
-            # Save the changes to the database
-            db.session.commit()
+                # Save the changes to the database
+                db.session.commit()
 
-            # Return a success response
-            return jsonify({"message": "Part updated successfully"})
-        else:
-            return jsonify({"message": "Part not found"})
+                # Return a success response
+                message = Markup(
+                    'Part updated! <a href="/part:{part_id}">Go to the part view.</a>'
+                )
+                flash(message, "success")
+            else:
+                message = Markup("Part {part_id} wasn not found!")
+                flash(message, "error")
+        part = Part.query.filter_by(id=part_number).first()
+        return render_template("admineditpart.html", user=current_user, part=part)
     else:
         abort(404)
 
