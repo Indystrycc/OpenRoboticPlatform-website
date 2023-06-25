@@ -2,7 +2,7 @@
 {% block title %}Add Part{% endblock %}
 {% block header %}
 <header class="masthead" style="background-color: #ffc800; padding-bottom: 0.5em; padding-top: 6em">
-    <div class="masthead-heading text-uppercase">Add Part</div>
+    <div class="masthead-heading text-uppercase">Admin edit part</div>
 </header>
 {% endblock %}
 
@@ -22,7 +22,6 @@
                                             <th>ID</th>
                                             <th>Name</th>
                                             <th>Category</th>
-                                            <th>Author</th>
                                             <th>Views</th>
                                             <th>Verified</th>
                                             <th>Featured</th>
@@ -35,7 +34,6 @@
                                             <td name="id">{{ part.id }}</td>
                                             <td name="name"><a href="/part:{{part.id}}">{{ part.name }}</a></td>
                                             <td>{{ part.category }}</td>
-                                            <td>{{ username }}</td>
                                             <td>{{ part.views }}</td>
                                             <td>
                                               <input class="form-check-input" type="checkbox" id="verified" name="verified" {% if part.verified %}checked{% endif %}>
@@ -78,6 +76,9 @@
                                 <label for="tags" class="form-label">Tags</label>
                                 <input type="text" class="form-control" id="tags" name="tags"
                                     value="{{part.tags}}" autocomplete="off">
+                            </div>
+                            <div class="mb-3">
+                                <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="part image" class="img-fluid" style="width: 400px">
                             </div>
                             <button type="submit" class="btn btn-primary">Update</button>
                             Go back to <a href="adminpanel">admin panel</a>
