@@ -46,7 +46,7 @@ def library():
             | Part.tags.icontains(search_query, autoescape=True)
         )
     else:
-        parts = Part.query
+        parts = Part.query.filter_by(rejected=False)
 
     parts = parts.paginate(page=page, per_page=per_page)
     return render_template("library.html", user=current_user, parts=parts)
@@ -264,7 +264,9 @@ def adminUpdatePart(part_number):
 
                 # Return a success response
                 message = Markup(
-                    'Part updated! <a href="/part:{part_id}">Go to the part view.</a>'
+                    'Part updated! <a href="/part:{}">Go to the part view.</a>'.format(
+                        part_number
+                    )
                 )
                 flash(message, "success")
             else:
