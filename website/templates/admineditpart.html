@@ -33,21 +33,21 @@
                                     <tbody>
                                         <tr>
                                             <td name="id">{{ part.id }}</td>
-                                            <td name="name"><a href="/part:{{ part.id }}">{{ part.name }}</a></td>
+                                            <td name="name"><a href="/part:{{part.id}}">{{ part.name }}</a></td>
                                             <td>{{ part.category }}</td>
                                             <td>{{ username }}</td>
                                             <td>{{ part.views }}</td>
                                             <td>
-                                              <input class="form-check-input" type="radio" id="verified" name="verified" {% if part.verified %}checked{% endif %}>
+                                              <input class="form-check-input" type="checkbox" id="verified" name="verified" {% if part.verified %}checked{% endif %}>
                                             </td>
                                             <td>
-                                              <input class="form-check-input" type="radio" id="featured" name="featured" {% if part.featured %}checked{% endif %}>
+                                              <input class="form-check-input" type="checkbox" id="featured" name="featured" {% if part.featured %}checked{% endif %}>
                                             </td>
                                             <td>
-                                              <input class="form-check-input" type="radio" id="public" name="public" {% if part.public %}checked{% endif %}>
+                                              <input class="form-check-input" type="checkbox" id="public" name="public" {% if part.public %}checked{% endif %}>
                                             </td>
                                             <td>
-                                              <input class="form-check-input" type="radio" id="rejected" name="rejected" {% if part.rejected %}checked{% endif %}>
+                                              <input class="form-check-input" type="checkbox" id="rejected" name="rejected" {% if part.rejected %}checked{% endif %}>
                                             </td>
                                         </tr>
                                     </tbody>
