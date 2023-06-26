@@ -18,7 +18,7 @@
                         <form method="POST" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label for="image" class="form-label">Profile image</label>
-                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" onchange="displayImage(event)">
+                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}">
                                 <div id="image-preview"></div>
                             </div>
                             <div class="mb-3">
@@ -50,72 +50,5 @@
     </div>
 </section>
 
-<script>
-    // Image preview functionality
-    function displayImage(event) {
-        const imagePreview = document.getElementById('image-preview');
-        const file = event.target.files[0];
-
-        if (file) {
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                const imageElement = document.createElement('img');
-                imageElement.src = e.target.result;
-                imageElement.className = 'uploaded-image';
-                imageElement.style.maxWidth = '200px';
-                imageElement.style.height = 'auto';
-                imageElement.style.border = '1px solid #ddd';
-                imageElement.style.borderRadius = '5px';
-                imageElement.style.marginTop = '10px';
-
-                // Replace existing image if present
-                while (imagePreview.firstChild) {
-                    imagePreview.firstChild.remove();
-                }
-
-                imagePreview.appendChild(imageElement);
-            }
-
-            reader.readAsDataURL(file);
-        }
-    }
-
-    // File preview functionality
-    const fileInput = document.getElementById('file-upload');
-    const filePreview = document.getElementById('file-preview');
-
-    fileInput.addEventListener('change', handleFilePreview);
-
-    function handleFilePreview() {
-        filePreview.innerHTML = '';
-
-        const files = Array.from(fileInput.files).slice(0, 10);
-
-        for (const file of files) {
-            const fileItem = document.createElement('div');
-            fileItem.classList.add('file-preview-item');
-
-            const fileIcon = document.createElement('div');
-            fileIcon.classList.add('file-preview-icon');
-            fileIcon.innerHTML = '<i class="fas fa-file"></i>';
-
-            const fileName = document.createElement('div');
-            fileName.classList.add('file-preview-name');
-            fileName.textContent = file.name;
-
-            fileItem.appendChild(fileIcon);
-            fileItem.appendChild(fileName);
-            filePreview.appendChild(fileItem);
-        }
-
-        if (files.length === 0) {
-            const noFileItem = document.createElement('div');
-            noFileItem.classList.add('file-preview-item');
-            noFileItem.innerHTML = '<div class="file-preview-icon"><i class="fas fa-file"></i></div><div class="file-preview-name">No file selected</div>';
-
-            filePreview.appendChild(noFileItem);
-        }
-    }
-</script>
+<script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module" async></script>
 {% endblock %}

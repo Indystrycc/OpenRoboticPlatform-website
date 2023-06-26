@@ -12107,6 +12107,28 @@ p {
      object-fit: cover;
 }
 
+.profile-img {
+  width: 250px;
+  height: 250px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
+  border-radius: 50%;
+}
+.profile-img.pi-sm {
+  width: 200px;
+  height: 200px;
+}
+
+.uploaded-image {
+  max-width: 200px;
+  height: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  margin-top: 0.75rem;
+}
+
 #mainNav {
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -12211,20 +12233,6 @@ p {
     color: #ffc800;
   }
 }
-.profile-img {
-  width: 250px;
-  height: 250px;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
-  border-radius: 50%;
-}
-.profile-img.pi-sm {
-  width: 200px;
-  height: 200px;
-}
-
 .search-form .input-group {
   max-width: 25rem;
   background-color: rgba(255, 255, 255, 0.9);
