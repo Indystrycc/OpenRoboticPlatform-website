@@ -1,17 +1,10 @@
 from bleach import clean
-from flask import (
-    Blueprint,
-    Markup,
-    abort,
-    flash,
-    render_template,
-    request,
-)
+from flask import Blueprint, Markup, abort, flash, render_template, request, url_for
 from flask_login import current_user, login_required
 from functools import wraps
 
 from . import db
-from .models import File, Part, User
+from .models import Part, User
 
 views_admin = Blueprint("views_admin", __name__)
 
@@ -73,7 +66,7 @@ def editPart(part_number):
 
             # Return a success response
             message = Markup(
-                f'Part updated! <a href="/part:{part_number}">Go to the part view.</a>'
+                f'Part updated! <a href="{url_for("views.part", part_number=part_number)}">Go to the part view.</a>'
             )
             flash(message, "success")
         else:
