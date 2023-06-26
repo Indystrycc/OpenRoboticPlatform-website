@@ -1,7 +1,8 @@
+from functools import wraps
+
 from bleach import clean
 from flask import Blueprint, Markup, abort, flash, render_template, request, url_for
 from flask_login import current_user, login_required
-from functools import wraps
 
 from . import db
 from .models import Part, User
@@ -69,7 +70,7 @@ def editPart(part_number):
 
             # Return a success response
             message = Markup(
-                f'Part updated! <a href="{url_for("views.part", part_number=part_number)}">Go to the part view.</a>'
+                f'Part updated! <a class="link-success" href="{url_for("views.part", part_number=part_number)}">Go to the part view.</a>'
             )
             flash(message, "success")
         else:
