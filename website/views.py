@@ -27,7 +27,9 @@ views = Blueprint("views", __name__)
 
 @views.route("/")
 def home():
-    parts = Part.query.order_by(Part.date.desc()).limit(5).all()
+    parts = (
+        Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(5).all()
+    )
     return render_template("home.html", user=current_user, parts=parts)
 
 
@@ -43,9 +45,9 @@ def library():
             Part.name.icontains(search_query, autoescape=True)
             | Part.description.icontains(search_query, autoescape=True)
             | Part.tags.icontains(search_query, autoescape=True)
-        )
+        ).filter_by(rejected=False)
     else:
-        parts = Part.query
+        parts = Part.query.filter_by(rejected=False)
 
     parts = parts.paginate(page=page, per_page=per_page)
     return render_template("library.html", user=current_user, parts=parts)
@@ -205,6 +207,7 @@ def userView(user_name):
 
 
 def save_image(image, part_id, username):
+    # Specify the directory where you want to save the images
     upload_folder = "website/static/uploads/images"
 
     # Create the directory if it doesn't exist

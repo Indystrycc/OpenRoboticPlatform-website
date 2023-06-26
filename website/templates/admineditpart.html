@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Admin edit part{% endblock %}
+{% block header %}
+<header class="masthead" style="background-color: #ffc800; padding-bottom: 0.5em; padding-top: 6em">
+    <div class="masthead-heading text-uppercase">Admin edit part</div>
+</header>
+{% endblock %}
+
+{% block content %}
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Edit part</h5>
+                        <form method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Views</th>
+                                            <th>Verified</th>
+                                            <th>Featured</th>
+                                            <th>Public</th>
+                                            <th>Rejected</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td name="id">{{ part.id }}</td>
+                                            <td name="name"><a href="{{ url_for('views.part', part_number=part.id) }}">{{ part.name }}</a></td>
+                                            <td>{{ part.category }}</td>
+                                            <td>{{ part.views }}</td>
+                                            <td>
+                                              <input class="form-check-input" type="checkbox" id="verified" name="verified" {% if part.verified %}checked{% endif %}>
+                                            </td>
+                                            <td>
+                                              <input class="form-check-input" type="checkbox" id="featured" name="featured" {% if part.featured %}checked{% endif %}>
+                                            </td>
+                                            <td>
+                                              <input class="form-check-input" type="checkbox" id="public" name="public" {% if part.public %}checked{% endif %}>
+                                            </td>
+                                            <td>
+                                              <input class="form-check-input" type="checkbox" id="rejected" name="rejected" {% if part.rejected %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" maxlength="80" value="{{part.name}}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" maxlength="500" required>{{part.description}}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">Select a category</option>
+                                    <option value="1">Plates</option>
+                                    <option value="2">Wheels</option>
+                                    <option value="3">Other</option>
+                                    <option value="4">Holders & Adapters for: Sensors</option>
+                                    <option value="5">Holders & Adapters for: Microcontrollers & SBCs</option>
+                                    <option value="6">Holders & Adapters for: Motors</option>
+                                    <option value="7">Holders & Adapters for: Cameras</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">Tags</label>
+                                <input type="text" class="form-control" id="tags" name="tags"
+                                    value="{{part.tags}}" autocomplete="off">
+                            </div>
+                            <div class="mb-3">
+                                <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="part image" class="img-fluid" style="width: 400px">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            Go back to <a href="{{url_for('views_admin.panel')}}">admin panel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

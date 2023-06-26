@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block header%}
+<header class="masthead" style="background-color: #ffc800; padding-bottom: 0.5em; padding-top: 6em">
+    <div class="masthead-heading text-uppercase">Admin Panel</div>
+</header>
+{% endblock %}
+{% block content %}
+<div class="container container-all">
+  <h2>Manage Parts</h2>
+  <table class="table">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Author</th>
+            <th>Views</th>
+            <th>Verified</th>
+            <th>Featured</th>
+            <th>Public</th>
+            <th>Rejected</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for part, username in parts %}
+        <tr>
+            <td name="image">
+              <div class="card-img-container">
+                <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" />
+             </div>
+            </td>
+            <td name="id">{{ part.id }}</td>
+            <td name="name"><a href="{{ url_for('views.part', part_number=part.id) }}">{{ part.name }}</a></td>
+            <td>{{ part.category }}</td>
+            <td>{{ username }}</td>
+            <td>{{ part.views }}</td>
+            <td>
+              <input class="form-check-input" type="radio" {% if part.verified %}checked{% endif %} disabled>
+            </td>
+            <td>
+              <input class="form-check-input" type="radio" {% if part.featured %}checked{% endif %} disabled>
+            </td>
+            <td>
+              <input class="form-check-input" type="radio" {% if part.public %}checked{% endif %} disabled>
+            </td>
+            <td>
+              <input class="form-check-input" type="radio" {% if part.rejected %}checked{% endif %} disabled>
+            </td>
+            <td>
+              <a href="{{ url_for('views_admin.editPart', part_number=part.id) }}"><button class="btn btn-primary btn-sm edit-button">Edit</button></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+  <nav aria-label="Pagination">
+    <ul class="pagination">
+      {% if parts.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('views_admin.panel', page=parts.prev_num) }}">Previous</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">Previous</span>
+      </li>
+      {% endif %}
+
+      {% for num in parts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if num %}
+          {% if parts.page == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('views_admin.panel', page=num) }}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if parts.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('views_admin.panel', page=parts.next_num) }}">Next</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">Next</span>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% endblock %}
