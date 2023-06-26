@@ -107,9 +107,14 @@ def part(part_number):
     files_list = File.query.filter_by(part_id=part_number).all()
     if not part:
         abort(404)
-
+    category = Category.query.filter_by(id=part.category).first()
     return render_template(
-        "part.html", part=part, user=current_user, files_list=files_list, author=author
+        "part.html",
+        part=part,
+        user=current_user,
+        files_list=files_list,
+        author=author,
+        category=category,
     )
 
 
