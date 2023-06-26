@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block header%}
-<header class="masthead" style="background-image: url({{ url_for('static', filename='/assets/img/header-bg.jpg') }})">
+<header class="masthead bg-img-home">
     <div class="container">
         <div class="masthead-subheading">Open Robotic Platform</div>
         <div class="masthead-heading text-uppercase">Robotics made easy with simple design rules</div>
@@ -17,24 +17,39 @@
         <div class="row text-center">
             <div class="col-md-4">
                 <span class="fa-stack fa-4x">
-                    <img src="static/assets/img/circle1.png" alt="..." style="max-width: 100%; max-height: 100%;"/>
+                    <picture>
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/circle1.avif') }}" type="image/avif">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/circle1.webp') }}" type="image/webp">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/circle1.jxl') }}" type="image/jxl">
+                        <img src="{{ url_for('static', filename='assets/img/opt/circle1.png') }}" alt="..." class="img-fluid h-100">
+                    </picture>
                 </span>
                 <h4 class="my-3">Hole pattern</h4>
-                <p class="text-muted">Holes are distrubted every 20mm in each direction. No more random, useless holes on your robot</p>
+                <p class="text-body-secondary">Holes are distrubted every 20mm in each direction. No more random, useless holes on your robot</p>
             </div>
             <div class="col-md-4">
                 <span class="fa-stack fa-4x">
-                    <img src="static/assets/img/circle2.png" alt="..." style="max-width: 100%; max-height: 100%;"/>
+                    <picture>
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/circle2.avif') }}" type="image/avif">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/circle2.webp') }}" type="image/webp">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/circle2.jxl') }}" type="image/jxl">
+                        <img src="{{ url_for('static', filename='assets/img/opt/circle2.png') }}" alt="..." class="img-fluid h-100">
+                    </picture>
                 </span>
                 <h4 class="my-3">Materials</h4>
-                <p class="text-muted">Plates can be 3D printed, CNC machined or laser cut. You can choose the material you want to use.</p>
+                <p class="text-body-secondary">Plates can be 3D printed, CNC machined or laser cut. You can choose the material you want to use.</p>
             </div>
             <div class="col-md-4">
                 <span class="fa-stack fa-4x">
-                    <img src="static/assets/img/circle3.png" alt="..." style="max-width: 100%; max-height: 100%;"/>
+                    <picture>
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/circle3.avif') }}" type="image/avif">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/circle3.webp') }}" type="image/webp">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/circle3.jxl') }}" type="image/jxl">
+                        <img src="{{ url_for('static', filename='assets/img/opt/circle3.png') }}" alt="..." class="img-fluid h-100">
+                    </picture>
                 </span>
                 <h4 class="my-3">Design and reusability</h4>
-                <p class="text-muted">Holes patter makes it easy to design any holder and modules for your robot. You can also reuse those that you already</p>
+                <p class="text-body-secondary">Holes patter makes it easy to design any holder and modules for your robot. You can also reuse those that you already</p>
             </div>
         </div>
     </div>
@@ -44,12 +59,17 @@
     <div class="container">
         <div class="text-center">
             <h2 class="section-heading text-uppercase">Featured Projects</h2>
-            <h3 class="section-subheading text-muted">Explore some of the amazing projects built with Open Robotic Platform</h3>
+            <h3 class="section-subheading text-body-secondary">Explore some of the amazing projects built with Open Robotic Platform</h3>
         </div>
         <div class="row">
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card project-card">
-                    <img class="card-img-top" src="static/assets/img/robot1.JPG" alt="Pico Mars Rover" />
+                    <picture>
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot1.avif') }}" type="image/avif">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot1.webp') }}" type="image/webp">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot1.jxl') }}" type="image/jxl">
+                        <img  class="card-img-top" src="{{ url_for('static', filename='assets/img/robot1.JPG') }}" alt="Pico Mars Rover">
+                    </picture>
                     <div class="card-body">
                         <h5 class="card-title">Pico Mars Rover</h5>
                         <p class="card-text">An educational platform designed to inspire young minds in robotics and space exploration.</p>
@@ -59,7 +79,12 @@
             </div>
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card project-card">
-                    <img class="card-img-top" src="static/assets/img/robot2.JPG" alt="Arduino LIDAR Robot" />
+                    <picture>
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot2.avif') }}" type="image/avif">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot2.webp') }}" type="image/webp">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot2.jxl') }}" type="image/jxl">
+                        <img  class="card-img-top" src="{{ url_for('static', filename='assets/img/robot2.JPG') }}" alt="Arduino LIDAR Robot">
+                    </picture>
                     <div class="card-body">
                         <h5 class="card-title">Arduino LIDAR Robot</h5>
                         <p class="card-text">A research platform powered by CubeMars motors, enabling precise mapping and navigation using LIDAR technology.</p>
@@ -69,7 +94,12 @@
             </div>
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card project-card">
-                    <img class="card-img-top" src="static/assets/img/robot3.JPG" alt="Overpowered Robot" />
+                    <picture>
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot3.avif') }}" type="image/avif">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot3.webp') }}" type="image/webp">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot3.jxl') }}" type="image/jxl">
+                        <img  class="card-img-top" src="{{ url_for('static', filename='assets/img/robot3.JPG') }}" alt="Overpowered Robot">
+                    </picture>
                     <div class="card-body">
                         <h5 class="card-title">Overpowered Robot</h5>
                         <p class="card-text">A versatile research platform utilizing the robust CubeMars motors for high-performance robotic applications.</p>
@@ -86,7 +116,7 @@
     <div class="container">
         <div class="text-center">
             <h2 class="section-heading text-uppercase">Newest Parts</h2>
-            <h3 class="section-subheading text-muted">Check out the newest parts uploaded by users</h3>
+            <h3 class="section-subheading text-body-secondary">Check out the newest parts uploaded by users</h3>
         </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
             {% for part in parts %}
@@ -94,7 +124,7 @@
                 <a href ="/part:{{part.id}}" class="text-decoration-none">
                 <div class="card">
                     <div class="card-img-container">
-                        <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" />
+                        <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top" />
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ part.name }}</h5>

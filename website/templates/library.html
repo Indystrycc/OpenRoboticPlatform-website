@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Library{% endblock %}
 {% block header%}
-<header class="masthead" style="background-image: url({{ url_for('static', filename='/assets/img/library-bg.png') }})">
+<header class="masthead bg-img-library">
     <div class="container">
         <div class="masthead-heading text-uppercase">Library</div>
         <form class="search-form mt-3" method="GET">
-            <div class="input-group">
-                <input class="form-control" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request.args.get('search', '') }}">
-                <button class="btn btn-light" type="submit" data-toggle="popover" title="Search Functionality" data-content="Enter keywords to search for specific parts"><i class="fas fa-search"></i></button>
-                <button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fas fa-question-circle"></i></button>
+            <div class="input-group mx-auto rounded-pill">
+                {# TODO: Replace rounded-pill rounded-{start,end} with rounded-{end-start}-pill after Bootstrap update #}
+                <input class="form-control border-0 bg-transparent rounded-pill rounded-end" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request.args.get('search', '') }}">
+                <button class="btn border-0" type="submit"><i class="fas fa-search"></i></button>
+                <button class="btn border-0 rounded-pill rounded-start" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fas fa-question-circle"></i></button>
             </div>
         </form>
     </div>
@@ -45,7 +46,7 @@
                 <a href="/part:{{part.id}}" class="text-decoration-none">
                 <div class="card">
                     <div class="card-img-container">
-                       <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" />
+                       <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top" />
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ part.name }}</h5>
@@ -58,7 +59,7 @@
         </div>
 
         <!-- Pagination -->
-        <nav aria-label="Page navigation" style="margin-top: 2em;">
+        <nav class="mt-3" aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 {% if parts.has_prev %}
                 <li class="page-item">

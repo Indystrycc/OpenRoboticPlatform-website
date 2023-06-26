@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Add Part{% endblock %}
+{% block navbar_add_class %}masthead-no-img{% endblock %}
 {% block header %}
-<header class="masthead" style="background-color: #ffc800; padding-bottom: 0.5em; padding-top: 6em">
+<header class="masthead masthead-no-img">
     <div class="masthead-heading text-uppercase">Add Part</div>
 </header>
 {% endblock %}
 
 {% block content %}
-<section style="background-color: #eee;">
+<section class="bg-secondary-subtle">
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
@@ -60,9 +61,9 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Upload</button>
                         </form>
-                        <div class="mb-3" style="margin-top: 2em; font-size: 0.8em;">
-                            <p>By uploading your parts to OpenRoboticPlatform, you are joining a community dedicated to open collaboration in robotics. To foster seamless collaboration and knowledge sharing, all parts uploaded to OpenRoboticPlatform are released under the MIT license.</p>
-                            <p>  With the MIT license, you retain ownership of your parts while allowing others to build upon your work, whether for personal, educational, or commercial purposes.</p>
+                        <div class="mt-4 small">
+                            <p class="small">By uploading your parts to OpenRoboticPlatform, you are joining a community dedicated to open collaboration in robotics. To foster seamless collaboration and knowledge sharing, all parts uploaded to OpenRoboticPlatform are released under the MIT license.</p>
+                            <p class="small">With the MIT license, you retain ownership of your parts while allowing others to build upon your work, whether for personal, educational, or commercial purposes.</p>
                         </div>
                     </div>
                 </div>

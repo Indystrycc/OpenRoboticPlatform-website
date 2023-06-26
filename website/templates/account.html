@@ -1,25 +1,31 @@
 {% extends "base.html" %}
 {% block title %}Account{% endblock %}
+{% block navbar_add_class %}masthead-no-img{% endblock %}
 {% block header%}
-<header class="masthead" style="background-color: #ffc800; padding-bottom: 0.5em; padding-top: 6em">
+<header class="masthead masthead-no-img">
     <div class="masthead-heading text-uppercase">Account</div>
 </header>
 {% endblock %}
 
 {% block content %}
-<section style="background-color: #eee;">
+<section class="bg-secondary-subtle">
     <div class="container py-5">
       <div class="row">
         <div class="col-lg-4">
           <div class="card mb-4">
             <div class="card-body text-center">
               {% if user.image %}
-                  <img src="{{ url_for('static', filename='uploads/profile_images/' + user.image) }}" alt="avatar" class="rounded-circle img-fluid" style="width: 250px; height: 250px; object-fit: cover; object-position: center;"">
+                  <img src="{{ url_for('static', filename='uploads/profile_images/' + user.image) }}" alt="avatar" class="profile-img">
               {% else %}
-                  <img src="static/assets/img/default_avatar.png" alt="default avatar" class="rounded-circle img-fluid" style="width: 300px; height: 300px; object-fit: cover; object-position: center;">
+                <picture>
+                  <source srcset="{{ url_for('static', filename='assets/img/opt/default_avatar.avif') }}" type="image/avif">
+                  <source srcset="{{ url_for('static', filename='assets/img/opt/default_avatar.webp') }}" type="image/webp">
+                  <source srcset="{{ url_for('static', filename='assets/img/opt/default_avatar.jxl') }}" type="image/jxl">
+                  <img src="{{ url_for('static', filename='assets/img/opt/default_avatar.png') }}" alt="default avatar" class="profile-img">
+                </picture>
               {% endif %}
               <h5 class="my-3">{{ user.username }}</h5>
-              <p class="text-muted mb-1">{{ user.description }}</p>
+              <p class="text-body-secondary mb-1">{{ user.description }}</p>
             </div>
           </div>
           <div class="card mb-4 mb-lg-0">
@@ -31,19 +37,19 @@
                 </li> -->
                 {% if user.name_github %}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                  <i class="fab fa-github fa-lg" style="color: #333333;"></i>
+                  <i class="fab fa-github fa-lg social-gh"></i>
                   <p class="mb-0"><a href="https://github.com/{{ user.name_github }}" target="_blank">{{user.name_github}}</a></p>
                 </li>
                 {% endif %}
                 {% if user.name_youtube %}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                  <i class="fab fa-youtube fa-lg" style="color: #e22323;"></i>
+                  <i class="fab fa-youtube fa-lg social-yt"></i>
                   <p class="mb-0"><a href="https://youtube.com/@{{ user.name_youtube }}" target="_blank">{{user.name_youtube}}</a></p>
                 </li>
                 {% endif %}
                 {% if user.name_instagram %}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                  <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
+                  <i class="fab fa-instagram fa-lg social-ig"></i>
                   <p class="mb-0"><a href="https://instagram.com/{{ user.name_instagram }}" target="_blank">{{user.name_instagram}}</a></p>
                 </li>
                 {% endif %}
@@ -59,7 +65,7 @@
                   <p class="mb-0">Username</p>
                 </div>
                 <div class="col-sm-9">
-                  <p class="text-muted mb-0">{{ user.username }}</p>
+                  <p class="text-body-secondary mb-0">{{ user.username }}</p>
                 </div>
               </div>
               <hr>
@@ -68,7 +74,7 @@
                   <p class="mb-0">Email</p>
                 </div>
                 <div class="col-sm-9">
-                  <p class="text-muted mb-0">{{ user.email }}</p>
+                  <p class="text-body-secondary mb-0">{{ user.email }}</p>
                 </div>
               </div>
               <hr>
@@ -77,7 +83,7 @@
                   <p class="mb-0">Password</p>
                 </div>
                 <div class="col-sm-9">
-                  <p class="text-muted mb-0"><a href ="">Click to change</a></p>
+                  <p class="text-body-secondary mb-0"><a href ="">Click to change</a></p>
                 </div>
               </div>
             </div>
@@ -88,7 +94,7 @@
                   <div class="card-body">
                       <p class="mb-4">Recent parts</p>
                       {% for part in recent_parts %}
-                      <p class="mb-1" style="font-size: 1rem;"><a href ="/part:{{part.id}}">{{ part.name }}</a></p>
+                      <p class="mb-1 fs-6"><a href ="/part:{{part.id}}">{{ part.name }}</a></p>
                       <hr>
                       {% endfor %}
                   </div>
@@ -98,14 +104,14 @@
               <div class="card mb-4 mb-md-0">
                 <div class="card-body">
                   <p class="mb-4">Your contribution</p>
-                  <p class="mb-1" style="font-size: 1.5rem;">Total parts: 3489</p>
+                  <p class="mb-1 fs-4">Total parts: 3489</p>
                   <hr>
-                  <p class="mt-4 mb-1" style="font-size: 1.5rem;">Your parts: 24</p>
+                  <p class="mt-4 mb-1 fs-4">Your parts: 24</p>
                   <hr>
-                  <p class="mt-4 mb-1" style="font-size: 1.5rem;">Your contribution: 0.68%</p>
+                  <p class="mt-4 mb-1 fs-4">Your contribution: 0.68%</p>
                 </div>
               </div>
-              
+
               <div class="card-body text-center">
                 <a href="/accountsettings">Edit profile</a>
               </div>

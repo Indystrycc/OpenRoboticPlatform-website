@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Admin Panel{% endblock %}
+{% block navbar_add_class %}masthead-no-img{% endblock %}
 {% block header%}
-<header class="masthead" style="background-color: #ffc800; padding-bottom: 0.5em; padding-top: 6em">
+<header class="masthead masthead-no-img">
     <div class="masthead-heading text-uppercase">Admin Panel</div>
 </header>
 {% endblock %}
@@ -29,7 +30,7 @@
         <tr>
             <td name="image">
               <div class="card-img-container">
-                <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top aspect-ratio-4x3" />
+                <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top" />
              </div>
             </td>
             <td name="id">{{ part.id }}</td>

@@ -1,0 +1,151 @@
+//
+// Navbar
+//
+
+$navbar-bg-color: $yellow;
+$navbar-text-color: $yellow-800;
+
+#mainNav {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: $navbar-bg-color;
+    --bs-navbar-color: #{$navbar-text-color};
+
+    .navbar-toggler {
+        padding: 0.75rem;
+        font-size: 0.75rem;
+        font-family: $headings-font-family;
+        text-transform: uppercase;
+        font-weight: $font-weight-bold;
+    }
+
+    .navbar-brand {
+        color: $primary;
+        font-family: $headings-font-family;
+        font-weight: $headings-font-weight;
+        letter-spacing: $headings-letter-spacing;
+        text-transform: uppercase;
+
+        svg,
+        img {
+            height: 1.5rem;
+            --logo-color: var(--bs-navbar-color);
+            stroke: var(--logo-color);
+            fill: var(--logo-color);
+        }
+
+        &:hover svg {
+            --logo-color: #{$white};
+        }
+    }
+
+    .navbar-nav {
+        .nav-item {
+            .nav-link {
+                font-family: $headings-font-family;
+                font-size: 0.95rem;
+                letter-spacing: $headings-letter-spacing;
+
+                &.active,
+                &:hover {
+                    color: $white;
+                }
+            }
+        }
+    }
+}
+
+// Responsive styling for screen width equal to or greater than the large breakpoint
+@include media-breakpoint-up(lg) {
+    #mainNav {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        border: none;
+        background-color: transparent;
+        transition: padding-top 0.3s ease-in-out,
+            padding-bottom 0.3s ease-in-out;
+        --bs-navbar-color: #{$white};
+
+        .navbar-brand {
+            font-size: 1.5em;
+            transition: font-size 0.3s ease-in-out;
+
+            svg,
+            img {
+                height: 4rem;
+                transition: height 0.3s ease-in-out;
+            }
+
+            &:hover svg {
+                --logo-color: #{$primary};
+            }
+        }
+
+        // Styling for when the navbar shrinks on larger screens
+        &.navbar-shrink {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            background-color: $navbar-bg-color;
+
+            .navbar-brand {
+                font-size: 1.25em;
+
+                svg,
+                img {
+                    --logo-color: #{$navbar-text-color};
+                    height: 3rem;
+                }
+
+                &:hover svg {
+                    --logo-color: #{$white};
+                }
+            }
+
+            .navbar-nav .nav-item .nav-link {
+                color: $navbar-text-color;
+
+                &.active,
+                &:hover {
+                    color: $white;
+                }
+            }
+        }
+
+        // In case the header below does not have an image background
+        &.masthead-no-img {
+            .navbar-brand {
+                svg {
+                    --logo-color: #{$navbar-text-color};
+                }
+
+                &:hover svg {
+                    --logo-color: #{$white};
+                }
+            }
+
+            .navbar-nav .nav-item .nav-link {
+                color: $navbar-text-color;
+
+                &.active,
+                &:hover {
+                    color: $white;
+                }
+            }
+        }
+
+        .navbar-nav .nav-item {
+            margin-right: 1rem;
+
+            &:last-child {
+                margin-right: 0;
+            }
+
+            .nav-link {
+                &.active,
+                &:hover {
+                    color: $primary;
+                }
+            }
+        }
+    }
+}

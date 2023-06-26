@@ -39,3 +39,6 @@ docker-compose.yaml
 **/*.txt
 !requirements.txt
 !prod/**/*.txt
+
+**/dist
+**/node_modules

@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Part{% endblock %}
+{% block navbar_add_class %}masthead-no-img{% endblock %}
 {% block header %}
-<header class="masthead" style="background-color: #ffc800; padding-bottom: 0.5em; padding-top: 6em">
+<header class="masthead masthead-no-img">
     <div class="masthead-heading text-uppercase">Part</div>
 </header>
 {% endblock %}
 {% block content %}
-<section style="background-color: #eee;">
+<section class="bg-secondary-subtle">
     <div class="container py-5">
         <div class="row">
             <div class="col-lg-4">
@@ -49,7 +50,7 @@
                     <div class="card-body">
                         <h5>Files</h5>
                         {% for file in files_list %}
-                            <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 1rem;">
+                            <div class="d-flex justify-content-between align-items-center mb-1 fs-6">
                                 <p class="mb-0">{{ file.file_name }}</p>
                                 <a href="{{ url_for('static', filename='uploads/files/' + file.file_name) }}" class="btn btn-warning btn-sm">Download</a>
                             </div>
@@ -64,27 +65,32 @@
                             <div class="col-md-6">
                                 <h5 class="mb-4">Author: <a href ="{{ url_for('views.userView', user_name=author.username) }}">{{ author.username }}</a></h5>
                                 {% if author.image %}
-                                    <img src="{{ url_for('static', filename='uploads/profile_images/' + author.image) }}" alt="avatar" class="rounded-circle img-fluid" style="width: 200px; height: 200px; object-fit: cover; object-position: center;">
+                                    <img src="{{ url_for('static', filename='uploads/profile_images/' + author.image) }}" alt="avatar" class="profile-img pi-sm">
                                 {% else %}
-                                    <img src="static/assets/img/default_avatar.png" alt="default avatar" class="rounded-circle img-fluid" style="width: 200px; height: 200px; object-fit: cover; object-position: center;">
+                                    <picture>
+                                        <source srcset="{{ url_for('static', filename='assets/img/opt/default_avatar.avif') }}" type="image/avif">
+                                        <source srcset="{{ url_for('static', filename='assets/img/opt/default_avatar.webp') }}" type="image/webp">
+                                        <source srcset="{{ url_for('static', filename='assets/img/opt/default_avatar.jxl') }}" type="image/jxl">
+                                        <img src="{{ url_for('static', filename='assets/img/opt/default_avatar.png') }}" alt="default avatar" class="profile-img pi-sm">
+                                    </picture>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
                                 {% if author.name_github %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                        <i class="fab fa-github fa-lg" style="color: #333333;"></i>
+                                        <i class="fab fa-github fa-lg social-gh"></i>
                                         <p class="mb-0"><a href="https://github.com/{{ author.name_github }}" target="_blank">{{author.name_github}}</a></p>
                                     </li>
                                 {% endif %}
                                 {% if author.name_youtube %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                        <i class="fab fa-youtube fa-lg" style="color: #e22323;"></i>
+                                        <i class="fab fa-youtube fa-lg social-yt"></i>
                                         <p class="mb-0"><a href="https://youtube.com/@{{ author.name_youtube }}" target="_blank">{{author.name_youtube}}</a></p>
                                     </li>
                                 {% endif %}
                                 {% if author.name_instagram %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                        <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
+                                        <i class="fab fa-instagram fa-lg social-ig"></i>
                                         <p class="mb-0"><a href="https://instagram.com/{{ author.name_instagram }}" target="_blank">{{author.name_instagram}}</a></p>
                                     </li>
                                 {% endif %}
