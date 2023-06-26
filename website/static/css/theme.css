@@ -12042,6 +12042,48 @@ p {
   margin-bottom: 4rem;
 }
 
+.bg-img-home {
+  background-image: url("/static/assets/img/header-bg.jpg");
+}
+
+.bg-img-design {
+  background-image: url("/static/assets/img/opt/design_rules_bg.png");
+}
+
+.bg-img-library {
+  background-image: url("/static/assets/img/opt/library-bg.png");
+}
+
+.bg-img-login {
+  background-image: url("/static/assets/img/opt/login_page_bg.png");
+}
+
+.bg-img-showcase {
+  background-image: url("/static/assets/img/opt/showcase.png");
+}
+
+@supports ((background-image: -webkit-image-set("" type("image/png"))) or (background-image: image-set("" type("image/png")))) {
+  .bg-img-home {
+    background-image: -webkit-image-set("/static/assets/img/opt/header-bg.avif" type("image/avif"), "/static/assets/img/opt/header-bg.jxl" type("image/jxl"), "/static/assets/img/opt/header-bg.webp" type("image/webp"));
+    background-image: image-set("/static/assets/img/opt/header-bg.avif" type("image/avif"), "/static/assets/img/opt/header-bg.jxl" type("image/jxl"), "/static/assets/img/opt/header-bg.webp" type("image/webp"));
+  }
+  .bg-img-design {
+    background-image: -webkit-image-set("/static/assets/img/opt/design_rules_bg.jxl" type("image/jxl"), "/static/assets/img/opt/design_rules_bg.avif" type("image/avif"), "/static/assets/img/opt/design_rules_bg.webp" type("image/webp"));
+    background-image: image-set("/static/assets/img/opt/design_rules_bg.jxl" type("image/jxl"), "/static/assets/img/opt/design_rules_bg.avif" type("image/avif"), "/static/assets/img/opt/design_rules_bg.webp" type("image/webp"));
+  }
+  .bg-img-library {
+    background-image: -webkit-image-set("/static/assets/img/opt/library-bg.jxl" type("image/jxl"), "/static/assets/img/opt/library-bg.avif" type("image/avif"), "/static/assets/img/opt/library-bg.webp" type("image/webp"));
+    background-image: image-set("/static/assets/img/opt/library-bg.jxl" type("image/jxl"), "/static/assets/img/opt/library-bg.avif" type("image/avif"), "/static/assets/img/opt/library-bg.webp" type("image/webp"));
+  }
+  .bg-img-login {
+    background-image: -webkit-image-set("/static/assets/img/opt/login_page_bg.jxl" type("image/jxl"), "/static/assets/img/opt/login_page_bg.avif" type("image/avif"), "/static/assets/img/opt/login_page_bg.webp" type("image/webp"));
+    background-image: image-set("/static/assets/img/opt/login_page_bg.jxl" type("image/jxl"), "/static/assets/img/opt/login_page_bg.avif" type("image/avif"), "/static/assets/img/opt/login_page_bg.webp" type("image/webp"));
+  }
+  .bg-img-showcase {
+    background-image: -webkit-image-set("/static/assets/img/opt/showcase.jxl" type("image/jxl"), "/static/assets/img/opt/showcase.avif" type("image/avif"), "/static/assets/img/opt/showcase.webp" type("image/webp"));
+    background-image: image-set("/static/assets/img/opt/showcase.jxl" type("image/jxl"), "/static/assets/img/opt/showcase.avif" type("image/avif"), "/static/assets/img/opt/showcase.webp" type("image/webp"));
+  }
+}
 .btn-xl {
   padding: 1.25rem 2.5rem;
   font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";

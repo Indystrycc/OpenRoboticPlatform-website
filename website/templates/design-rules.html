@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Design rules{% endblock %}
 {% block header %}
-<header class="masthead" style="background-image: url({{ url_for('static', filename='/assets/img/design_rules_bg.png') }})">
+<header class="masthead bg-img-design">
     <div class="container">
         <div class="masthead-heading text-uppercase">Design rules</div>
     </div>
@@ -23,7 +23,12 @@
                         <p>
                             Aenean commodo mi sit amet ornare ullamcorper. Suspendisse fringilla vehicula magna at rutrum. Vestibulum tincidunt ultrices dolor sit amet congue. Sed a egestas nulla, et interdum erat. Praesent vestibulum dui metus, sit amet tincidunt sapien vestibulum quis. Sed aliquet nec eros sit amet vehicula. Cras at imperdiet lacus, quis efficitur lacus. Proin eleifend massa eu malesuada posuere. Phasellus pharetra est id sem rutrum, non pretium nisi consectetur. Phasellus in sem leo. In non velit pharetra, scelerisque.
                         </p>
-                        <img src="static/assets/img/designrules1.png" alt="Image 1" class="img-fluid my-4" />
+                        <picture>
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/designrules1.avif') }}" type="image/avif">
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/designrules1.webp') }}" type="image/webp">
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/designrules1.jxl') }}" type="image/jxl">
+                            <img src="{{ url_for('static', filename='assets/img/opt/designrules1.png') }}" alt="Image 1" class="img-fluid my-4">
+                        </picture>
                     </section>
                     <section>
                         <h2>Plate design</h2>
@@ -33,7 +38,12 @@
                         <p>
                             Aenean commodo mi sit amet ornare ullamcorper. Suspendisse fringilla vehicula magna at rutrum. Vestibulum tincidunt ultrices dolor sit amet congue. Sed a egestas nulla, et interdum erat. Praesent vestibulum dui metus, sit amet tincidunt sapien vestibulum quis. Sed aliquet nec eros sit amet vehicula. Cras at imperdiet lacus, quis efficitur lacus. Proin eleifend massa eu malesuada posuere. Phasellus pharetra est id sem rutrum, non pretium nisi consectetur. Phasellus in sem leo. In non velit pharetra, scelerisque.
                         </p>
-                        <img src="static/assets/img/designrules1.png" alt="Image 2" class="img-fluid my-4" />
+                        <picture>
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/designrules1.avif') }}" type="image/avif">
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/designrules1.webp') }}" type="image/webp">
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/designrules1.jxl') }}" type="image/jxl">
+                            <img src="{{ url_for('static', filename='assets/img/opt/designrules1.png') }}" alt="Image 2" class="img-fluid my-4">
+                        </picture>
                     </section>
                     <section>
                         <h2>Motor holders design</h2>
@@ -43,7 +53,12 @@
                         <p>
                             Aenean commodo mi sit amet ornare ullamcorper. Suspendisse fringilla vehicula magna at rutrum. Vestibulum tincidunt ultrices dolor sit amet congue.
                         </p>
-                        <img src="static/assets/img/designrules1.png" alt="Image 3" class="img-fluid my-4" />
+                        <picture>
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/designrules1.avif') }}" type="image/avif">
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/designrules1.webp') }}" type="image/webp">
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/designrules1.jxl') }}" type="image/jxl">
+                            <img src="{{ url_for('static', filename='assets/img/opt/designrules1.png') }}" alt="Image 3" class="img-fluid my-4">
+                        </picture>
                     </section>
                 </article>
             </div>

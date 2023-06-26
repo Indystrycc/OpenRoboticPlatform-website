@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Showcase{% endblock %}
 {% block header %}
-<header class="masthead" style="background-image: url({{ url_for('static', filename='/assets/img/showcase.png') }})">
+<header class="masthead bg-img-showcase">
     <div class="container">
         <div class="masthead-heading text-uppercase">Showcase</div>
     </div>
@@ -26,7 +26,12 @@
                             <p>
                                 The robot was created to check if it is possible to use a LIDAR with an Arduino. ORP plates and mounts made it easy to design custom holders for each element and later reuse them for different projects.
                             </p>
-                            <img src="static/assets/img/robot2.JPG" alt="Image 1" class="img-fluid my-4" />
+                            <picture>
+                                <source srcset="{{ url_for('static', filename='assets/img/opt/robot2.avif') }}" type="image/avif">
+                                <source srcset="{{ url_for('static', filename='assets/img/opt/robot2.webp') }}" type="image/webp">
+                                <source srcset="{{ url_for('static', filename='assets/img/opt/robot2.jxl') }}" type="image/jxl">
+                                <img src="{{ url_for('static', filename='assets/img/robot2.JPG') }}" alt="Image 1" class="img-fluid my-4">
+                            </picture>
                         </section>
                     </section>
                 </article>

@@ -67,7 +67,12 @@
                                 {% if author.image %}
                                     <img src="{{ url_for('static', filename='uploads/profile_images/' + author.image) }}" alt="avatar" class="profile-img pi-sm">
                                 {% else %}
-                                    <img src="static/assets/img/default_avatar.png" alt="default avatar" class="profile-img pi-sm">
+                                    <picture>
+                                        <source srcset="{{ url_for('static', filename='assets/img/opt/default_avatar.avif') }}" type="image/avif">
+                                        <source srcset="{{ url_for('static', filename='assets/img/opt/default_avatar.webp') }}" type="image/webp">
+                                        <source srcset="{{ url_for('static', filename='assets/img/opt/default_avatar.jxl') }}" type="image/jxl">
+                                        <img src="{{ url_for('static', filename='assets/img/opt/default_avatar.png') }}" alt="default avatar" class="profile-img pi-sm">
+                                    </picture>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
