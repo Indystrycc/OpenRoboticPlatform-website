@@ -233,21 +233,11 @@ def adminUpdatePart(part_number):
             description = clean(request.form.get("description"))
             category = clean(request.form.get("category"))
             tags = clean(request.form.get("tags"))
-            image = request.files.get("image")
             verified = request.form.get("verified")
             public = request.form.get("public")
             rejected = request.form.get("rejected")
             featured = request.form.get("featured")
             category = request.form.get("category")
-
-            print("name: ", name)
-            print("description: ", description)
-            print("category: ", category)
-            print("tags: ", tags)
-            print("verified: ", verified)
-            print("public: ", public)
-            print("rejected: ", rejected)
-            print("featured: ", featured)
 
             # Update the part with the new values using the provided part_id and updated_values
             part = Part.query.get(part_number)
@@ -266,14 +256,11 @@ def adminUpdatePart(part_number):
 
                 # Return a success response
                 message = Markup(
-                    'Part updated! <a href="/part:{}">Go to the part view.</a>'.format(
-                        part_number
-                    )
+                    f'Part updated! <a href="/part:{part_number}">Go to the part view.</a>'
                 )
                 flash(message, "success")
             else:
-                message = Markup("Part {part_id} wasn not found!")
-                flash(message, "error")
+                flash(f"Part {part_number} was not found!", "error")
         part = Part.query.filter_by(id=part_number).first()
         return render_template("admineditpart.html", user=current_user, part=part)
     else:
