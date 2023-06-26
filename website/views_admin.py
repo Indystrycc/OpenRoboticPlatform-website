@@ -19,9 +19,14 @@ def admin_required(f):
     return decorated_function
 
 
-@views_admin.route("/panel")
+@views_admin.before_request
 @login_required
 @admin_required
+def before_request():
+    pass
+
+
+@views_admin.route("/panel")
 def panel():
     page = request.args.get("page", 1, type=int)
     per_page = 20
@@ -35,8 +40,6 @@ def panel():
 
 
 @views_admin.route("/editpart:<int:part_number>", methods=["GET", "POST"])
-@login_required
-@admin_required
 def editPart(part_number):
     if request.method == "POST":
         name = clean(request.form.get("name"))
