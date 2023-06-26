@@ -27,7 +27,7 @@ class Part(db.Model):
     description = db.Column(db.String(5000))
     image = db.Column(db.String(100), unique=True)
     # category examples: plates, wheels, other, holders & adapters for: sensors, microcontrollers & SBCs, motors, cameras
-    category = db.Column(db.Integer)
+    category = db.Column(db.Integer, db.ForeignKey("category.id"))
     user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     verified = db.Column(db.Boolean, default=False)
@@ -37,6 +37,8 @@ class Part(db.Model):
     downloads = db.Column(db.Integer, default=0)
     tags = db.Column(db.String(200))
 
+    cat = db.relationship("Category", backref=db.backref("part", lazy=True))
+
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,3 +46,9 @@ class File(db.Model):
     file_name = db.Column(db.String(100), unique=True)
 
     part = db.relationship("Part", backref=db.backref("files", lazy=True))
+
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    parent_id = db.Column(db.Integer, nullable=True)
