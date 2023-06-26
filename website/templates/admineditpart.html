@@ -32,7 +32,7 @@
                                     <tbody>
                                         <tr>
                                             <td name="id">{{ part.id }}</td>
-                                            <td name="name"><a href="/part:{{part.id}}">{{ part.name }}</a></td>
+                                            <td name="name"><a href="{{ url_for('views.part', part_number=part.id) }}">{{ part.name }}</a></td>
                                             <td>{{ part.category }}</td>
                                             <td>{{ part.views }}</td>
                                             <td>
@@ -81,7 +81,7 @@
                                 <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="part image" class="img-fluid" style="width: 400px">
                             </div>
                             <button type="submit" class="btn btn-primary">Update</button>
-                            Go back to <a href="adminpanel">admin panel</a>
+                            Go back to <a href="{{url_for('views_admin.panel')}}">admin panel</a>
                         </form>
                     </div>
                 </div>

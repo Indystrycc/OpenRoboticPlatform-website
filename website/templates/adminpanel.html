@@ -33,7 +33,7 @@
              </div>
             </td>
             <td name="id">{{ part.id }}</td>
-            <td name="name"><a href="/part:{{ part.id }}">{{ part.name }}</a></td>
+            <td name="name"><a href="{{ url_for('views.part', part_number=part.id) }}">{{ part.name }}</a></td>
             <td>{{ part.category }}</td>
             <td>{{ username }}</td>
             <td>{{ part.views }}</td>
@@ -50,7 +50,7 @@
               <input class="form-check-input" type="radio" {% if part.rejected %}checked{% endif %} disabled>
             </td>
             <td>
-                <a href="/admineditpart:{{part.id}}"><button class="btn btn-primary btn-sm edit-button">Edit</button></a>
+              <a href="{{ url_for('views_admin.editPart', part_number=part.id) }}"><button class="btn btn-primary btn-sm edit-button">Edit</button></a>
             </td>
         </tr>
         {% endfor %}
@@ -62,7 +62,7 @@
     <ul class="pagination">
       {% if parts.has_prev %}
       <li class="page-item">
-        <a class="page-link" href="{{ url_for('adminPanel', page=parts.prev_num) }}">Previous</a>
+        <a class="page-link" href="{{ url_for('views_admin.panel', page=parts.prev_num) }}">Previous</a>
       </li>
       {% else %}
       <li class="page-item disabled">
@@ -78,7 +78,7 @@
             </li>
           {% else %}
             <li class="page-item">
-              <a class="page-link" href="{{ url_for('adminPanel', page=num) }}">{{ num }}</a>
+              <a class="page-link" href="{{ url_for('views_admin.panel', page=num) }}">{{ num }}</a>
             </li>
           {% endif %}
         {% else %}
@@ -90,7 +90,7 @@
 
       {% if parts.has_next %}
       <li class="page-item">
-        <a class="page-link" href="{{ url_for('adminPanel', page=parts.next_num) }}">Next</a>
+        <a class="page-link" href="{{ url_for('views_admin.panel', page=parts.next_num) }}">Next</a>
       </li>
       {% else %}
       <li class="page-item disabled">
