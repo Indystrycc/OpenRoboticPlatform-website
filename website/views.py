@@ -46,7 +46,7 @@ def library():
             Part.name.icontains(search_query, autoescape=True)
             | Part.description.icontains(search_query, autoescape=True)
             | Part.tags.icontains(search_query, autoescape=True)
-        )
+        ).filter_by(rejected=False)
     else:
         parts = Part.query.filter_by(rejected=False)
 
