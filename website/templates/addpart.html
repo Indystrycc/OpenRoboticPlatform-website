@@ -44,14 +44,13 @@
                             <div class="mb-3">
                                 <label for="category" class="form-label">Category</label>
                                 <select class="form-select" id="category" name="category" required>
-                                    <option value="">Select a category</option>
-                                    <option value="1">Plates</option>
-                                    <option value="2">Wheels</option>
-                                    <option value="3">Other</option>
-                                    <option value="4">Holders & Adapters for: Sensors</option>
-                                    <option value="5">Holders & Adapters for: Microcontrollers & SBCs</option>
-                                    <option value="6">Holders & Adapters for: Motors</option>
-                                    <option value="7">Holders & Adapters for: Cameras</option>
+                                    {% for category in categories %}
+                                        {% if not category.parent_id %}
+                                        <optgroup label="{{category.name}}">
+                                        {% else %}
+                                        <option value="{{category.id}}">{{category.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="mb-3">
