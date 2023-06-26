@@ -19,7 +19,7 @@ from werkzeug.utils import secure_filename
 
 from . import compression_process, db
 from .compression import compress_uploads
-from .models import File, Part, User
+from .models import File, Part, User, Category
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
@@ -179,13 +179,14 @@ def addPart():
 
         flash("Part added successfully!", "success")
         return redirect(url_for("views.addPart"))
-
+    categories = Category.query.all()
     # Render the addpart.html template for GET requests
     return render_template(
         "addpart.html",
         user=current_user,
         part_extensions=ALLOWED_PART_EXTENSIONS,
         image_types=ALLOWED_IMAGE_MIME,
+        categories=categories,
     )
 
 
