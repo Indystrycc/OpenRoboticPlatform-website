@@ -3,27 +3,27 @@
 //
 
 // Import variables
-@import "./variables.scss";
+@import "./variables";
 
 // Import utilities
 @import "./utilities";
 
 // Import Bootstrap
-@import "bootstrap/scss/bootstrap.scss";
+@import "bootstrap/scss/bootstrap";
 
 // Global CSS
-@import "./global.scss";
+@import "./global";
 
 // Components
 @import "./components/bg-images";
-@import "./components/buttons.scss";
+@import "./components/buttons";
 @import "./components/card-img";
-@import "./components/navbar.scss";
+@import "./components/navbar";
 @import "./components/profile-img";
 @import "./components/search-form";
 @import "./components/socials";
 
 // Sections
 @import "./sections/article";
-@import "./sections/masthead.scss";
-@import "./sections/footer.scss";
+@import "./sections/masthead";
+@import "./sections/footer";
