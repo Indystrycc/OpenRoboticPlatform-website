@@ -59,7 +59,6 @@ def create_app():
 
     # fill in the categories
     with app.app_context():
-        print("working")
         # Check if categories exist
         if models.Category.query.count() == 0:
             for category in categories_list:
