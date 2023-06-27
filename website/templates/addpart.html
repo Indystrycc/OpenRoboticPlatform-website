@@ -48,7 +48,7 @@
                                         {% if not category.parent_id %}
                                         <optgroup label="{{category.name}}">
                                         {% else %}
-                                        <option value="{{category[0]}}">{{category.name}}</option>
+                                        <option value="{{category.id}}">{{category.name}}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>
