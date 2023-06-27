@@ -107,7 +107,11 @@ def part(part_number):
     files_list = File.query.filter_by(part_id=part_number).all()
     if not part:
         abort(404)
-    category = Category.query.filter_by(id=part.category).first()
+    subcategory = Category.query.filter_by(id=part.category).first()
+    category = subcategory
+    if subcategory.parent_id != None:
+        category = Category.query.filter_by(id=subcategory.parent_id).first()
+        category = f'{category.name} - {subcategory.name}'
     return render_template(
         "part.html",
         part=part,
@@ -140,6 +144,8 @@ def addPart():
         tags = clean(request.form.get("tags"))
         image = request.files.get("image")
         files = request.files.getlist("files")
+
+        print("category: ", category)
 
         # Validate the form data (add your validation logic here)
         if not name or not description or not category:
