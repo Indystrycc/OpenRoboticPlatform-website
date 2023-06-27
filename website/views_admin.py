@@ -32,9 +32,10 @@ def panel():
     page = request.args.get("page", 1, type=int)
     per_page = 20
     parts = (
-        db.session.query(Part, User.username)
+        db.session.query(Part, User.username, Category.name)
         .join(User, User.id == Part.user_id)
-        .with_entities(Part, User.username)
+        .join(Category, Category.id == Part.category)
+        .with_entities(Part, User.username, Category.name)
         .paginate(page=page, per_page=per_page)
     )
     return render_template("adminpanel.html", user=current_user, parts=parts)
