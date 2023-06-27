@@ -22,7 +22,7 @@
                 <label for="floatingInput">User name</label>
               </div>
               <div class="d-grid">
-                <button class="btn btn-primary btn-login text-uppercase fw-bold g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" data-callback="onSubmitCaptcha" data-action="submit" data-form="signup_form">Sign up</button>
+                <button class="btn btn-primary btn-login text-uppercase fw-bold recaptcha" data-sitekey="{{ recaptcha_site_key }}" data-action="signup" data-form="signup_form">Sign up</button>
               </div>
               <hr class="my-4">
             </form>
@@ -35,6 +35,6 @@
     </div>
   </div>
 </div>
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}" async defer></script>
 <script src="{{ url_for('static', filename='js/captcha-form.js') }}" type="module" async></script>
 {% endblock %}
