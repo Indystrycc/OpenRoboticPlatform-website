@@ -10,15 +10,15 @@
             <h5 class="card-title text-center mb-5 fw-light fs-5">Sign Up</h5>
             <form method="POST" id="signup_form">
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com">
+                <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com" maxlength="100" required>
                 <label for="floatingInput">Email address</label>
               </div>
               <div class="form-floating mb-3">
-                <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password">
+                <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" minlength="8" maxlength="128" required>
                 <label for="floatingPassword">Password</label>
               </div>
               <div class="form-floating mb-3">
-                <input class="form-control" id="floatingInput" name="username" placeholder="User name">
+                <input class="form-control" id="floatingInput" name="username" placeholder="User name" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]+" required>
                 <label for="floatingInput">User name</label>
               </div>
               <div class="d-grid">
