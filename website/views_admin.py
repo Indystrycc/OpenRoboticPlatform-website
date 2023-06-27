@@ -5,7 +5,7 @@ from flask import Blueprint, Markup, abort, flash, render_template, request, url
 from flask_login import current_user, login_required
 
 from . import db
-from .models import Part, User
+from .models import Part, User, Category
 
 views_admin = Blueprint("views_admin", __name__)
 
@@ -76,4 +76,7 @@ def editPart(part_number):
         else:
             flash(f"Part {part_number} was not found!", "error")
     part = Part.query.filter_by(id=part_number).first()
-    return render_template("admineditpart.html", user=current_user, part=part)
+    categories = Category.query.all()
+    return render_template(
+        "admineditpart.html", user=current_user, part=part, categories=categories
+    )
