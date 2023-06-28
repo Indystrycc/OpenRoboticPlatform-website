@@ -1,14 +1,11 @@
 import uuid
 from concurrent.futures import ProcessPoolExecutor
 from os import getenv
-from time import sleep
 
 from flask import Flask, Response
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from MySQLdb.constants.CR import CONNECTION_ERROR
-from sqlalchemy.exc import OperationalError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
@@ -43,20 +40,8 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(views_admin, url_prefix="/admin/")
 
+    # Register models
     from . import models
-
-    with app.app_context():
-        for _ in range(5):
-            try:
-                db.create_all()
-                break
-            except OperationalError as err:
-                # db may not be running yet
-                if err.orig.args[0] == CONNECTION_ERROR:
-                    sleep(3)
-                else:
-                    raise
-        db.session.commit()
 
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
