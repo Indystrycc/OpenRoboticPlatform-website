@@ -1,18 +1,20 @@
+import uuid
 from concurrent.futures import ProcessPoolExecutor
 from os import getenv
 from time import sleep
 
 from flask import Flask, Response
 from flask_login import LoginManager
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from MySQLdb.constants.CR import CONNECTION_ERROR
 from sqlalchemy.exc import OperationalError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
-import uuid
 
 db = SQLAlchemy()
+migrate = Migrate()
 compression_process = (
     ProcessPoolExecutor(1) if getenv("FLASK_ENV") == "production" else None
 )
@@ -31,6 +33,7 @@ def create_app():
         "SQLALCHEMY_DATABASE_URI"
     ] = f'mysql://root:rootroot@{getenv("DB_HOST", "127.0.0.1")}:3306/orp_db'
     db.init_app(app)
+    migrate.init_app(app, db)
 
     from .auth import auth
     from .views import views

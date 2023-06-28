@@ -1,13 +1,13 @@
+import uuid
+
 from flask_login import UserMixin
 from sqlalchemy.sql import func
-import uuid
+
 from . import db
 
 
 class User(db.Model, UserMixin):
-    id = db.Column(
-        db.UUID(as_uuid=True), primary_key=True, unique=True, default=uuid.uuid4
-    )
+    id = db.Column(db.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(163))
     username = db.Column(db.String(20), unique=True)

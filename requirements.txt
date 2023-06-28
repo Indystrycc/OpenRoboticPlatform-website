@@ -1,6 +1,7 @@
 flask>=2.3.2
-Flask-SQLAlchemy>=3.0.3
 Flask-Login>=0.6.2
+Flask-Migrate>=4.0.4
+Flask-SQLAlchemy>=3.0.3
 bleach>=6.0.0
 requests>=2.31.0
 
