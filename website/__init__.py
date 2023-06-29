@@ -42,17 +42,6 @@ def create_app():
 
     # Register models
     from . import models
-    from .categories import categories_list
-
-    # fill in the categories
-    with app.app_context():
-        # Check if categories exist
-        if models.Category.query.count() == 0:
-            for category in categories_list:
-                new_category = models.Category(name=category[0], parent_id=category[1])
-                db.session.add(new_category)
-
-            db.session.commit()
 
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"

@@ -1,6 +1,7 @@
 import uuid
 
 from flask_login import UserMixin
+from sqlalchemy.orm import Mapped
 from sqlalchemy.sql import func
 
 from . import db
@@ -51,4 +52,10 @@ class File(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    parent_id = db.Column(db.Integer, nullable=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey("category.id"))
+    subcategories: Mapped[list["Category"]] = db.relationship(
+        "Category", back_populates="parent_cat"
+    )
+    parent_cat: Mapped["Category"] = db.relationship(
+        "Category", back_populates="subcategories", remote_side=[id]
+    )
