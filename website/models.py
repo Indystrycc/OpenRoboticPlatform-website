@@ -22,12 +22,10 @@ class User(db.Model, UserMixin):
 
 
 class Part(db.Model):
-    # instead of autoincrementing it shoud be a random 5 digit hex value
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     description = db.Column(db.String(5000))
     image = db.Column(db.String(100), unique=True)
-    # category examples: plates, wheels, other, holders & adapters for: sensors, microcontrollers & SBCs, motors, cameras
     category = db.Column(db.Integer, db.ForeignKey("category.id"))
     user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
