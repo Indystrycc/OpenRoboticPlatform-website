@@ -150,6 +150,10 @@ def addPart():
             flash("Please fill in all required fields.", "error")
             return redirect(url_for("views.addPart"))
 
+        category_check = Category.query.filter_by(id=category).first()
+        if not category_check:
+            flash("Something went wrong, please try again.", "error")
+            return redirect(url_for("views.addPart"))
         # Save the part details to the database
         part = Part(
             name=name,
