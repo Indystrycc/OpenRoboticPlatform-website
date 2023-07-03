@@ -20,6 +20,8 @@ class User(db.Model, UserMixin):
     name_instagram = db.Column(db.String(100))
     is_admin = db.Column(db.Boolean, default=False)
 
+    parts: Mapped[list["Part"]] = db.relationship("Part", back_populates="author")
+
 
 class Part(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,6 +39,7 @@ class Part(db.Model):
     tags = db.Column(db.String(200))
 
     cat = db.relationship("Category", backref=db.backref("part", lazy=True))
+    author: Mapped[User] = db.relationship("User", back_populates="parts")
 
 
 class File(db.Model):
@@ -51,6 +54,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     parent_id = db.Column(db.Integer, db.ForeignKey("category.id"))
+
     subcategories: Mapped[list["Category"]] = db.relationship(
         "Category", back_populates="parent_cat"
     )

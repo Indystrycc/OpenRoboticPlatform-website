@@ -3,9 +3,11 @@ from functools import wraps
 from bleach import clean
 from flask import Blueprint, Markup, abort, flash, render_template, request, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 
 from . import db
-from .models import Part, User, Category
+from .models import Category, Part
 
 views_admin = Blueprint("views_admin", __name__)
 
@@ -29,14 +31,13 @@ def before_request():
 
 @views_admin.route("/panel")
 def panel():
-    page = request.args.get("page", 1, type=int)
-    per_page = 20
-    parts = (
-        db.session.query(Part, User.username, Category.name)
-        .join(User, User.id == Part.user_id)
-        .join(Category, Category.id == Part.category)
-        .with_entities(Part, User.username, Category.name)
-        .paginate(page=page, per_page=per_page)
+    parts = db.paginate(
+        select(Part).options(
+            joinedload(Part.author),
+            joinedload(Part.cat),
+            joinedload(Part.cat, Category.parent_cat),
+        ),
+        per_page=20,
     )
     return render_template("adminpanel.html", user=current_user, parts=parts)
 
