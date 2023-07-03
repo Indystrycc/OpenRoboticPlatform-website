@@ -20,7 +20,7 @@ x-database: &db-base
         - db
 
 x-website: &website-base
-  build:
+  build: &website-base-build
     context: .
   container_name: website
   environment: &website-base-env
@@ -36,6 +36,7 @@ services:
   website-dev:
     <<: *website-base
     build:
+      <<: *website-base-build
       dockerfile: dev.Dockerfile
     stop_signal: SIGINT
     depends_on:
@@ -50,6 +51,7 @@ services:
   website-prod:
     <<: *website-base
     build:
+      <<: *website-base-build
       dockerfile: Dockerfile
     depends_on:
       - db-prod

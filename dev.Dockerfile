@@ -16,7 +16,7 @@ RUN \
 	rm -f /etc/apt/apt.conf.d/docker-clean; \
 	echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache; \
 	apt-get update && \
-	apt-get install -y default-libmysqlclient-dev build-essential
+	apt-get install -y default-libmysqlclient-dev build-essential pkg-config
 
 # upgrade pip
 RUN pip install --upgrade pip
