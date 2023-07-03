@@ -3,6 +3,7 @@ import os
 import uuid
 from pathlib import Path
 
+import MySQLdb.constants.ER as mysql_errors
 from bleach import clean
 from flask import (
     Blueprint,
@@ -15,11 +16,12 @@ from flask import (
     url_for,
 )
 from flask_login import current_user, login_required
+from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 
 from . import compression_process, db
 from .compression import compress_uploads
-from .models import File, Part, User, Category
+from .models import Category, File, Part, User
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
@@ -102,15 +104,15 @@ def accountsettings():
 
 @views.route("/part:<int:part_number>")
 def part(part_number):
-    part = Part.query.filter_by(id=part_number).first()
-    author = User.query.filter_by(id=part.user_id).first()
-    files_list = File.query.filter_by(part_id=part_number).all()
+    part: Part | None = Part.query.get(part_number)
     if not part:
         abort(404)
-    subcategory = Category.query.filter_by(id=part.category).first()
+    author: User | None = User.query.get(part.user_id)
+    files_list = part.files
+    subcategory: Category | None = part.cat
     category = subcategory.name
-    if subcategory.parent_id != None:
-        category = Category.query.filter_by(id=subcategory.parent_id).first()
+    if subcategory.parent_cat:
+        category = subcategory.parent_cat
         category = f"{category.name} - {subcategory.name}"
     return render_template(
         "part.html",
@@ -159,7 +161,23 @@ def addPart():
             user_id=current_user.id,
         )
         db.session.add(part)
-        db.session.flush()
+        try:
+            db.session.flush()
+        except IntegrityError as e:
+            if (
+                e.orig.args[0] == mysql_errors.NO_REFERENCED_ROW_2
+                or e.orig.args[0] == mysql_errors.NO_REFERENCED_ROW
+            ):
+                flash("Selected category does not exist.", "error")
+                db.session.rollback()
+                return redirect(url_for("views.addPart"))
+            else:
+                raise
+
+        if part.cat.parent_id is None:
+            flash("Part must be assigned to one of the subcategories.", "error")
+            db.session.rollback()
+            return redirect(url_for("views.addPart"))
 
         # Process and save the image
         if (
