@@ -49,8 +49,12 @@ RUN \
 WORKDIR /app
 ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV FLASK_APP=main
 # copy the environment from build
 COPY --from=build /app .
+
+# copy migrations
+COPY migrations migrations/
 
 # copy remaining files
 COPY prod/gunicorn.conf.py .
@@ -60,4 +64,4 @@ COPY website website/
 # copy the theme and overwrite
 COPY --from=theme /theme/dist/styles.css website/static/css/theme.css
 
-CMD [ "gunicorn" ]
+CMD [ "/bin/sh", "-c", "flask db upgrade && gunicorn" ]
