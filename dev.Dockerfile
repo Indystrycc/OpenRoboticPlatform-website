@@ -49,8 +49,12 @@ RUN \
 WORKDIR /app
 ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV FLASK_APP=main
 # copy the environment from build
 COPY --from=build /app .
+
+# copy migrations
+COPY migrations migrations/
 
 # copy remaining files
 COPY main.py .
@@ -60,4 +64,4 @@ COPY website website/
 COPY --from=theme /theme/dist/styles.css website/static/css/theme.css
 
 EXPOSE 5004
-CMD [ "flask", "--app", "main", "run", "--host=0.0.0.0", "--port=5004", "--debug" ]
+CMD [ "/bin/sh", "-c", "flask db upgrade && flask run --host=0.0.0.0 --port=5004 --debug" ]

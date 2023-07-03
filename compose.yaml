@@ -30,6 +30,7 @@ x-website: &website-base
     - website_secrets.py
   networks: &website-base-net
     dbnet:
+  restart: unless-stopped
 
 
 services:
