@@ -3,7 +3,7 @@ from functools import wraps
 from bleach import clean
 from flask import Blueprint, Markup, abort, flash, render_template, request, url_for
 from flask_login import current_user, login_required
-from sqlalchemy import select
+from sqlalchemy import exists, select
 from sqlalchemy.orm import joinedload
 
 from . import db
@@ -81,4 +81,47 @@ def editPart(part_number):
     categories = Category.query.all()
     return render_template(
         "admineditpart.html", user=current_user, part=part, categories=categories
+    )
+
+
+@views_admin.route("/categories", methods=["GET", "POST"])
+def categories():
+    if request.method == "POST":
+        category_id = request.form.get("categoryId", type=int)
+        category_name = request.form.get("categoryName")
+        parent_id = request.form.get("parentCategory", type=int)
+        if parent_id == -1:
+            parent_id = None
+
+        if category_id == -1:
+            category = Category(name=category_name, parent_id=parent_id)
+            db.session.add(category)
+        else:
+            category = db.session.get(Category, category_id)
+            has_children = db.session.scalar(
+                exists(Category.id).where(Category.parent_id == category_id).select()
+            )
+            if has_children and parent_id is not None:
+                flash(
+                    "The category is a main category with subcategories and can't be made a subcategory.",
+                    "error",
+                )
+            else:
+                category.name = category_name
+                category.parent_id = parent_id
+
+        db.session.commit()
+        # fall through to GET
+
+    categories = (
+        db.session.scalars(
+            select(Category)
+            .where(Category.parent_id == None)
+            .options(joinedload(Category.subcategories))
+        )
+        .unique()
+        .all()
+    )
+    return render_template(
+        "admin-categories.html", user=current_user, categories=categories
     )

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Admin categories{% endblock %}
+{% block navbar_add_class %}masthead-no-img{% endblock %}
+{% block header %}
+<header class="masthead masthead-no-img">
+    <div class="masthead-heading text-uppercase">Admin categories</div>
+</header>
+{% endblock %}
+
+{% block content %}
+<section class="bg-secondary-subtle">
+    <div class="container py-5 d-flex justify-content-center">
+        <div class="col-12 col-sm-10 col-lg-8">
+            <div class="accordion" id="accordionCategories">
+            {% for category in categories %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse{{ category.id }}" aria-expanded="false" aria-controls="collapse{{ category.id }}">{{ category.name }}</button>
+                    </h2>
+                    <div id="collapse{{ category.id }}" class="accordion-collapse collapse" data-bs-parent="#accordionCategories">
+                        <div class="accordion-body">
+                            <div class="mb-2">
+                                <button class="btn btn-link p-0 border-0" data-bs-toggle="modal" data-bs-target="#categoryEditModal" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">Edit category <i class="fa-regular fa-pen-to-square"></i></button><br>
+                                Subcategories:
+                            </div>
+                            <ul class="list-group list-group-flush">
+                            {% for subcategory in category.subcategories %}
+                                <ul class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ subcategory.name }}
+                                    <button class="btn btn-link p-0 border-0"  data-bs-toggle="modal" data-bs-target="#categoryEditModal" data-category-id="{{ subcategory.id }}" data-category-name="{{ subcategory.name }}" data-parent-id="{{ category.id }}">Edit <i class="fa-regular fa-pen-to-square"></i></button>
+                                </ul>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#categoryEditModal" data-category-id="-1"><i class="fa-solid fa-circle-plus"></i> New category</button>
+        </div>
+    </div>
+</section>
+<div class="modal fade" id="categoryEditModal" tabindex="-1" aria-labelledby="categoryEditLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="categoryEditLabel">New category</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryModalForm" method="post">
+                    <div class="mb-3">
+                        <label for="categoryName" class="col-form-label">Category name:</label>
+                        <input type="text" class="form-control" id="categoryName" name="categoryName" minlength="1" maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentCategory" class="col-form-label">Parent category:</label>
+                        <select class="form-select" id="parentCategory" name="parentCategory">
+                            <option value="-1">None (main category)</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <input type="text" class="d-none" id="categoryId" name="categoryId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="categoryModalForm" class="btn btn-primary">Create category</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="module" src="{{ url_for('static', filename='js/admin-categories.js') }}" async></script>
+{% endblock %}
