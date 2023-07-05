@@ -13,10 +13,10 @@ window.addEventListener("DOMContentLoaded", () => {
         /** @type {HTMLSelectElement} */
         const select = catSelect;
 
-        for (const opt of select.querySelectorAll("[data-prefixed=true]")) {
+        for (const opt of select.querySelectorAll("[data-prefixed=\"true\"]")) {
             if (opt instanceof HTMLOptionElement) {
                 const prefix = getPrefix(opt);
-                if (opt.label.startsWith(prefix)) opt.label = opt.label.substring(prefix.length);
+                if (opt.textContent.startsWith(prefix)) opt.textContent = opt.textContent.substring(prefix.length);
                 opt.removeAttribute("data-prefixed");
             }
         }
@@ -24,7 +24,7 @@ window.addEventListener("DOMContentLoaded", () => {
         for (const opt of select.selectedOptions) {
             if (opt.dataset.prefixed === "true") continue;
             const prefix = getPrefix(opt);
-            opt.label = prefix + opt.label;
+            opt.textContent = prefix + opt.textContent;
             opt.dataset.prefixed = "true";
         }
     }
