@@ -9,7 +9,7 @@ function displayPreview(event) {
         const fileItem = document.createElement("div");
 
         const fileIcon = document.createElement("i");
-        fileIcon.classList.add("fas", "fa-file", "me-2");
+        fileIcon.classList.add("fa-solid", "fa-file", "me-2");
 
         const fileName = document.createElement("span");
         fileName.textContent = file.name;
