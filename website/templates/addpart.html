@@ -45,11 +45,11 @@
                                 <label for="category" class="form-label">Category</label>
                                 <select class="form-select" id="category" name="category" required>
                                     {% for category in categories %}
-                                        {% if not category.parent_id %}
                                         <optgroup label="{{category.name}}">
-                                        {% else %}
-                                        <option value="{{category.id}}">{{category.name}}</option>
-                                        {% endif %}
+                                            {% for subcategory in category.subcategories %}
+                                            <option value="{{subcategory.id}}">{{subcategory.name}}</option>
+                                            {% endfor %}
+                                        </optgroup>
                                     {% endfor %}
                                 </select>
                             </div>

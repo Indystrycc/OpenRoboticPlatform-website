@@ -16,7 +16,9 @@ from flask import (
     url_for,
 )
 from flask_login import current_user, login_required
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 
 from . import compression_process, db
@@ -206,7 +208,15 @@ def addPart():
 
         flash("Part added successfully!", "success")
         return redirect(url_for("views.addPart"))
-    categories = Category.query.all()
+    categories = (
+        db.session.scalars(
+            select(Category)
+            .where(Category.parent_id == None)
+            .options(joinedload(Category.subcategories))
+        )
+        .unique()
+        .all()
+    )
     # Render the addpart.html template for GET requests
     return render_template(
         "addpart.html",

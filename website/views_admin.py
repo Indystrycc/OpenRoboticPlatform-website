@@ -78,7 +78,15 @@ def editPart(part_number):
         else:
             flash(f"Part {part_number} was not found!", "error")
     part = Part.query.filter_by(id=part_number).first()
-    categories = Category.query.all()
+    categories = (
+        db.session.scalars(
+            select(Category)
+            .where(Category.parent_id == None)
+            .options(joinedload(Category.subcategories))
+        )
+        .unique()
+        .all()
+    )
     return render_template(
         "admineditpart.html", user=current_user, part=part, categories=categories
     )

@@ -64,11 +64,11 @@
                                 <label for="category" class="form-label">Category</label>
                                 <select class="form-select" id="category" name="category" required>
                                     {% for category in categories %}
-                                        {% if not category.parent_id %}
                                         <optgroup label="{{category.name}}">
-                                        {% else %}
-                                        <option value="{{category.id}}" {% if category.id == part.category %}selected{% endif %}>{{category.name}}</option>
-                                        {% endif %}
+                                            {% for subcategory in category.subcategories %}
+                                            <option value="{{subcategory.id}}" {% if subcategory.id == part.category %}selected{% endif %}>{{subcategory.name}}</option>
+                                            {% endfor %}
+                                        </optgroup>
                                     {% endfor %}
                                 </select>
                             </div>
