@@ -137,7 +137,7 @@ def showcase():
 @views.route("/addpart", methods=["GET", "POST"])
 @login_required
 def addPart():
-    ALLOWED_PART_EXTENSIONS = [".3mf", ".stl", ".step"]
+    ALLOWED_PART_EXTENSIONS = [".3mf", ".stl", ".step", ".dxf"]
     if request.method == "POST":
         # Retrieve the form data
         name = clean(request.form.get("name"))
