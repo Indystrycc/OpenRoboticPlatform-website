@@ -26,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for part, username in parts %}
+        {% for part in parts %}
         <tr>
             <td name="image">
               <div class="card-img-container">
@@ -35,8 +35,8 @@
             </td>
             <td name="id">{{ part.id }}</td>
             <td name="name"><a href="{{ url_for('views.part', part_number=part.id) }}">{{ part.name }}</a></td>
-            <td>{{ part.category }}</td>
-            <td>{{ username }}</td>
+            <td>{% if part.cat.parent_cat %}{{ part.cat.parent_cat.name }} - {% endif %}{{ part.cat.name }}</td>
+            <td>{{ part.author.username }}</td>
             <td>{{ part.views }}</td>
             <td>
               <input class="form-check-input" type="radio" {% if part.verified %}checked{% endif %} disabled>
