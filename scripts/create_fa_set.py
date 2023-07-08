@@ -7,7 +7,15 @@ import requests
 
 FA_VERSION = "6.4.0"
 BRAND_ICONS = ["github", "youtube", "instagram"]
-SOLID_ICONS = ["file", "globe", "bars", "search", "question-circle"]
+SOLID_ICONS = [
+    "file",
+    "globe",
+    "bars",
+    "search",
+    "question-circle",
+    "circle-plus",
+    "pen-to-square",
+]
 
 TARGET_DIR = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "../website/static/js/fa"
@@ -61,9 +69,15 @@ if __name__ == "__main__":
 
     print("Writing results")
     Path(TARGET_DIR).mkdir(parents=True, exist_ok=True)
-    with open(os.path.join(TARGET_DIR, "brands.min.js"), "wt") as brands_file:
+    with open(
+        os.path.join(TARGET_DIR, "brands.min.js"), "wt", newline="\n"
+    ) as brands_file:
         brands_file.write(brands)
-    with open(os.path.join(TARGET_DIR, "solid.min.js"), "wt") as solid_file:
+    with open(
+        os.path.join(TARGET_DIR, "solid.min.js"), "wt", newline="\n"
+    ) as solid_file:
         solid_file.write(solid)
-    with open(os.path.join(TARGET_DIR, "fontawesome.min.js"), "wt") as fa_file:
+    with open(
+        os.path.join(TARGET_DIR, "fontawesome.min.js"), "wt", newline="\n"
+    ) as fa_file:
         fa_file.write(script)

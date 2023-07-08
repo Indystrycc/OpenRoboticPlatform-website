@@ -20,14 +20,14 @@
                     <div id="collapse{{ category.id }}" class="accordion-collapse collapse" data-bs-parent="#accordionCategories">
                         <div class="accordion-body">
                             <div class="mb-2">
-                                <button class="btn btn-link p-0 border-0" data-bs-toggle="modal" data-bs-target="#categoryEditModal" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">Edit category <i class="fa-regular fa-pen-to-square"></i></button><br>
+                                <button class="btn btn-link p-0 border-0" data-bs-toggle="modal" data-bs-target="#categoryEditModal" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">Edit category <i class="fa-solid fa-pen-to-square"></i></button><br>
                                 Subcategories:
                             </div>
                             <ul class="list-group list-group-flush">
                             {% for subcategory in category.subcategories %}
                                 <ul class="list-group-item d-flex justify-content-between align-items-center">
                                     {{ subcategory.name }}
-                                    <button class="btn btn-link p-0 border-0"  data-bs-toggle="modal" data-bs-target="#categoryEditModal" data-category-id="{{ subcategory.id }}" data-category-name="{{ subcategory.name }}" data-parent-id="{{ category.id }}">Edit <i class="fa-regular fa-pen-to-square"></i></button>
+                                    <button class="btn btn-link p-0 border-0"  data-bs-toggle="modal" data-bs-target="#categoryEditModal" data-category-id="{{ subcategory.id }}" data-category-name="{{ subcategory.name }}" data-parent-id="{{ category.id }}">Edit <i class="fa-solid fa-pen-to-square"></i></button>
                                 </ul>
                             {% endfor %}
                             </ul>
