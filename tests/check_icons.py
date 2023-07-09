@@ -205,18 +205,33 @@ def find_all_icons() -> tuple[list[str], Icons]:
 def check_in_create_script(icons: Icons):
     errors: list[str] = []
     not_found_icons: Icons = {"brands": set(), "regular": set(), "solid": set()}
+    found_icons: Icons = {"brands": set(), "regular": set(), "solid": set()}
     for icon in icons["brands"]:
         if icon not in BRAND_ICONS:
             errors.append(f'Brand icon "{icon}" is not listed in BRAND_ICONS')
             not_found_icons["brands"].add(icon)
+        else:
+            found_icons["brands"].add(icon)
     for icon in icons["solid"]:
         if icon not in SOLID_ICONS:
             errors.append(f'Solid icon "{icon}" is not listed in SOLID_ICONS')
             not_found_icons["solid"].add(icon)
-    if len(icons["regular"]):
-        errors.append("Found regular icons, which are not supported")
+        else:
+            found_icons["solid"].add(icon)
 
-    return errors, not_found_icons
+    unnecessary_brands_icons = set(BRAND_ICONS).difference(found_icons["brands"])
+    unnecessary_solid_icons = set(SOLID_ICONS).difference(found_icons["solid"])
+    unnecessary_icons: Icons = {
+        "brands": unnecessary_brands_icons,
+        "regular": set(),
+        "solid": unnecessary_solid_icons,
+    }
+    for icon in unnecessary_brands_icons:
+        errors.append(f'Unused brand icon "{icon}" found in BRAND_ICONS')
+    for icon in unnecessary_solid_icons:
+        errors.append(f'Unused solid icon "{icon}" found in SOLID_ICONS')
+
+    return errors, not_found_icons, unnecessary_icons
 
 
 def all_names_from_js(script: str):
@@ -249,7 +264,7 @@ def check_minimized_fa_scripts(icons: Icons):
         for icon in icons["solid"]:
             if icon not in solid:
                 errors.append(
-                    f'Solid icon "{icon}" is not listed in the FontAwesome brands.min.js file. Make sure that it\'s in SOLID_ICONS and run create_fa_set.py'
+                    f'Solid icon "{icon}" is not listed in the FontAwesome solid.min.js file. Make sure that it\'s in SOLID_ICONS and run create_fa_set.py'
                 )
                 not_found_icons["solid"].add(icon)
 
@@ -258,26 +273,33 @@ def check_minimized_fa_scripts(icons: Icons):
 
 def test_icons():
     errors, icons = find_all_icons()
-    e, nf_py_script = check_in_create_script(icons)
+    e, nf_py_script, nu_py_script = check_in_create_script(icons)
     errors.extend(e)
     e, nf_js_min = check_minimized_fa_scripts(icons)
     errors.extend(e)
-    return errors, nf_py_script, nf_js_min
+    return errors, nf_py_script, nf_js_min, nu_py_script
 
 
 if __name__ == "__main__":
-    errors, nf_py_script, nf_js_min = test_icons()
+    errors, nf_py_script, nf_js_min, nu_py_script = test_icons()
     for error in errors:
         print(error, file=sys.stderr)
 
     missing_script = len(nf_py_script["brands"]) + len(nf_py_script["solid"])
     missing_generated = len(nf_js_min["brands"]) + len(nf_js_min["solid"])
+    unnecessary_script = len(nu_py_script["brands"]) + len(nu_py_script["solid"])
 
+    if unnecessary_script:
+        print(
+            "Remove unused icons from scripts/create_fa_set.py and run it to regenerate minimized icon sets",
+            file=sys.stderr,
+        )
     if missing_script:
         print(
             "Add the missing icons to scripts/create_fa_set.py and run it to generate minimized icon sets",
             file=sys.stderr,
         )
+    if unnecessary_script or missing_script:
         exit(1)
     if missing_generated:
         print(
@@ -285,5 +307,10 @@ if __name__ == "__main__":
             file=sys.stderr,
         )
         exit(2)
+
+    # Other errors were generated (regular icons or invalid syntax)
+    if len(errors):
+        exit(3)
+
     print("Success!")
     exit(0)
