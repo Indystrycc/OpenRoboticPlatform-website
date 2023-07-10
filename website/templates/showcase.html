@@ -20,19 +20,36 @@
                         <p>
                             Below you can find al the cool projects built with ORP parts! Showcase is a place where you can get inspired by other projects but also see how powerful are the simple design rules used to create Open Robotic Platform. If you want your projects to be featured right here, let us know by email: nikodem@indystry.cc
                         </p>
+                        <section>
+                            <h3>Mini Mars Rover</h3>
+                            <p>
+                                Project built to experiment with the new Pi Pico W board and omni wheels. Created as an easy-to-build educational platform with the potential to be used in schools to teach robotics. It features an FPV camera, a robot arm, omni-directional driving capabilities, and plenty of mounting options thanks to ORP-based plates.
+                            </p>
+                            <a href="https://www.youtube.com/watch?v=OB4AxmelKik" target="_blank">
+                            <picture>
+                                <source srcset="{{ url_for('static', filename='assets/img/opt/robot1.avif') }}" type="image/avif">
+                                <source srcset="{{ url_for('static', filename='assets/img/opt/robot1.webp') }}" type="image/webp">
+                                <source srcset="{{ url_for('static', filename='assets/img/opt/robot1.jxl') }}" type="image/jxl">
+                                <img src="{{ url_for('static', filename='assets/img/robot1.JPG') }}" alt="Image 1" class="img-fluid my-4">
+                            </picture>
+                            </a>
+                        </section>
 
                         <section>
                             <h3>LIDAR robot with Arduino and ORP</h3>
                             <p>
-                                The robot was created to check if it is possible to use a LIDAR with an Arduino. ORP plates and mounts made it easy to design custom holders for each element and later reuse them for different projects.
+                                The robot was created to test the feasibility of using a LIDAR with an Arduino. ORP plates and mounts facilitated the design of custom holders for each component, which could be later repurposed for different projects. This initial iteration of the ORP system validated the concept and aided in the development of the system.
                             </p>
+                            <a href="https://www.youtube.com/watch?v=xSrjtJ2AZqw&t=17s" target="_blank">
                             <picture>
                                 <source srcset="{{ url_for('static', filename='assets/img/opt/robot2.avif') }}" type="image/avif">
                                 <source srcset="{{ url_for('static', filename='assets/img/opt/robot2.webp') }}" type="image/webp">
                                 <source srcset="{{ url_for('static', filename='assets/img/opt/robot2.jxl') }}" type="image/jxl">
-                                <img src="{{ url_for('static', filename='assets/img/robot2.JPG') }}" alt="Image 1" class="img-fluid my-4">
+                                <img src="{{ url_for('static', filename='assets/img/robot2.JPG') }}" alt="Image 2" class="img-fluid my-4">
                             </picture>
+                            </a>
                         </section>
+                        
                     </section>
                 </article>
             </div>
