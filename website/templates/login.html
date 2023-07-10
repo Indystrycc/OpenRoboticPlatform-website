@@ -8,14 +8,14 @@
         <div class="card border-0 shadow rounded-3 my-5">
           <div class="card-body p-4 p-sm-5">
             <h5 class="card-title text-center mb-5 fw-light fs-5">Log in</h5>
-            <form method="POST" onsubmit="return validateForm()">
+            <form method="POST">
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com">
+                <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com" maxlength="100" required>
                 <label for="emailInput">Email address</label>
                 <div class="invalid-feedback" id="emailError">Please enter a valid email address.</div>
               </div>
               <div class="form-floating mb-3">
-                <input type="password" class="form-control" id="passwordInput" name="password" placeholder="Password">
+                <input type="password" class="form-control" id="passwordInput" name="password" placeholder="Password" minlength="8" maxlength="128" required>
                 <label for="passwordInput">Password</label>
                 <div class="invalid-feedback" id="passwordError">Please enter a password.</div>
               </div>
@@ -39,40 +39,4 @@
     </div>
   </div>
 </div>
-
-<script>
-  function validateForm() {
-    let emailInput = document.getElementById('emailInput');
-    let passwordInput = document.getElementById('passwordInput');
-    let emailError = document.getElementById('emailError');
-    let passwordError = document.getElementById('passwordError');
-
-    let valid = true;
-
-    if (!emailInput.value.match(/^\S+@\S+\.\S+$/)) {
-      emailInput.classList.add('is-invalid');
-      emailError.style.display = 'block';
-      valid = false;
-    } else {
-      emailInput.classList.remove('is-invalid');
-      emailError.style.display = 'none';
-    }
-
-    if (!passwordInput.value) {
-      passwordInput.classList.add('is-invalid');
-      passwordError.style.display = 'block';
-      valid = false;
-    } else {
-      passwordInput.classList.remove('is-invalid');
-      passwordError.style.display = 'none';
-    }
-
-    return valid;
-  }
-</script>
 {% endblock %}
-
-{% block content %}
-
-
-{%endblock%}

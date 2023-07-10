@@ -18,16 +18,16 @@
                         <form method="POST" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
-                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" required onchange="displayImage(event)">
+                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" required>
                                 <div id="image-preview"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="files" class="form-label">Files</label>
                                 <input type="file" class="form-control" name="files" id="file-upload" accept="{{ part_extensions|join(', ') }}" multiple required>
                                 <div id="file-preview" class="mt-2">
-                                    <div class="file-preview-item">
-                                        <div class="file-preview-icon"><i class="fas fa-file"></i></div>
-                                        <div class="file-preview-name">No file selected</div>
+                                    <div>
+                                        <i class="fa-solid fa-file me-2"></i>
+                                        <span>No file selected</span>
                                     </div>
                                 </div>
                             </div>
@@ -44,14 +44,13 @@
                             <div class="mb-3">
                                 <label for="category" class="form-label">Category</label>
                                 <select class="form-select" id="category" name="category" required>
-                                    <option value="">Select a category</option>
-                                    <option value="1">Plates</option>
-                                    <option value="2">Wheels</option>
-                                    <option value="3">Other</option>
-                                    <option value="4">Holders & Adapters for: Sensors</option>
-                                    <option value="5">Holders & Adapters for: Microcontrollers & SBCs</option>
-                                    <option value="6">Holders & Adapters for: Motors</option>
-                                    <option value="7">Holders & Adapters for: Cameras</option>
+                                    {% for category in categories %}
+                                        <optgroup label="{{category.name}}">
+                                            {% for subcategory in category.subcategories %}
+                                            <option value="{{subcategory.id}}">{{subcategory.name}}</option>
+                                            {% endfor %}
+                                        </optgroup>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -72,72 +71,7 @@
     </div>
 </section>
 
-<script>
-    // Image preview functionality
-    function displayImage(event) {
-        const imagePreview = document.getElementById('image-preview');
-        const file = event.target.files[0];
-
-        if (file) {
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                const imageElement = document.createElement('img');
-                imageElement.src = e.target.result;
-                imageElement.className = 'uploaded-image';
-                imageElement.style.maxWidth = '200px';
-                imageElement.style.height = 'auto';
-                imageElement.style.border = '1px solid #ddd';
-                imageElement.style.borderRadius = '5px';
-                imageElement.style.marginTop = '10px';
-
-                // Replace existing image if present
-                while (imagePreview.firstChild) {
-                    imagePreview.firstChild.remove();
-                }
-
-                imagePreview.appendChild(imageElement);
-            }
-
-            reader.readAsDataURL(file);
-        }
-    }
-
-    // File preview functionality
-    const fileInput = document.getElementById('file-upload');
-    const filePreview = document.getElementById('file-preview');
-
-    fileInput.addEventListener('change', handleFilePreview);
-
-    function handleFilePreview() {
-        filePreview.innerHTML = '';
-
-        const files = Array.from(fileInput.files).slice(0, 10);
-
-        for (const file of files) {
-            const fileItem = document.createElement('div');
-            fileItem.classList.add('file-preview-item');
-
-            const fileIcon = document.createElement('div');
-            fileIcon.classList.add('file-preview-icon');
-            fileIcon.innerHTML = '<i class="fas fa-file"></i>';
-
-            const fileName = document.createElement('div');
-            fileName.classList.add('file-preview-name');
-            fileName.textContent = file.name;
-
-            fileItem.appendChild(fileIcon);
-            fileItem.appendChild(fileName);
-            filePreview.appendChild(fileItem);
-        }
-
-        if (files.length === 0) {
-            const noFileItem = document.createElement('div');
-            noFileItem.classList.add('file-preview-item');
-            noFileItem.innerHTML = '<div class="file-preview-icon"><i class="fas fa-file"></i></div><div class="file-preview-name">No file selected</div>';
-
-            filePreview.appendChild(noFileItem);
-        }
-    }
-</script>
+<script src="{{ url_for('static', filename='js/parent-in-select.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/file-preview.js') }}" type="module"></script>
 {% endblock %}
