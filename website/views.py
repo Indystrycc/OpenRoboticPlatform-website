@@ -32,7 +32,7 @@ views = Blueprint("views", __name__)
 @views.route("/")
 def home():
     parts = (
-        Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(5).all()
+        Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(10).all()
     )
     return render_template("home.html", user=current_user, parts=parts)
 
@@ -51,7 +51,7 @@ def library():
             | Part.tags.icontains(search_query, autoescape=True)
         ).filter_by(rejected=False)
     else:
-        parts = Part.query.filter_by(rejected=False)
+        parts = Part.query.filter_by(rejected=False).order_by(Part.date.desc())
 
     parts = parts.paginate(page=page, per_page=per_page)
     return render_template("library.html", user=current_user, parts=parts)
