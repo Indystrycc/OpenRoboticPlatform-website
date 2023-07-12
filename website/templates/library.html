@@ -40,6 +40,19 @@
 {% block content %}
 <section class="mt-5">
     <div class="container">
+        <div class="mb-4">
+            Sort by:
+            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="sort_dateup" id="sort_dateup" autocomplete="off">
+                <label class="btn btn-outline-primary" for="sort_dateup">Date &uarr;</label>
+              
+                <input type="radio" class="btn-check" name="sort_datedown" id="sort_datedown" autocomplete="off">
+                <label class="btn btn-outline-primary" for="sort_datedown">Date &darr;</label>
+              
+                <input type="radio" class="btn-check" name="sort_popularity" id="sort_popularity" autocomplete="off">
+                <label class="btn btn-outline-primary" for="sort_popularity">Popularity</label>
+              </div>
+        </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for part in parts.items %}
             <div class="col">
