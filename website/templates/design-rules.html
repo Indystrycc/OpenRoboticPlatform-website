@@ -20,11 +20,11 @@
                         <p>
                             The ORP project aims to develop a user-friendly library of robotics parts. These parts adhere strictly to design guidelines and prioritize simplicity and minimalism. The project considers three different manufacturing methods for designing these parts:
                         </p> 
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><b>3D printing</b> - This is the most popular and easiest solution available today. Simple plastic FDM (Fused Deposition Modeling) parts are generally strong enough for both hobbyist and research robotic projects.</li>
-                                <li class="list-group-item"><b>Laser cutting</b> - Laser cutting allows for the use of materials beyond plastic, such as plywood and metals. The manufacturing process is quicker, enabling higher-scale production.</li>
-                                <li class="list-group-item"><b>CNC machining</b> - CNC machining serves as an alternative to laser cutting. However, it is not recommended to use complex geometries.</li>
-                            </ul>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><b>3D printing</b> - This is the most popular and easiest solution available today. Simple plastic FDM (Fused Deposition Modeling) parts are generally strong enough for both hobbyist and research robotic projects.</li>
+                            <li class="list-group-item"><b>Laser cutting</b> - Laser cutting allows for the use of materials beyond plastic, such as plywood and metals. The manufacturing process is quicker, enabling higher-scale production.</li>
+                            <li class="list-group-item"><b>CNC machining</b> - CNC machining serves as an alternative to laser cutting. However, it is not recommended to use complex geometries.</li>
+                        </ul>
                         <p>
                             Please note that these rules for different part categories are currently a "work in progress" at this early stage of the project. They may be subject to change in the future based on user feedback. If you would like to provide feedback and contribute to the project, please fill out this form.
                         </p>
@@ -34,28 +34,28 @@
                         <p>
                             The foundation of each ORP chassis and the entire project is the hole pattern. This pattern is a crucial aspect of the design. For every plate, there is a hole starting from the center, and holes are spread out across the entire plate at 20mm intervals in X and Y. Hole diameter must be exactly 3.5 mm. The plates are categorized as follows:
                         </p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><b>Rectangular</b> - These plates can be rectangular, square, or trapezoidal in shape.</li>
-                                <li class="list-group-item"><b>Circular</b> - This category includes plates that are perfect circles.</li>
-                                <li class="list-group-item"><b>Oval</b> - Any oval-shaped plate that is not a circle falls into this category.</li>
-                                <li class="list-group-item"><b>Special</b> - Plates in this category are designed for specific use cases or have specialized cutouts to accommodate specific requirements.</li>
-                                <li class="list-group-item"><b>Weird</b> - This category encompasses plates that do not fit into the aforementioned categories.</li>
-                            </ul>
-                            <picture>
-                                <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_1.avif') }}" type="image/avif">
-                                <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_1.webp') }}" type="image/webp">
-                                <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_1.jxl') }}" type="image/jxl">
-                                <img src="{{ url_for('static', filename='assets/img/opt/design_rules_1.png') }}" alt="Technical drawing of the ORP hole system" class="img-fluid my-4" loading="lazy">
-                            </picture>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><b>Rectangular</b> - These plates can be rectangular, square, or trapezoidal in shape.</li>
+                            <li class="list-group-item"><b>Circular</b> - This category includes plates that are perfect circles.</li>
+                            <li class="list-group-item"><b>Oval</b> - Any oval-shaped plate that is not a circle falls into this category.</li>
+                            <li class="list-group-item"><b>Special</b> - Plates in this category are designed for specific use cases or have specialized cutouts to accommodate specific requirements.</li>
+                            <li class="list-group-item"><b>Weird</b> - This category encompasses plates that do not fit into the aforementioned categories.</li>
+                        </ul>
+                        <picture>
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_1.avif') }}" type="image/avif">
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_1.webp') }}" type="image/webp">
+                            <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_1.jxl') }}" type="image/jxl">
+                            <img src="{{ url_for('static', filename='assets/img/opt/design_rules_1.png') }}" alt="Technical drawing of the ORP hole system" class="img-fluid my-4" loading="lazy">
+                        </picture>
                         <p>
                         It is highly recommended to share the parts in both DXF and 3MF formats. The DXF format is particularly useful for compatibility with laser cutters and CNC machines. Importing the DXF file into a CAD environment also facilitates adjustments and modifications for 3D printing. Additionally, including a 3MF file with each part submission ensures easy printing.
                         </p>
-                            <ol class="list-group list-group-flush">
-                                <li class="list-group-item"><b>Thickness</b> - While there are no specific rules regarding plate thickness, it is important to consider the rigidity of the plate. The thickness should be chosen appropriately to ensure the desired strength and stability.</li>
-                                <li class="list-group-item"><b>Material</b> - All plates should be designed in a way that allows for the use of various manufacturing methods and materials. For special use case parts, it is recommended to mention the minimal thickness and the specific material required.</li>
-                                <li class="list-group-item"><b>Hole diameter</b> - All holes on the plate should have a diameter of 3.5mm. This diameter allows for successful use with any manufacturing method and enables the use of popular 1/8 inch milling bits for CNC machining. M3 screws easily fit into these holes, and if necessary, some of the holes can later be drilled to a larger diameter (such as 5mm or more) to accommodate larger screws for mounting purposes.</li>
-                                <li class="list-group-item"><b>Wheel cutouts</b> - Most plates will likely include wheel cutouts. While there are no strict rules regarding their design, it is important to <b>include the design file of a plate without cutouts as well.</b></li>
-                            </ol>
+                        <ol class="list-group list-group-flush">
+                            <li class="list-group-item"><b>Thickness</b> - While there are no specific rules regarding plate thickness, it is important to consider the rigidity of the plate. The thickness should be chosen appropriately to ensure the desired strength and stability.</li>
+                            <li class="list-group-item"><b>Material</b> - All plates should be designed in a way that allows for the use of various manufacturing methods and materials. For special use case parts, it is recommended to mention the minimal thickness and the specific material required.</li>
+                            <li class="list-group-item"><b>Hole diameter</b> - All holes on the plate should have a diameter of 3.5mm. This diameter allows for successful use with any manufacturing method and enables the use of popular 1/8 inch milling bits for CNC machining. M3 screws easily fit into these holes, and if necessary, some of the holes can later be drilled to a larger diameter (such as 5mm or more) to accommodate larger screws for mounting purposes.</li>
+                            <li class="list-group-item"><b>Wheel cutouts</b> - Most plates will likely include wheel cutouts. While there are no strict rules regarding their design, it is important to <b>include the design file of a plate without cutouts as well.</b></li>
+                        </ol>
                         <picture>
                             <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_2.avif') }}" type="image/avif">
                             <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_2.webp') }}" type="image/webp">
@@ -74,15 +74,15 @@
                         <p>
                             The following categories are defined for holders within the ORP project:
                         </p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><b>Motors</b> - Holders for any type of motor used in a robot, including actuators and servos</li>
-                                <li class="list-group-item"><b>Sensors</b> - Designed for any type of sensor, PCB, module, or circuit used in robotics projects.</li>
-                                <li class="list-group-item"><b>Microcontrollers and SBCs</b> - Intended for microcontrollers and Single Board Computers (SBCs) such as Arduino, Raspberry Pi, Jetson Nano, etc.</li>
-                                <li class="list-group-item"><b>Cameras</b> - Any type of camera.</li>
-                                <li class="list-group-item"><b>Batteries</b> - Including power banks, LiPo batteries, gel batteries any others.</li>
-                                <li class="list-group-item"><b>Special</b> - Specialized holders for unpopular or custom parts.</li>
-                                <li class="list-group-item"><b>Other</b> - If it doesn't fit above it fits here.</li>
-                            </ul>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><b>Motors</b> - Holders for any type of motor used in a robot, including actuators and servos</li>
+                            <li class="list-group-item"><b>Sensors</b> - Designed for any type of sensor, PCB, module, or circuit used in robotics projects.</li>
+                            <li class="list-group-item"><b>Microcontrollers and SBCs</b> - Intended for microcontrollers and Single Board Computers (SBCs) such as Arduino, Raspberry Pi, Jetson Nano, etc.</li>
+                            <li class="list-group-item"><b>Cameras</b> - Any type of camera.</li>
+                            <li class="list-group-item"><b>Batteries</b> - Including power banks, LiPo batteries, gel batteries any others.</li>
+                            <li class="list-group-item"><b>Special</b> - Specialized holders for unpopular or custom parts.</li>
+                            <li class="list-group-item"><b>Other</b> - If it doesn't fit above it fits here.</li>
+                        </ul>
 
                         <picture>
                             <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_7.avif') }}" type="image/avif">
@@ -97,13 +97,13 @@
                         <p>
                             Wheels within the ORP system are considered the least constrained parts, allowing for a wide range of options for robot actuation. A wheel can be any component that enables the robot's movement. The ORP project distinguishes the following types of wheels:
                         </p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><b>Smooth</b> - These wheels have a smooth surface without any specific tread pattern. They are suitable for applications where traction is not a primary concern.</li>
-                                <li class="list-group-item"><b>Normal</b> - Wheels in this category feature a standard tread design that provides increased traction. They are versatile and can be used in various robotic applications.</li>
-                                <li class="list-group-item"><b>Terrain</b> - These wheels are specifically designed for outdoor use, providing enhanced performance on uneven or rough surfaces.</li>
-                                <li class="list-group-item"><b>Spikes</b> - Wheels in this category are equipped with spikes or specialized tread patterns for extra grip on challenging terrains or for use on icy surfaces.</li>
-                                <li class="list-group-item"><b>Special</b> - This category includes any wheel with a unique design or intended for specific use cases not mentioned in the above categories.</li>
-                            </ul>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><b>Smooth</b> - These wheels have a smooth surface without any specific tread pattern. They are suitable for applications where traction is not a primary concern.</li>
+                            <li class="list-group-item"><b>Normal</b> - Wheels in this category feature a standard tread design that provides increased traction. They are versatile and can be used in various robotic applications.</li>
+                            <li class="list-group-item"><b>Terrain</b> - These wheels are specifically designed for outdoor use, providing enhanced performance on uneven or rough surfaces.</li>
+                            <li class="list-group-item"><b>Spikes</b> - Wheels in this category are equipped with spikes or specialized tread patterns for extra grip on challenging terrains or for use on icy surfaces.</li>
+                            <li class="list-group-item"><b>Special</b> - This category includes any wheel with a unique design or intended for specific use cases not mentioned in the above categories.</li>
+                        </ul>
 
                         <picture>
                             <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_4.avif') }}" type="image/avif">
@@ -118,11 +118,11 @@
                         <p>
                             Connection rods are utilized to stack plates on top of each other, expanding the available mounting space and facilitating the creation of multi-floor robots. The ORP project defines the following categories for connection rods:
                         </p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><b>One hole</b> - This type of connection rod attaches to a single hole on the plate. It provides a basic connection point for stacking plates.</li>
-                                <li class="list-group-item"><b>Multi holes</b> - Connection rods in this category attach to multiple holes on the plates, offering enhanced stability and support when stacking multiple plates together.</li>
-                                <li class="list-group-item"><b>Special</b> - This category encompasses non-standard connection rods that have unique designs or features tailored for specific use cases.</li>
-                            </ul>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><b>One hole</b> - This type of connection rod attaches to a single hole on the plate. It provides a basic connection point for stacking plates.</li>
+                            <li class="list-group-item"><b>Multi holes</b> - Connection rods in this category attach to multiple holes on the plates, offering enhanced stability and support when stacking multiple plates together.</li>
+                            <li class="list-group-item"><b>Special</b> - This category encompasses non-standard connection rods that have unique designs or features tailored for specific use cases.</li>
+                        </ul>
 
                         <picture>
                             <source srcset="{{ url_for('static', filename='assets/img/opt/design_rules_5.avif') }}" type="image/avif">
@@ -157,5 +157,3 @@
     </div>
 </section>
 {% endblock %}
-
-<!-- ... -->
