@@ -41,18 +41,20 @@
 <section class="mt-5">
     <div class="container">
         <div class="mb-4">
+        <div class="dropdown">
             Sort by:
-            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                <input type="radio" class="btn-check" name="sort_dateup" id="sort_dateup" autocomplete="off">
-                <label class="btn btn-outline-primary" for="sort_dateup">Date &uarr;</label>
+            <div class="btn-group" role="group" aria-label="Sort parts by">
+                <input type="radio" class="btn-check" name="btnradio" id="sort_date_up" autocomplete="off" checked>
+                <label class="btn btn-outline-primary" for="sort_date_up">Date &uarr;</label>
               
-                <input type="radio" class="btn-check" name="sort_datedown" id="sort_datedown" autocomplete="off">
-                <label class="btn btn-outline-primary" for="sort_datedown">Date &darr;</label>
+                <input type="radio" class="btn-check" name="btnradio" id="sort_date_down" autocomplete="off">
+                <label class="btn btn-outline-primary" for="sort_date_down">Date &darr;</label>
               
-                <input type="radio" class="btn-check" name="sort_popularity" id="sort_popularity" autocomplete="off">
-                <label class="btn btn-outline-primary" for="sort_popularity">Popularity</label>
+                <input type="radio" class="btn-check" name="btnradio" id="sort_date_popularity" autocomplete="off">
+                <label class="btn btn-outline-primary" for="sort_date_popularity">Popularity</label>
               </div>
-        </div>
+    </div>
+    </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for part in parts.items %}
             <div class="col">
