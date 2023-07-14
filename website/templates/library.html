@@ -41,20 +41,13 @@
 <section class="mt-5">
     <div class="container">
         <div class="mb-4">
-        <div class="dropdown">
             Sort by:
             <div class="btn-group" role="group" aria-label="Sort parts by">
-                <input type="radio" class="btn-check" name="btnradio" id="sort_date_up" autocomplete="off" checked>
-                <label class="btn btn-outline-primary" for="sort_date_up">Date &uarr;</label>
-              
-                <input type="radio" class="btn-check" name="btnradio" id="sort_date_down" autocomplete="off">
-                <label class="btn btn-outline-primary" for="sort_date_down">Date &darr;</label>
-              
-                <input type="radio" class="btn-check" name="btnradio" id="sort_date_popularity" autocomplete="off">
-                <label class="btn btn-outline-primary" for="sort_date_popularity">Popularity</label>
-              </div>
-    </div>
-    </div>
+                <a class="btn btn-outline-primary {% if sort_option == 'date_desc' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='date_desc') }}">Date &darr;</a>
+                <a class="btn btn-outline-primary {% if sort_option == 'date_asc' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='date_asc') }}">Date &uarr;</a>
+                <a class="btn btn-outline-primary {% if sort_option == 'popularity' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='popularity') }}">Popularity</a>
+            </div> 
+        </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for part in parts.items %}
             <div class="col">
@@ -78,7 +71,7 @@
             <ul class="pagination justify-content-center">
                 {% if parts.has_prev %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for('views.library', page=parts.prev_num) }}" aria-label="Previous">
+                    <a class="page-link" href="{{ url_for('views.library', page=parts.prev_num, sort=sort_option) }}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
@@ -87,7 +80,7 @@
                 {% for num in parts.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
                 {% if num %}
                 <li class="page-item {% if num == parts.page %}active{% endif %}">
-                    <a class="page-link" href="{{ url_for('views.library', page=num) }}">{{ num }}</a>
+                    <a class="page-link" href="{{ url_for('views.library', page=num, sort=sort_option) }}">{{ num }}</a>
                 </li>
                 {% else %}
                 <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
@@ -96,7 +89,7 @@
 
                 {% if parts.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for('views.library', page=parts.next_num) }}" aria-label="Next">
+                    <a class="page-link" href="{{ url_for('views.library', page=parts.next_num, sort=sort_option) }}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
