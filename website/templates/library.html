@@ -41,13 +41,34 @@
 <section class="mt-5">
     <div class="container">
         <div class="mb-4">
-            Sort by:
-            <div class="btn-group" role="group" aria-label="Sort parts by">
-                <a class="btn btn-outline-primary {% if sort_option == 'date_desc' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='date_desc') }}">Date &darr;</a>
-                <a class="btn btn-outline-primary {% if sort_option == 'date_asc' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='date_asc') }}">Date &uarr;</a>
-                <a class="btn btn-outline-primary {% if sort_option == 'popularity' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='popularity') }}">Popularity</a>
-            </div> 
+            <div class="row">
+                <div class="col-sm">
+                    Sort by:
+                    <div class="btn-group" role="group" aria-label="Sort parts by">
+                        <a class="btn btn-outline-primary {% if sort_option == 'date_desc' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='date_desc') }}">Date &darr;</a>
+                        <a class="btn btn-outline-primary {% if sort_option == 'date_asc' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='date_asc') }}">Date &uarr;</a>
+                        <a class="btn btn-outline-primary {% if sort_option == 'popularity' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='popularity') }}">Popularity</a>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="d-flex">
+                        <div class="me-2">Categories:</div>
+                        <select class="form-select" id="category" name="category">
+                            <option value="-1" selected>All</option>
+                            {% for category in categories %}
+                            <optgroup label="{{category.name}}">
+                                {% for subcategory in category.subcategories %}
+                                <option value="{{subcategory.id}}">{{subcategory.name}}</option>
+                                {% endfor %}
+                            </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+            </div>
         </div>
+
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for part in parts.items %}
             <div class="col">

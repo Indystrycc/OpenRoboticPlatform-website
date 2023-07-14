@@ -59,10 +59,20 @@ def library():
         parts = parts.order_by(Part.downloads.desc())
     else:
         parts = parts.order_by(Part.date.desc())
+    
+    categories = (
+        db.session.scalars(
+            select(Category)
+            .where(Category.parent_id == None)
+            .options(joinedload(Category.subcategories))
+        )
+        .unique()
+        .all()
+    )
 
     parts = parts.paginate(page=page, per_page=per_page)
     return render_template(
-        "library.html", user=current_user, parts=parts, sort_option=sort_option
+        "library.html", user=current_user, parts=parts, sort_option=sort_option, categories=categories
     )
 
 
