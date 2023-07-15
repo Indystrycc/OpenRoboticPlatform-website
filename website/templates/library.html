@@ -12,6 +12,7 @@
                 <button class="btn border-0 rounded-pill rounded-start" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fa-solid fa-question-circle"></i></button>
             </div>
         </form>
+        
     </div>
 </header>
 
@@ -42,7 +43,7 @@
     <div class="container">
         <div class="mb-4">
             <div class="row">
-                <div class="col-sm">
+                <div class="col-sm mb-4">
                     Sort by:
                     <div class="btn-group" role="group" aria-label="Sort parts by">
                         <a class="btn btn-outline-primary {% if sort_option == 'date_desc' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='date_desc') }}">Date &darr;</a>
@@ -50,20 +51,26 @@
                         <a class="btn btn-outline-primary {% if sort_option == 'popularity' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='popularity') }}">Popularity</a>
                     </div>
                 </div>
+                
                 <div class="col-sm">
-                    <div class="d-flex">
+                    <form class="d-flex align-items-center" method="GET">
                         <div class="me-2">Categories:</div>
                         <select class="form-select" id="category" name="category">
                             <option value="-1" selected>All</option>
                             {% for category in categories %}
                             <optgroup label="{{category.name}}">
                                 {% for subcategory in category.subcategories %}
-                                <option value="{{subcategory.id}}">{{subcategory.name}}</option>
+                                <option value="{{subcategory.id}}">&emsp;{{subcategory.name}}</option>
                                 {% endfor %}
                             </optgroup>
                             {% endfor %}
                         </select>
-                    </div>
+                        <div class="form-check form-switch ms-3">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="v">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Verified</label>
+                        </div>
+                        <button class="btn btn-primary ms-3" type="submit">Filter</button>
+                    </form>
                 </div>
                 
             </div>
