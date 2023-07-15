@@ -40,7 +40,7 @@ def home():
 @views.route("/library")
 def library():
     page = request.args.get("page", 1, type=int)
-    per_page = 8
+    per_page = 20
     search_query = request.args.get("search", "")
     sort_option = request.args.get("sort", "date_desc")
     selected_category = int(request.args.get("category", "-1"))
