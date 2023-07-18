@@ -6,13 +6,11 @@
         <div class="masthead-heading text-uppercase">Library</div>
         <form class="search-form mt-3" method="GET" id="search_filter">
             <div class="input-group mx-auto rounded-pill">
-                {# TODO: Replace rounded-pill rounded-{start,end} with rounded-{end-start}-pill after Bootstrap update #}
-                <input class="form-control border-0 bg-transparent rounded-pill rounded-end" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request.args.get('search', '') }}">
+                <input class="form-control border-0 bg-transparent rounded-start-pill" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request.args.get('search', '') }}">
                 <button class="btn border-0" aria-label="search" type="submit"><i class="fa-solid fa-search"></i></button>
-                <button class="btn border-0 rounded-pill rounded-start" aria-label="search info" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fa-solid fa-question-circle"></i></button>
+                <button class="btn border-0 rounded-end-pill" aria-label="search info" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fa-solid fa-question-circle"></i></button>
             </div>
         </form>
-        
     </div>
 </header>
 
@@ -52,7 +50,7 @@
                         <input type="hidden" id="categoryHidden" name="sort" value="{{ sort_option }}" form="search_filter">
                     </div>
                 </div>
-                
+
                 <div class="col-sm">
                     <div class="d-flex align-items-center">
                         <label class="me-2" for="select_category">Categories:</label>
@@ -73,7 +71,7 @@
                         <button form="search_filter" class="btn btn-primary ms-3" type="submit">Filter</button>
                     </form>
                 </div>
-                
+
             </div>
         </div>
 
