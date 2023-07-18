@@ -86,6 +86,11 @@ server {
             # proxy_pass is not inherited
             proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
         }
+
+        location /accountsettings {
+            client_max_body_size 6M;
+            proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
+        }
     }
 
     location /static {

@@ -113,12 +113,14 @@ def account():
 @login_required
 def accountsettings():
     if request.method == "POST":
+        previous_image = None
+        new_image = None
         image = request.files.get("image")
         description = clean(request.form.get("description"))
         link_github = clean(request.form.get("name_github"))
         link_youtube = clean(request.form.get("name_youtube"))
         link_instagram = clean(request.form.get("name_instagram"))
-        current_user.description = description[:75]
+        current_user.description = description
         current_user.name_github = link_github
         current_user.name_youtube = link_youtube
         current_user.name_instagram = link_instagram
@@ -129,12 +131,25 @@ def accountsettings():
             and mimetypes.guess_type(image.filename)[0] in ALLOWED_IMAGE_MIME
         ):
             previous_image = current_user.image
-            current_user.image = save_profile_image(image, current_user.username)
+            new_image, image_path = save_profile_image(image, current_user.username)
+            if os.path.getsize(image_path) > 5 * 1024 * 1024:
+                delete_profile_image(new_image)
+                db.session.rollback()
+                flash("The image is too large", "error")
+                return redirect(url_for("views.accountsettings"))
+            current_user.image = new_image
 
-            if previous_image:
-                delete_profile_image(previous_image)
+        try:
+            db.session.commit()
+        except:
+            if new_image:
+                delete_profile_image(new_image)
+            flash("One of the inputs was too long.", "error")
+            return redirect(url_for("views.accountsettings"))
 
-        db.session.commit()
+        if previous_image:
+            delete_profile_image(previous_image)
+
         message = Markup(
             'Settings saved! <a href="/account" class="link-success">Go to your account.</a>'
         )
@@ -236,7 +251,7 @@ def addPart():
         if os.path.getsize(image_path) > 5 * 1024 * 1024:
             delete_part_uploads(part.id, current_user.username)
             db.session.rollback()
-            flash(f"The image is too large.")
+            flash(f"The image is too large.", "error")
             return redirect(url_for("views.addPart"))
         part.image = image_filename
 
@@ -250,7 +265,7 @@ def addPart():
             if os.path.getsize(file_path) > 10 * 1024 * 1024:
                 delete_part_uploads(part.id, current_user.username)
                 db.session.rollback()
-                flash(f"File {file.filename} is too large.")
+                flash(f"File {file.filename} is too large.", "error")
                 return redirect(url_for("views.addPart"))
             part.file_name = file_filename
             db_file = File(part_id=part.id, file_name=file_filename)
@@ -330,7 +345,7 @@ def save_profile_image(image, username):
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
-    return filename
+    return filename, save_path
 
 
 def delete_profile_image(filename: str):
