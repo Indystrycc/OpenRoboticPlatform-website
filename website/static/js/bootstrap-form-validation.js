@@ -83,7 +83,7 @@ function initFileInputValidation() {
                 feedback.appendChild(list);
             } else if (!tooManyFiles) {
                 if (input.required && !input.files.length) {
-                    const validationMessage = "At least one file (model or drawing) is required.";
+                    const validationMessage = input.multiple ? "At least one file is required." : "A file is required";
                     input.setCustomValidity(validationMessage);
                     feedback.appendChild(new Text(validationMessage));
                 } else {

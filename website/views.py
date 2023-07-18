@@ -232,7 +232,12 @@ def addPart():
         ):
             db.session.rollback()
             return abort(400)
-        image_filename = save_image(image, part.id, current_user.username)
+        image_filename, image_path = save_image(image, part.id, current_user.username)
+        if os.path.getsize(image_path) > 5 * 1024 * 1024:
+            delete_part_uploads(part.id, current_user.username)
+            db.session.rollback()
+            flash(f"The image is too large.")
+            return redirect(url_for("views.addPart"))
         part.image = image_filename
 
         # Process and save the files
@@ -310,7 +315,7 @@ def save_image(image, part_id, username):
     save_path = os.path.join(upload_folder, filename)
     image.save(save_path)
 
-    return filename
+    return filename, save_path
 
 
 def save_profile_image(image, username):
