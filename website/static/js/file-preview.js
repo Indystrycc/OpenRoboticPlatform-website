@@ -23,7 +23,9 @@ function displayPreview(event) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    const fileInput = document.getElementById("file-upload");
-    if (fileInput instanceof HTMLInputElement)
+    const fileInput = document.getElementById("filesInput");
+    if (fileInput instanceof HTMLInputElement) {
         fileInput.addEventListener("change", displayPreview);
+        if (fileInput.files?.length) fileInput.dispatchEvent(new Event("change"));
+    }
 });

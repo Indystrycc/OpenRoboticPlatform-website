@@ -190,8 +190,12 @@ def addPart():
         files = request.files.getlist("files")
 
         # Validate the form data (add your validation logic here)
-        if not name or not description or not category:
+        if not name or not description or not category or not image or len(files) == 0:
             flash("Please fill in all required fields.", "error")
+            return redirect(url_for("views.addPart"))
+
+        if len(files) > 20:
+            flash("Too many files.", "error")
             return redirect(url_for("views.addPart"))
 
         # Save the part details to the database
@@ -237,7 +241,12 @@ def addPart():
                 delete_part_uploads(part.id, current_user.username)
                 db.session.rollback()
                 return abort(400)
-            file_filename = save_file(file, part.id, current_user.username)
+            file_filename, file_path = save_file(file, part.id, current_user.username)
+            if os.path.getsize(file_path) > 10 * 1024 * 1024:
+                delete_part_uploads(part.id, current_user.username)
+                db.session.rollback()
+                flash(f"File {file.filename} is too large.")
+                return redirect(url_for("views.addPart"))
             part.file_name = file_filename
             db_file = File(part_id=part.id, file_name=file_filename)
             db.session.add(db_file)
@@ -342,7 +351,7 @@ def save_file(file, part_id, username):
     save_path = os.path.join(upload_folder, filename)
     file.save(save_path)
 
-    return filename
+    return filename, save_path
 
 
 def delete_part_uploads(part_id: int, username: str):

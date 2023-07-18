@@ -79,6 +79,13 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-Prefix /;
+
+        location /addpart {
+            # In theory users can upload up to 10 * 20 MiB + image (??? MiB) + the request itself (a few kB), so 202 MiB probably is enough
+            client_max_body_size 202M;
+            # proxy_pass is not inherited
+            proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
+        }
     }
 
     location /static {

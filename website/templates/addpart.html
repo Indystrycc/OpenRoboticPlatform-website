@@ -15,15 +15,18 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Upload Part</h5>
-                        <form method="POST" enctype="multipart/form-data">
+                        <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                             <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
                                 <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" required>
+                                <div class="invalid-feedback">A thumbnail is required.</div>
                                 <div id="image-preview"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="files" class="form-label">Files</label>
-                                <input type="file" class="form-control" name="files" id="file-upload" accept="{{ part_extensions|join(', ') }}" multiple required>
+                                <label for="filesInput" class="form-label">Files</label>
+                                <input type="file" class="form-control" name="files" id="filesInput" accept="{{ part_extensions|join(', ') }}" aria-describedby="fileHelp" data-max-files="20" data-max-size="10M" data-feedback="fileFeedback" multiple required>
+                                <div id="fileHelp" class="form-text">Max. file size 10 MiB, up to 20 files allowed.</div>
+                                <div class="invalid-feedback" id="fileFeedback">At least one file (model or drawing) is required.</div>
                                 <div id="file-preview" class="mt-2">
                                     <div>
                                         <i class="fa-solid fa-file me-2"></i>
@@ -34,12 +37,14 @@
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" class="form-control" id="name" name="name"
-                                    placeholder="Enter the part name" maxlength="80" required>
+                                    placeholder="Enter the part name" maxlength="200" required>
+                                <div class="invalid-feedback">Enter part name (max 200 characters)</div>
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
                                 <textarea class="form-control" id="description" name="description"
-                                    placeholder="Enter the part description" maxlength="500" required></textarea>
+                                    placeholder="Enter the part description" maxlength="5000" required></textarea>
+                                <div class="invalid-feedback">Enter part description (max 5000 characters)</div>
                             </div>
                             <div class="mb-3">
                                 <label for="category" class="form-label">Category</label>
@@ -52,11 +57,13 @@
                                         </optgroup>
                                     {% endfor %}
                                 </select>
+                                <div class="invalid-feedback">Select an appropriate category</div>
                             </div>
                             <div class="mb-3">
                                 <label for="tags" class="form-label">Tags</label>
                                 <input type="text" class="form-control" id="tags" name="tags"
-                                    placeholder="Enter tags separated by commas" autocomplete="off">
+                                    placeholder="Enter tags separated by commas" autocomplete="off" maxlength="200">
+                                <div class="invalid-feedback">Maximum length is 200 characters</div>
                             </div>
                             <button type="submit" class="btn btn-primary">Upload</button>
                         </form>
@@ -74,4 +81,5 @@
 <script src="{{ url_for('static', filename='js/parent-in-select.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/file-preview.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module"></script>
 {% endblock %}

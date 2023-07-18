@@ -8,7 +8,13 @@
 // https://caniuse.com/?search=scroll-padding
 
 html {
-    scroll-padding-top: 4.5rem;
+    // 1.5rem logo, 2*1rem padding and 2rem to leave some margin
+    scroll-padding-top: 5.5rem;
+
+    @include media-breakpoint-up(lg) {
+        // logo has 3rem height with .navbar-shrink
+        scroll-padding-top: 7rem;
+    }
 }
 
 body {

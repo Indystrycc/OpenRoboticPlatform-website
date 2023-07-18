@@ -20,6 +20,8 @@ function displayPreview(event) {
 
 window.addEventListener("DOMContentLoaded", () => {
     const imageInput = document.getElementById("image");
-    if (imageInput instanceof HTMLInputElement)
+    if (imageInput instanceof HTMLInputElement) {
         imageInput.addEventListener("change", displayPreview);
+        if (imageInput.files?.length) imageInput.dispatchEvent(new Event("change"));
+    }
 });
