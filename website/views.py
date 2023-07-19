@@ -42,8 +42,20 @@ def library():
     page = request.args.get("page", 1, type=int)
     per_page = 20
     search_query = request.args.get("search", "")
+    sort_option = request.args.get("sort", "date_desc")
+    selected_category = int(request.args.get("category", "-1"))
+    verified_only = request.args.get("v", "")
 
-    # Filter parts based on search query
+    categories = (
+        db.session.scalars(
+            select(Category)
+            .where(Category.parent_id == None)
+            .options(joinedload(Category.subcategories))
+        )
+        .unique()
+        .all()
+    )
+
     if search_query:
         parts = Part.query.filter(
             Part.name.icontains(search_query, autoescape=True)
@@ -51,10 +63,38 @@ def library():
             | Part.tags.icontains(search_query, autoescape=True)
         ).filter_by(rejected=False)
     else:
-        parts = Part.query.filter_by(rejected=False).order_by(Part.date.desc())
+        parts = Part.query.filter_by(rejected=False)
+
+    if verified_only:
+        parts = parts.filter_by(verified=True)
+
+    if selected_category != -1:
+        if any(category.id == selected_category for category in categories):
+            category_group = next(
+                c.subcategories for c in categories if c.id == selected_category
+            )
+            category_ids = [category.id for category in category_group]
+            parts = parts.filter(Part.category.in_(category_ids))
+        else:
+            parts = parts.filter_by(category=selected_category)
+
+    if sort_option == "date_asc":
+        parts = parts.order_by(Part.date.asc())
+    elif sort_option == "popularity":
+        parts = parts.order_by(Part.downloads.desc())
+    else:
+        parts = parts.order_by(Part.date.desc())
 
     parts = parts.paginate(page=page, per_page=per_page)
-    return render_template("library.html", user=current_user, parts=parts)
+    return render_template(
+        "library.html",
+        user=current_user,
+        parts=parts,
+        sort_option=sort_option,
+        categories=categories,
+        selected_category=selected_category,
+        verified_only=verified_only,
+    )
 
 
 @views.route("/account")

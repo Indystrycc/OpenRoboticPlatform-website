@@ -4,14 +4,15 @@
 <header class="masthead bg-img-library">
     <div class="container">
         <div class="masthead-heading text-uppercase">Library</div>
-        <form class="search-form mt-3" method="GET">
+        <form class="search-form mt-3" method="GET" id="search_filter">
             <div class="input-group mx-auto rounded-pill">
                 {# TODO: Replace rounded-pill rounded-{start,end} with rounded-{end-start}-pill after Bootstrap update #}
                 <input class="form-control border-0 bg-transparent rounded-pill rounded-end" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request.args.get('search', '') }}">
-                <button class="btn border-0" type="submit"><i class="fa-solid fa-search"></i></button>
-                <button class="btn border-0 rounded-pill rounded-start" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fa-solid fa-question-circle"></i></button>
+                <button class="btn border-0" aria-label="search" type="submit"><i class="fa-solid fa-search"></i></button>
+                <button class="btn border-0 rounded-pill rounded-start" aria-label="search info" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fa-solid fa-question-circle"></i></button>
             </div>
         </form>
+        
     </div>
 </header>
 
@@ -40,6 +41,42 @@
 {% block content %}
 <section class="mt-5">
     <div class="container">
+        <div class="mb-4">
+            <div class="row">
+                <div class="col-sm mb-4">
+                    Sort by:
+                    <div class="btn-group" role="group" aria-label="Sort parts by">
+                        <button class="btn btn-outline-primary {% if sort_option == 'date_desc' %}active{% endif %}" form="search_filter" type="submit" name="sort" value="date_desc">Date &darr;</a>
+                        <button class="btn btn-outline-primary {% if sort_option == 'date_asc' %}active{% endif %}" form="search_filter" type="submit" name="sort" value="date_asc">Date &uarr;</a>
+                        <button class="btn btn-outline-primary {% if sort_option == 'popularity' %}active{% endif %}" form="search_filter" type="submit" name="sort" value="popularity">Popularity</a>
+                        <input type="hidden" id="categoryHidden" name="sort" value="{{ sort_option }}" form="search_filter">
+                    </div>
+                </div>
+                
+                <div class="col-sm">
+                    <div class="d-flex align-items-center">
+                        <label class="me-2" for="select_category">Categories:</label>
+                        <select form="search_filter" class="form-select" id="select_category" name="category">
+                            <option value="-1" {% if selected_category == "-1" %}selected{% endif %}>All</option>
+                            {% for category in categories %}
+                            <option {% if selected_category == category.id %}selected{% endif %} value="{{category.id}}">{{category.name}}</option>
+                                {% for subcategory in category.subcategories %}
+                                <option value="{{subcategory.id}}" {% if selected_category == subcategory.id %}selected{% endif %}>&emsp;{{subcategory.name}}</option>
+                                {% endfor %}
+                            </optgroup>
+                            {% endfor %}
+                        </select>
+                        <div class="form-check form-switch ms-3">
+                            <input form="search_filter" class="form-check-input" type="checkbox" id="switch_verified" name="v" {% if verified_only %}checked{% endif %}>
+                            <label form="search_filter" class="form-check-label" for="switch_verified">Verified</label>
+                        </div>
+                        <button form="search_filter" class="btn btn-primary ms-3" type="submit">Filter</button>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for part in parts.items %}
             <div class="col">
@@ -63,7 +100,7 @@
             <ul class="pagination justify-content-center">
                 {% if parts.has_prev %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for('views.library', page=parts.prev_num) }}" aria-label="Previous">
+                    <a class="page-link" href="{{ url_for('views.library', page=parts.prev_num, sort=sort_option, category=selected_category, v=verified_only) }}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
@@ -72,7 +109,7 @@
                 {% for num in parts.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
                 {% if num %}
                 <li class="page-item {% if num == parts.page %}active{% endif %}">
-                    <a class="page-link" href="{{ url_for('views.library', page=num) }}">{{ num }}</a>
+                    <a class="page-link" href="{{ url_for('views.library', page=num, sort=sort_option, category=selected_category, v=verified_only) }}">{{ num }}</a>
                 </li>
                 {% else %}
                 <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
@@ -81,7 +118,7 @@
 
                 {% if parts.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for('views.library', page=parts.next_num) }}" aria-label="Next">
+                    <a class="page-link" href="{{ url_for('views.library', page=parts.next_num, sort=sort_option, category=selected_category, v=verified_only) }}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
