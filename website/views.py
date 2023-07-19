@@ -368,6 +368,19 @@ def save_file(file, part_id, username):
     # Generate a secure filename and save the file to the upload folder
     filename = secure_filename(file.filename)
     filename = f"{username}-{part_id}-{filename}"
+    if len(filename) > 100:
+        f_name, f_ext = os.path.splitext(filename)
+        # 97, because there will be (at most) 2 digits and '~'
+        trunc_len = 97 - len(f_ext)
+        assert trunc_len > 0
+        f_name = f_name[:trunc_len]
+        for i in range(1, 21):
+            final_name = f"{f_name}~{i}{f_ext}"
+            full_path = os.path.join(upload_folder, final_name)
+            if not os.path.exists(full_path):
+                filename = final_name
+                break
+
     save_path = os.path.join(upload_folder, filename)
     file.save(save_path)
 
