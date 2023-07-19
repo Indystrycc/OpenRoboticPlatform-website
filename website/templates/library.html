@@ -67,8 +67,8 @@
                             {% endfor %}
                         </select>
                         <div class="form-check form-switch ms-3">
-                            <input form="search_filter" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="v" {% if verified_only %}checked{% endif %}>
-                            <label form="search_filter" class="form-check-label" for="flexSwitchCheckDefault">Verified</label>
+                            <input form="search_filter" class="form-check-input" type="checkbox" id="switch_verified" name="v" {% if verified_only %}checked{% endif %}>
+                            <label form="search_filter" class="form-check-label" for="switch_verified">Verified</label>
                         </div>
                         <button form="search_filter" class="btn btn-primary ms-3" type="submit">Filter</button>
                     </form>
