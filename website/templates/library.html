@@ -4,22 +4,13 @@
 <header class="masthead bg-img-library">
     <div class="container">
         <div class="masthead-heading text-uppercase">Library</div>
-        <form class="search-form mt-3" method="GET">
+        <form class="search-form mt-3" method="GET" id="search_filter">
             <div class="input-group mx-auto rounded-pill">
                 {# TODO: Replace rounded-pill rounded-{start,end} with rounded-{end-start}-pill after Bootstrap update #}
                 <input class="form-control border-0 bg-transparent rounded-pill rounded-end" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request.args.get('search', '') }}">
                 <button class="btn border-0" type="submit"><i class="fa-solid fa-search"></i></button>
                 <button class="btn border-0 rounded-pill rounded-start" type="button" data-bs-toggle="modal" data-bs-target="#infoModal"><i class="fa-solid fa-question-circle"></i></button>
             </div>
-            {% if verified_only %}
-                <input type="hidden" id="verifiedHidden" name="verified_only" value="{{ verified_only }}">
-            {% endif %}
-            {% if selected_category %}
-            <input type="hidden" id="categoryHidden" name="category" value="{{ selected_category }}">
-            {% endif %}
-            {% if sort_option %}
-            <input type="hidden" id="categoryHidden" name="sort" value="{{ sort_option }}">
-            {% endif %}
         </form>
         
     </div>
@@ -55,16 +46,17 @@
                 <div class="col-sm mb-4">
                     Sort by:
                     <div class="btn-group" role="group" aria-label="Sort parts by">
-                        <a class="btn btn-outline-primary {% if sort_option == 'date_desc' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='date_desc', category=selected_category, v=verified_only) }}" {% if verified_only %}data-v="on"{% endif %}>Date &darr;</a>
-                        <a class="btn btn-outline-primary {% if sort_option == 'date_asc' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='date_asc', category=selected_category, v=verified_only) }}">Date &uarr;</a>
-                        <a class="btn btn-outline-primary {% if sort_option == 'popularity' %}active{% endif %}" href="{{ url_for('views.library', page=parts.page, sort='popularity', category=selected_category, v=verified_only) }}">Popularity</a>
+                        <button class="btn btn-outline-primary {% if sort_option == 'date_desc' %}active{% endif %}" form="search_filter" type="submit" name="sort" value="date_desc">Date &darr;</a>
+                        <button class="btn btn-outline-primary {% if sort_option == 'date_asc' %}active{% endif %}" form="search_filter" type="submit" name="sort" value="date_asc">Date &uarr;</a>
+                        <button class="btn btn-outline-primary {% if sort_option == 'popularity' %}active{% endif %}" form="search_filter" type="submit" name="sort" value="popularity">Popularity</a>
+                        <input type="hidden" id="categoryHidden" name="sort" value="{{ sort_option }}" form="search_filter">
                     </div>
                 </div>
                 
                 <div class="col-sm">
-                    <form class="d-flex align-items-center" method="GET">
+                    <div class="d-flex align-items-center">
                         <div class="me-2">Categories:</div>
-                        <select class="form-select" id="category" name="category">
+                        <select form="search_filter" class="form-select" id="category" name="category">
                             <option value="-1" {% if selected_category == "-1" %}selected{% endif %}>All</option>
                             {% for category in categories %}
                             <option {% if selected_category == category.id %}selected{% endif %} value="{{category.id}}">{{category.name}}</option>
@@ -75,10 +67,10 @@
                             {% endfor %}
                         </select>
                         <div class="form-check form-switch ms-3">
-                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="v" {% if verified_only %}checked{% endif %}>
-                            <label class="form-check-label" for="flexSwitchCheckDefault">Verified</label>
+                            <input form="search_filter" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="v" {% if verified_only %}checked{% endif %}>
+                            <label form="search_filter" class="form-check-label" for="flexSwitchCheckDefault">Verified</label>
                         </div>
-                        <button class="btn btn-primary ms-3" type="submit">Filter</button>
+                        <button form="search_filter" class="btn btn-primary ms-3" type="submit">Filter</button>
                     </form>
                 </div>
                 
