@@ -1,5 +1,6 @@
 import re
 import sys
+from os import getenv
 
 import requests
 from flask import Blueprint, flash, redirect, render_template, request, url_for
@@ -56,7 +57,10 @@ def sign_up():
         response = requests.post(url, data=data)
         captcha_result = response.json()
 
-        if captcha_result["success"]:
+        if captcha_result["success"] and (
+            getenv("FLASK_ENV") != "production"
+            or (captcha_result["score"] >= 0.5 and captcha_result["action"] == "signup")
+        ):
             user = User.query.filter_by(email=email).first()
             if user:
                 flash("This email is already registered.", category="error")
