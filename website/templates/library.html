@@ -55,7 +55,7 @@
                 
                 <div class="col-sm">
                     <div class="d-flex align-items-center">
-                        <label class="me-2 form-check-label" for="select_category">Categories:</label>
+                        <label class="me-2" for="select_category">Categories:</label>
                         <select form="search_filter" class="form-select" id="select_category" name="category">
                             <option value="-1" {% if selected_category == "-1" %}selected{% endif %}>All</option>
                             {% for category in categories %}
