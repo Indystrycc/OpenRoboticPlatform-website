@@ -70,7 +70,9 @@ def library():
 
     if selected_category != -1:
         if any(category.id == selected_category for category in categories):
-            category_group = next(c.subcategories for c in categories if c.id == selected_category)
+            category_group = next(
+                c.subcategories for c in categories if c.id == selected_category
+            )
             category_ids = [category.id for category in category_group]
             parts = parts.filter(Part.category.in_(category_ids))
         else:
