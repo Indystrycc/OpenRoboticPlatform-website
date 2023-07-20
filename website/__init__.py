@@ -64,6 +64,7 @@ def create_app():
         strict_transport_security=False,  # nginx already does it
         referrer_policy="same-origin",
         session_cookie_secure=production,
+        x_xss_protection=False,  # it's not supported any more, because it wasn't always working and could introduce new vulnerabilities
     )
 
     from .auth import auth
