@@ -2,6 +2,7 @@ flask>=2.3.2
 Flask-Login>=0.6.2
 Flask-Migrate>=4.0.4
 Flask-SQLAlchemy>=3.0.5
+flask-talisman>=1.0.0
 bleach>=6.0.0
 requests>=2.31.0
 
@@ -9,5 +10,5 @@ requests>=2.31.0
 mysqlclient>=2.2.0
 
 # dependencies of Flask-* dependencies, but we're using them directly, so make sure that they are installed
-SQLAlchemy>=2.0.18
+SQLAlchemy>=2.0.19
 Werkzeug>=2.3.6

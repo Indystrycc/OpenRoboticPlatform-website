@@ -2,18 +2,43 @@ import uuid
 from concurrent.futures import ProcessPoolExecutor
 from os import getenv
 
-from flask import Flask, Response
+from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_talisman import Talisman
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
 
+production = getenv("FLASK_ENV") == "production"
+
 db = SQLAlchemy()
 migrate = Migrate()
-compression_process = (
-    ProcessPoolExecutor(1) if getenv("FLASK_ENV") == "production" else None
+talisman = Talisman()
+compression_process = ProcessPoolExecutor(1) if production else None
+
+default_csp = {
+    "default-src": "'none'",
+    "base-uri": "'none'",
+    "form-action": "'self'",
+    "style-src": ["'self'", "https://fonts.googleapis.com"],
+    "font-src": "https://fonts.gstatic.com",
+    "script-src": "",  # allow only nonce-based scripts (csp_nonce() adds values here)
+    "img-src": [
+        "'self'",
+        "data:",  # Bootstrap has some SVGs as data: URL in the stylesheet
+    ],
+}
+csp_captcha = dict(
+    default_csp,
+    **{
+        "script-src": "'strict-dynamic'",
+        "frame-src": [
+            "https://www.google.com/recaptcha/",
+            "https://recaptcha.google.com/recaptcha/",
+        ],
+    },
 )
 
 
@@ -31,6 +56,15 @@ def create_app():
     ] = f'mysql://root:rootroot@{getenv("DB_HOST", "127.0.0.1")}:3306/orp_db'
     db.init_app(app)
     migrate.init_app(app, db)
+    talisman.init_app(
+        app,
+        content_security_policy=default_csp,
+        content_security_policy_nonce_in=["script-src"],
+        force_https=production,
+        strict_transport_security=False,  # nginx already does it
+        referrer_policy="same-origin",
+        session_cookie_secure=production,
+    )
 
     from .auth import auth
     from .views import views
@@ -50,10 +84,5 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return models.User.query.get(uuid.UUID(id))
-
-    @app.after_request
-    def set_important_headers(response: Response):
-        response.headers.set("X-Content-Type-Options", "nosniff")
-        return response
 
     return app

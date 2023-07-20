@@ -28,6 +28,13 @@ map $sent_http_content_type $expires {
     ~model/                 180d;
 }
 
+map $upstream_http_x_content_type_options $nosniff {
+    '' "nosniff";
+}
+map $upstream_http_content_security_policy $csp {
+    '' "default-src 'none'; sandbox";
+}
+
 server {
     listen 443 quic reuseport;
     listen 443 ssl;
@@ -68,10 +75,10 @@ server {
 
     # TODO:
     # 1. Configure caching (make it longer for images and styles if we're going to use cache busting)
-    # 2. CSP? (requires fixing styles and scripts)
 
-    # Arbitrary request size limit of 30MB
-    client_max_body_size 30M;
+    # should be overwritten by the Python server; applies only to /static (other requests are served by upstream)
+    add_header X-Content-Type-Options $nosniff always;
+    add_header Content-Security-Policy $csp always;
 
     location / {
         proxy_pass http://unix:/run/gunicorn/gunicorn.sock;

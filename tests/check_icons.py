@@ -87,7 +87,7 @@ class Icons(TypedDict):
 IconStyle = Literal["solid", "brands", "regular"] | None
 
 project_path = Path(dirname, "../website/")
-fa_path = project_path / "static/js/fa"
+fa_path = project_path / "static/fa"
 
 
 def process_single_class_list(

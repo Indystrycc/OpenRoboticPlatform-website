@@ -39,5 +39,5 @@
     </div>
   </div>
 </div>
-<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}

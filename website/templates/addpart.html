@@ -78,8 +78,8 @@
     </div>
 </section>
 
-<script src="{{ url_for('static', filename='js/parent-in-select.js') }}" type="module"></script>
-<script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module"></script>
-<script src="{{ url_for('static', filename='js/file-preview.js') }}" type="module"></script>
-<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/parent-in-select.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/file-preview.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}

@@ -10,9 +10,10 @@
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
-        <script src="{{ url_for('static', filename='js/fa/fontawesome.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/fa/brands.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/fa/solid.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='fa/fontawesome.min.js') }}" data-auto-add-css="false" nonce="{{ csp_nonce() }}"></script>
+        <script src="{{ url_for('static', filename='fa/brands.min.js') }}" nonce="{{ csp_nonce() }}"></script>
+        <script src="{{ url_for('static', filename='fa/solid.min.js') }}" nonce="{{ csp_nonce() }}"></script>
+        <link href="{{ url_for('static', filename='fa/svg-with-js.min.css') }}" rel="stylesheet" />
         <!-- Google fonts-->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
@@ -88,9 +89,9 @@
 </footer>
 
         <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" nonce="{{ csp_nonce() }}"></script>
         <!-- Core theme JS-->
-        <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/scripts.js') }}" nonce="{{ csp_nonce() }}"></script>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

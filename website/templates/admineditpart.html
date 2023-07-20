@@ -89,5 +89,5 @@
         </div>
     </div>
 </section>
-<script type="module" src="{{ url_for('static', filename='js/parent-in-select.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/parent-in-select.js') }}" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}
