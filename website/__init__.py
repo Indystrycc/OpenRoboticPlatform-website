@@ -2,7 +2,7 @@ import uuid
 from concurrent.futures import ProcessPoolExecutor
 from os import getenv
 
-from flask import Flask
+from flask import Flask, Response
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -85,5 +85,15 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return models.User.query.get(uuid.UUID(id))
+
+    @app.after_request
+    def set_important_headers(response: Response):
+        # enable process isolation and prevent XS-Leaks
+        response.headers.set("Cross-Origin-Opener-Policy", "same-origin")
+        # block no-cors cross-origin requests to our site, change it (on /static) if we want to allow cross-origin embedding of our resources
+        response.headers.set("Cross-Origin-Resource-Policy", "same-origin")
+        # only allow loading resources with CORP or (if marked as crossorigin) CORS
+        response.headers.set("Cross-Origin-Embedder-Policy", "require-corp")
+        return response
 
     return app

@@ -34,6 +34,15 @@ map $upstream_http_x_content_type_options $nosniff {
 map $upstream_http_content_security_policy $csp {
     '' "default-src 'none'; sandbox";
 }
+map $upstream_http_cross_origin_opener_policy $coop {
+    '' "same-origin";
+}
+map $upstream_http_cross_origin_resource_policy $corp {
+    '' "same-origin";
+}
+map $upstream_http_cross_origin_embedder_policy $coep {
+    '' "require-corp";
+}
 
 server {
     listen 443 quic reuseport;
@@ -79,6 +88,9 @@ server {
     # should be overwritten by the Python server; applies only to /static (other requests are served by upstream)
     add_header X-Content-Type-Options $nosniff always;
     add_header Content-Security-Policy $csp always;
+    add_header Cross-Origin-Opener-Policy $coop always;
+    add_header Cross-Origin-Resource-Policy $corp always;
+    add_header Cross-Origin-Embedder-Policy $coep always;
 
     location / {
         proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
