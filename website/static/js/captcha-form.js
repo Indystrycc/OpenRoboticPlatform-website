@@ -11,6 +11,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const sitekey = el.dataset.sitekey;
         const action = el.dataset.action ?? "submit";
+        const validateForm = (form.noValidate ? form.checkValidity : form.reportValidity).bind(form);
 
         if (!sitekey) {
             console.warn("An element with recaptcha class, but no data-sitekey exists.");
@@ -19,7 +20,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         form.addEventListener("submit", (e) => {
             e.preventDefault();
-            if (!form.reportValidity() || !grecaptcha) return;
+            if (!validateForm() || !grecaptcha) return;
 
             grecaptcha.ready(() => {
                 grecaptcha.execute(sitekey, { action })

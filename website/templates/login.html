@@ -8,7 +8,7 @@
         <div class="card border-0 shadow rounded-3 my-5">
           <div class="card-body p-4 p-sm-5">
             <h5 class="card-title text-center mb-5 fw-light fs-5">Log in</h5>
-            <form method="POST">
+            <form method="POST" class="needs-validation" novalidate>
               <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com" maxlength="100" required>
                 <label for="emailInput">Email address</label>
@@ -39,4 +39,5 @@
     </div>
   </div>
 </div>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module"></script>
 {% endblock %}

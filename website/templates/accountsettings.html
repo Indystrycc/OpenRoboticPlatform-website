@@ -15,31 +15,36 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Change your account settings</h5>
-                        <form method="POST" enctype="multipart/form-data">
+                        <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                             <div class="mb-3">
                                 <label for="image" class="form-label">Profile image</label>
-                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}">
+                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" data-max-size="5M" data-feedback="profileImageFeedback">
+                                <div class="invalid-feedback" id="profileImageFeedback">Image too large</div>
                                 <div id="image-preview"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="name" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="name" name="name" value="{{user.username}}" maxlength="80" disabled="disabled">
+                                <input type="text" class="form-control" id="name" name="name" value="{{user.username}}" disabled readonly>
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description" placeholder="Enter the part description" maxlength="500">{{user.description}}</textarea>
+                                <textarea class="form-control" id="description" name="description" placeholder="Enter your profile description" maxlength="500">{{user.description if user.description else ''}}</textarea>
+                                <div class="invalid-feedback">Maximum description length is 500 characters</div>
                             </div>
                             <div class="mb-3">
                                 <label for="name_github" class="form-label">GitHub name</label>
                                 <input type="text" class="form-control" id="name_github" name="name_github" value="{{user.name_github if user.name_github else ''}}" maxlength="100">
+                                <div class="invalid-feedback">Maximum username length is 100 characters</div>
                             </div>
                             <div class="mb-3">
                                 <label for="name_youtube" class="form-label">YouTube name</label>
                                 <input type="text" class="form-control" id="name_youtube" name="name_youtube" value="{{user.name_youtube if user.name_youtube else ''}}" maxlength="100">
+                                <div class="invalid-feedback">Maximum username length is 100 characters</div>
                             </div>
                             <div class="mb-3">
                                 <label for="name_instagram" class="form-label">Instagram name</label>
                                 <input type="text" class="form-control" id="name_instagram" name="name_instagram" value="{{user.name_instagram if user.name_instagram else ''}}" maxlength="100">
+                                <div class="invalid-feedback">Maximum username length is 100 characters</div>
                             </div>
                             <button type="submit" class="btn btn-primary">Save</button>
                         </form>
@@ -51,4 +56,5 @@
 </section>
 
 <script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module"></script>
 {% endblock %}

@@ -8,18 +8,23 @@
         <div class="card border-0 shadow rounded-3 my-5">
           <div class="card-body p-4 p-sm-5">
             <h5 class="card-title text-center mb-5 fw-light fs-5">Sign Up</h5>
-            <form method="POST" id="signup_form">
+            <form method="POST" id="signup_form" class="needs-validation" novalidate>
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com" maxlength="100" required>
-                <label for="floatingInput">Email address</label>
+                <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com" maxlength="100" required>
+                <label for="emailInput">Email address</label>
+                <div class="invalid-feedback">Enter a valid email address (max 100 characters)</div>
               </div>
               <div class="form-floating mb-3">
-                <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" minlength="8" maxlength="128" required>
+                <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" aria-describedby="passwordHelp" minlength="8" maxlength="128" required>
                 <label for="floatingPassword">Password</label>
+                <div id="passwordHelp" class="form-text">Password must be between 8 and 128 characters long.</div>
+                <div class="invalid-feedback">Password does not meet requirements</div>
               </div>
               <div class="form-floating mb-3">
-                <input class="form-control" id="floatingInput" name="username" placeholder="User name" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]+" required>
-                <label for="floatingInput">User name</label>
+                <input class="form-control" id="usernameInput" name="username" placeholder="User name" aria-describedby="usernameHelp" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]+" required>
+                <label for="usernameInput">User name</label>
+                <div id="usernameHelp" class="form-text">Username must be between 4 and 20 characters long. Only letters, digits and underscores are allowed.</div>
+                <div class="invalid-feedback">Username does not meet the requirements</div>
               </div>
               <div class="d-grid">
                 <button class="btn btn-primary btn-login text-uppercase fw-bold recaptcha" data-sitekey="{{ recaptcha_site_key }}" data-action="signup" data-form="signup_form">Sign up</button>
@@ -37,4 +42,5 @@
 </div>
 <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}" async defer></script>
 <script src="{{ url_for('static', filename='js/captcha-form.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module"></script>
 {% endblock %}

@@ -12015,7 +12015,12 @@ textarea.form-control-lg {
   }
 }
 html {
-  scroll-padding-top: 4.5rem;
+  scroll-padding-top: 5.5rem;
+}
+@media (min-width: 992px) {
+  html {
+    scroll-padding-top: 7rem;
+  }
 }
 
 body {
