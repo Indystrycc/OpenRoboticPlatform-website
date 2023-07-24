@@ -2,6 +2,7 @@ import mimetypes
 import os
 import uuid
 from pathlib import Path
+from datetime import datetime, timedelta
 
 import MySQLdb.constants.ER as mysql_errors
 from bleach import clean
@@ -16,14 +17,14 @@ from flask import (
     url_for,
 )
 from flask_login import current_user, login_required
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 
 from . import compression_process, db
 from .compression import compress_uploads
-from .models import Category, File, Part, User
+from .models import Category, File, Part, User, View
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
@@ -171,6 +172,26 @@ def part(part_number):
     if subcategory.parent_cat:
         category = subcategory.parent_cat
         category = f"{category.name} - {subcategory.name}"
+    ip_address = request.remote_addr
+    three_hours_ago = datetime.utcnow() - timedelta(hours=3)
+    view_count_check: View | None = View.query.filter(
+        or_(
+            View.ip == ip_address,
+            View.user_id == current_user.id if current_user.is_authenticated else False,
+        ),
+        View.part_id == part_number,
+        View.event_date >= three_hours_ago,
+    ).all()
+
+    if not view_count_check:
+        views = int(part.views)
+        part.views = views + 1
+        db.session.commit()
+
+    new_view = View(user_id=current_user.id, ip=ip_address, part_id=part_number)
+    db.session.add(new_view)
+    db.session.commit()
+
     return render_template(
         "part.html",
         part=part,
