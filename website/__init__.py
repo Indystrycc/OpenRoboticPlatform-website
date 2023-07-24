@@ -5,6 +5,7 @@ from os import getenv
 from flask import Flask, Response
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -16,6 +17,7 @@ production = getenv("FLASK_ENV") == "production"
 db = SQLAlchemy()
 migrate = Migrate()
 talisman = Talisman()
+csrf = SeaSurf()
 compression_process = ProcessPoolExecutor(1) if production else None
 
 default_csp = {
@@ -66,6 +68,9 @@ def create_app():
         session_cookie_secure=production,
         x_xss_protection=False,  # it's not supported any more, because it wasn't always working and could introduce new vulnerabilities
     )
+    app.config["CSRF_COOKIE_SECURE"] = production
+    app.config["CSRF_COOKIE_HTTPONLY"] = True
+    csrf.init_app(app)
 
     from .auth import auth
     from .views import views

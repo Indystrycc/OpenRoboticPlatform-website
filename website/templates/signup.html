@@ -30,6 +30,7 @@
                 <button class="btn btn-primary btn-login text-uppercase fw-bold recaptcha" data-sitekey="{{ recaptcha_site_key }}" data-action="signup" data-form="signup_form">Sign up</button>
               </div>
               <hr class="my-4">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
             </form>
             <div class="text-center pt-3">
                 Already have an account? <a href="/login">Log in!</a>
