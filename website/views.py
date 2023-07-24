@@ -182,7 +182,7 @@ def part(part_number):
         ),
         View.part_id == part_number,
         View.event_date >= time_delta,
-    ).all()
+    ).first()
 
     if not view_count_check:
         part.views = int(part.views) + 1
