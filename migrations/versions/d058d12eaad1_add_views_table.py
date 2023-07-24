@@ -23,7 +23,7 @@ def upgrade():
         sa.Column("user_id", sa.UUID(), nullable=True),
         sa.Column("ip", sa.String(length=45), nullable=True),
         sa.Column("part_id", sa.Integer(), nullable=False),
-        sa.Column("event_date", sa.DateTime(), nullable=False),
+        sa.Column("event_date", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("view_event_id"),
         sa.ForeignKeyConstraint(
             ["user_id"],
