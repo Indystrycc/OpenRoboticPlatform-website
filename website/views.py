@@ -172,6 +172,7 @@ def part(part_number):
     if subcategory.parent_cat:
         category = subcategory.parent_cat
         category = f"{category.name} - {subcategory.name}"
+
     ip_address = request.remote_addr
     time_delta = datetime.utcnow() - timedelta(hours=3)
     view_count_check: View | None = View.query.filter(
