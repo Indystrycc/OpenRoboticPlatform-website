@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-        "views",
+        "view",
         sa.Column("view_event_id", sa.UUID(), nullable=False),
         sa.Column("user_id", sa.UUID(), nullable=True),
         sa.Column("ip", sa.String(length=45), nullable=True),
@@ -35,6 +35,9 @@ def upgrade():
         ),
     )
 
+    op.add_column("part", sa.Column("views", sa.Integer(), nullable=False, default=0))
+
 
 def downgrade():
     op.drop_table("views")
+    # op.drop_column("part", "views")
