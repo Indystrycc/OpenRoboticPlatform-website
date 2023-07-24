@@ -65,12 +65,8 @@ class Category(db.Model):
 
 
 class View(db.Model):
-    view_event_id = db.Column(
-        db.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    view_event_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"), nullable=True)
     ip = db.Column(db.String(45), nullable=True)
     part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
     event_date = db.Column(db.DateTime(timezone=True), default=func.now())
-
-    user = db.relationship("User", backref=db.backref("views", lazy=True))

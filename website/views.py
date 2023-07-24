@@ -186,13 +186,12 @@ def part(part_number):
 
     if not view_count_check:
         part.views = int(part.views) + 1
+        if current_user.is_authenticated:
+            new_view = View(user_id=current_user.id, ip=ip_address, part_id=part_number)
+        else:
+            new_view = View(user_id=None, ip=ip_address, part_id=part_number)
+        db.session.add(new_view)
         db.session.commit()
-    if current_user.is_authenticated:
-        new_view = View(user_id=current_user.id, ip=ip_address, part_id=part_number)
-    else:
-        new_view = View(user_id=None, ip=ip_address, part_id=part_number)
-    db.session.add(new_view)
-    db.session.commit()
 
     return render_template(
         "part.html",

@@ -1,4 +1,4 @@
-"""empty message
+"""add views table
 
 Revision ID: d058d12eaad1
 Revises: 5820e7dd0602
@@ -19,7 +19,7 @@ depends_on = None
 def upgrade():
     op.create_table(
         "view",
-        sa.Column("view_event_id", sa.UUID(), nullable=False),
+        sa.Column("view_event_id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.UUID(), nullable=True),
         sa.Column("ip", sa.String(length=45), nullable=True),
         sa.Column("part_id", sa.Integer(), nullable=False),
@@ -39,5 +39,5 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table("views")
+    op.drop_table("view")
     op.drop_column("part", "views")
