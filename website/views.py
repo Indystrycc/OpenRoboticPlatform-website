@@ -173,19 +173,18 @@ def part(part_number):
         category = subcategory.parent_cat
         category = f"{category.name} - {subcategory.name}"
     ip_address = request.remote_addr
-    three_hours_ago = datetime.utcnow() - timedelta(hours=3)
+    time_delta = datetime.utcnow() - timedelta(hours=3)
     view_count_check: View | None = View.query.filter(
         or_(
             View.ip == ip_address,
             View.user_id == current_user.id if current_user.is_authenticated else False,
         ),
         View.part_id == part_number,
-        View.event_date >= three_hours_ago,
+        View.event_date >= time_delta,
     ).all()
 
     if not view_count_check:
-        views = int(part.views)
-        part.views = views + 1
+        part.views = int(part.views) + 1
         db.session.commit()
 
     new_view = View(user_id=current_user.id, ip=ip_address, part_id=part_number)
