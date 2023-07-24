@@ -40,4 +40,4 @@ def upgrade():
 
 def downgrade():
     op.drop_table("views")
-    # op.drop_column("part", "views")
+    op.drop_column("part", "views")
