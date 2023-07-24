@@ -37,6 +37,7 @@ class Part(db.Model):
     rejected = db.Column(db.Boolean, default=False)
     downloads = db.Column(db.Integer, default=0)
     tags = db.Column(db.String(200))
+    views = db.Column(db.Integer, default=0)
 
     cat = db.relationship("Category", backref=db.backref("part", lazy=True))
     author: Mapped[User] = db.relationship("User", back_populates="parts")
@@ -63,12 +64,13 @@ class Category(db.Model):
     )
 
 
-class Views(db.Model):
-    view_event_id = db.Column(db.UUID(as_uuid=True), primary_key=True)
+class View(db.Model):
+    view_event_id = db.Column(
+        db.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"), nullable=True)
     ip = db.Column(db.String(45), nullable=True)
-    part_id = db.Column(db.Integer, db.ForeignKey("part.id"), nullable=False)
-    event_date = db.Column(db.DateTime, nullable=False)
+    part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
+    event_date = db.Column(db.DateTime(timezone=True), default=func.now())
 
-    part = db.relationship("Part", backref=db.backref("views", lazy=True))
     user = db.relationship("User", backref=db.backref("views", lazy=True))
