@@ -82,7 +82,7 @@ def library():
     if sort_option == "date_asc":
         parts = parts.order_by(Part.date.asc())
     elif sort_option == "popularity":
-        parts = parts.order_by(Part.downloads.desc())
+        parts = parts.order_by(Part.views.desc())
     else:
         parts = parts.order_by(Part.date.desc())
 
