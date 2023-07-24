@@ -61,3 +61,14 @@ class Category(db.Model):
     parent_cat: Mapped["Category"] = db.relationship(
         "Category", back_populates="subcategories", remote_side=[id]
     )
+
+
+class Views(db.Model):
+    view_event_id = db.Column(db.UUID(as_uuid=True), primary_key=True)
+    user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"), nullable=True)
+    ip = db.Column(db.String(45), nullable=True)
+    part_id = db.Column(db.Integer, db.ForeignKey("part.id"), nullable=False)
+    event_date = db.Column(db.DateTime, nullable=False)
+
+    part = db.relationship("Part", backref=db.backref("views", lazy=True))
+    user = db.relationship("User", backref=db.backref("views", lazy=True))
