@@ -36,8 +36,25 @@ def upgrade():
     )
 
     op.add_column("part", sa.Column("views", sa.Integer(), nullable=False, default=0))
+    op.add_column(
+        "user",
+        sa.Column("date", sa.DateTime(timezone=True), nullable=True),
+    )
+
+    op.execute(
+        """
+        SET GLOBAL event_scheduler = OFF;
+        CREATE EVENT clearOldViews
+        ON SCHEDULE EVERY 1 DAY
+        DO
+        UPDATE view SET ip=Null, user_id=Null
+        WHERE TIMESTAMPDIFF(HOUR, view.event_date, NOW()) > 3;
+        """
+    )
 
 
 def downgrade():
     op.drop_table("view")
     op.drop_column("part", "views")
+    op.drop_column("user", "date")
+    op.execute("drop event clearOldViews")

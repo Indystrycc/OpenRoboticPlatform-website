@@ -19,6 +19,7 @@ class User(db.Model, UserMixin):
     name_youtube = db.Column(db.String(100))
     name_instagram = db.Column(db.String(100))
     is_admin = db.Column(db.Boolean, default=False)
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
 
     parts: Mapped[list["Part"]] = db.relationship("Part", back_populates="author")
 
