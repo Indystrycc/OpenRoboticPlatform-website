@@ -43,6 +43,9 @@ map $upstream_http_cross_origin_resource_policy $corp {
 map $upstream_http_cross_origin_embedder_policy $coep {
     '' "require-corp";
 }
+map $upstream_http_permissions_policy $pp {
+    '' "accelerometer=(), camera=(), browsing-topics=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()";
+}
 
 server {
     listen 443 quic reuseport;
@@ -91,6 +94,7 @@ server {
     add_header Cross-Origin-Opener-Policy $coop always;
     add_header Cross-Origin-Resource-Policy $corp always;
     add_header Cross-Origin-Embedder-Policy $coep always;
+    add_header Permissions-Policy $pp always;
 
     location / {
         proxy_pass http://unix:/run/gunicorn/gunicorn.sock;

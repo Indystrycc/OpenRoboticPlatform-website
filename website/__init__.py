@@ -63,9 +63,20 @@ def create_app():
         content_security_policy=default_csp,
         content_security_policy_nonce_in=["script-src"],
         force_https=production,
+        permissions_policy={
+            "accelerometer": (),
+            "camera": (),
+            "browsing-topics": (),  # prevent Chrome from tracking visitors on this website
+            "geolocation": (),
+            "gyroscope": (),
+            "magnetometer": (),
+            "microphone": (),
+            "payment": (),
+            "usb": (),
+        },
+        session_cookie_secure=production,
         strict_transport_security=False,  # nginx already does it
         referrer_policy="same-origin",
-        session_cookie_secure=production,
         x_xss_protection=False,  # it's not supported any more, because it wasn't always working and could introduce new vulnerabilities
     )
     app.config["CSRF_COOKIE_SECURE"] = production
