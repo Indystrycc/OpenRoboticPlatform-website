@@ -43,7 +43,7 @@ def upgrade():
 
     op.execute(
         """
-        SET GLOBAL event_scheduler = OFF;
+        SET GLOBAL event_scheduler = ON;
         CREATE EVENT clearOldViews
         ON SCHEDULE EVERY 1 DAY
         DO
