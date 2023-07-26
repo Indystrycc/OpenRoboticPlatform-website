@@ -5,15 +5,42 @@ from os import getenv
 from flask import Flask, Response
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
+from flask_talisman import Talisman
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
 
+production = getenv("FLASK_ENV") == "production"
+
 db = SQLAlchemy()
 migrate = Migrate()
-compression_process = (
-    ProcessPoolExecutor(1) if getenv("FLASK_ENV") == "production" else None
+talisman = Talisman()
+csrf = SeaSurf()
+compression_process = ProcessPoolExecutor(1) if production else None
+
+default_csp = {
+    "default-src": "'none'",
+    "base-uri": "'none'",
+    "form-action": "'self'",
+    "style-src": ["'self'", "https://fonts.googleapis.com"],
+    "font-src": "https://fonts.gstatic.com",
+    "script-src": "",  # allow only nonce-based scripts (csp_nonce() adds values here)
+    "img-src": [
+        "'self'",
+        "data:",  # Bootstrap has some SVGs as data: URL in the stylesheet
+    ],
+}
+csp_captcha = dict(
+    default_csp,
+    **{
+        "script-src": "'strict-dynamic'",
+        "frame-src": [
+            "https://www.google.com/recaptcha/",
+            "https://recaptcha.google.com/recaptcha/",
+        ],
+    },
 )
 
 
@@ -31,6 +58,30 @@ def create_app():
     ] = f'mysql://root:rootroot@{getenv("DB_HOST", "127.0.0.1")}:3306/orp_db'
     db.init_app(app)
     migrate.init_app(app, db)
+    talisman.init_app(
+        app,
+        content_security_policy=default_csp,
+        content_security_policy_nonce_in=["script-src"],
+        force_https=production,
+        permissions_policy={
+            "accelerometer": (),
+            "camera": (),
+            "browsing-topics": (),  # prevent Chrome from tracking visitors on this website
+            "geolocation": (),
+            "gyroscope": (),
+            "magnetometer": (),
+            "microphone": (),
+            "payment": (),
+            "usb": (),
+        },
+        session_cookie_secure=production,
+        strict_transport_security=False,  # nginx already does it
+        referrer_policy="same-origin",
+        x_xss_protection=False,  # it's not supported any more, because it wasn't always working and could introduce new vulnerabilities
+    )
+    app.config["CSRF_COOKIE_SECURE"] = production
+    app.config["CSRF_COOKIE_HTTPONLY"] = True
+    csrf.init_app(app)
 
     from .auth import auth
     from .views import views
@@ -53,7 +104,12 @@ def create_app():
 
     @app.after_request
     def set_important_headers(response: Response):
-        response.headers.set("X-Content-Type-Options", "nosniff")
+        # enable process isolation and prevent XS-Leaks
+        response.headers.set("Cross-Origin-Opener-Policy", "same-origin")
+        # block no-cors cross-origin requests to our site, change it (on /static) if we want to allow cross-origin embedding of our resources
+        response.headers.set("Cross-Origin-Resource-Policy", "same-origin")
+        # only allow loading resources with CORP or (if marked as crossorigin) CORS
+        response.headers.set("Cross-Origin-Embedder-Policy", "require-corp")
         return response
 
     return app

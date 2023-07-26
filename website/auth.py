@@ -9,7 +9,7 @@ from MySQLdb.constants.ER import DUP_ENTRY
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from . import db
+from . import csp_captcha, db, talisman
 from .models import User
 from .secrets_manager import *
 
@@ -45,6 +45,7 @@ def logout():
 
 
 @auth.route("/signup", methods=["GET", "POST"])
+@talisman(content_security_policy=csp_captcha)
 def sign_up():
     if request.method == "POST":
         email = request.form.get("email")

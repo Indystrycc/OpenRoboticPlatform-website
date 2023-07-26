@@ -47,6 +47,7 @@
                                 <div class="invalid-feedback">Maximum username length is 100 characters</div>
                             </div>
                             <button type="submit" class="btn btn-primary">Save</button>
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                         </form>
                     </div>
                 </div>
@@ -55,6 +56,6 @@
     </div>
 </section>
 
-<script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module"></script>
-<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}

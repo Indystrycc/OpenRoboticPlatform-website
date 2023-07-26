@@ -29,6 +29,7 @@
                 <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">Log in</button>
               </div>
               <hr class="my-4">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
             </form>
             <div class="text-center pt-3">
               Don't have an account? <a href="/signup">Sign up!</a>
@@ -39,5 +40,5 @@
     </div>
   </div>
 </div>
-<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}

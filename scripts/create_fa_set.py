@@ -18,7 +18,7 @@ SOLID_ICONS = [
 ]
 
 TARGET_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), "../website/static/js/fa"
+    os.path.dirname(os.path.realpath(__file__)), "../website/static/fa"
 )
 ICON_LINE = re.compile(
     r"^\s*(?P<name>\d+|(?:[a-z]\w*)|(?:\"[\w-]*\")):\s*\[\s*\d+,\s*\d+,\s*\[(?P<alt_names>(?:[\s\w\",-]+)?)\].*\],?$",
@@ -27,8 +27,8 @@ ICON_LINE = re.compile(
 EMPTY_LINES = re.compile(r"\n{2,}")
 
 
-def download_file(file_base: str):
-    url_base = f"https://github.com/FortAwesome/Font-Awesome/raw/{FA_VERSION}/js/{file_base}.min.js"
+def download_file(file_base: str, file_type="js"):
+    url_base = f"https://github.com/FortAwesome/Font-Awesome/raw/{FA_VERSION}/{file_type}/{file_base}.min.{file_type}"
     r = requests.get(url_base)
     if r.status_code != 200:
         raise RuntimeError("Got unexpected response code", r)
@@ -66,6 +66,8 @@ if __name__ == "__main__":
     solid = process_icon_set(solid, SOLID_ICONS)
     print("Downloading the Font Awesome script")
     script = download_file("fontawesome")
+    print("Downloading the necessary stylesheet")
+    style = download_file("svg-with-js", "css")
 
     print("Writing results")
     Path(TARGET_DIR).mkdir(parents=True, exist_ok=True)
@@ -81,3 +83,7 @@ if __name__ == "__main__":
         os.path.join(TARGET_DIR, "fontawesome.min.js"), "wt", newline="\n"
     ) as fa_file:
         fa_file.write(script)
+    with open(
+        os.path.join(TARGET_DIR, "svg-with-js.min.css"), "wt", newline="\n"
+    ) as css_file:
+        css_file.write(style)

@@ -82,6 +82,7 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Update</button>
                             Go back to <a href="{{url_for('views_admin.panel')}}">admin panel</a>
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                         </form>
                     </div>
                 </div>
@@ -89,5 +90,5 @@
         </div>
     </div>
 </section>
-<script type="module" src="{{ url_for('static', filename='js/parent-in-select.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/parent-in-select.js') }}" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}

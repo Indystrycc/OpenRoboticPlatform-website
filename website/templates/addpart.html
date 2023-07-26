@@ -66,6 +66,7 @@
                                 <div class="invalid-feedback">Maximum length is 200 characters</div>
                             </div>
                             <button type="submit" class="btn btn-primary">Upload</button>
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                         </form>
                         <div class="mt-4 small">
                             <p class="small">By uploading your parts to OpenRoboticPlatform, you are joining a community dedicated to open collaboration in robotics. To foster seamless collaboration and knowledge sharing, all parts uploaded to OpenRoboticPlatform are released under the MIT license.</p>
@@ -78,8 +79,8 @@
     </div>
 </section>
 
-<script src="{{ url_for('static', filename='js/parent-in-select.js') }}" type="module"></script>
-<script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module"></script>
-<script src="{{ url_for('static', filename='js/file-preview.js') }}" type="module"></script>
-<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/parent-in-select.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/file-preview.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}
