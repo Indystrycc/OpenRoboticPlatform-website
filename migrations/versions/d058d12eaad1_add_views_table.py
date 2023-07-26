@@ -57,4 +57,4 @@ def downgrade():
     op.drop_table("view")
     op.drop_column("part", "views")
     op.drop_column("user", "date")
-    op.execute("drop event clearOldViews")
+    op.execute("DROP EVENT clearOldViews")
