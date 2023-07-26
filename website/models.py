@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
     name_youtube = db.Column(db.String(100))
     name_instagram = db.Column(db.String(100))
     is_admin = db.Column(db.Boolean, default=False)
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    date = db.Column(db.DateTime, default=func.now())
 
     parts: Mapped[list["Part"]] = db.relationship("Part", back_populates="author")
 
@@ -31,7 +31,7 @@ class Part(db.Model):
     image = db.Column(db.String(100), unique=True)
     category = db.Column(db.Integer, db.ForeignKey("category.id"))
     user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"))
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    date = db.Column(db.DateTime, default=func.now())
     verified = db.Column(db.Boolean, default=False)
     featured = db.Column(db.Boolean, default=False)
     public = db.Column(db.Boolean, default=False)
@@ -70,4 +70,4 @@ class View(db.Model):
     user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"), nullable=True)
     ip = db.Column(db.String(45), nullable=True)
     part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
-    event_date = db.Column(db.DateTime(timezone=True), default=func.now())
+    event_date = db.Column(db.DateTime, default=func.now())

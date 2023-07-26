@@ -47,7 +47,7 @@ def upgrade():
         CREATE EVENT clearOldViews
         ON SCHEDULE EVERY 1 DAY
         DO
-        UPDATE view SET ip=Null, user_id=Null
+        UPDATE view SET ip=NULL, user_id=NULL
         WHERE TIMESTAMPDIFF(HOUR, view.event_date, NOW()) > 3;
         """
     )
@@ -58,3 +58,4 @@ def downgrade():
     op.drop_column("part", "views")
     op.drop_column("user", "date")
     op.execute("DROP EVENT clearOldViews")
+    op.execute("SET GLOBAL event_scheduler = OFF")
