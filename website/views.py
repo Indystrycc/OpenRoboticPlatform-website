@@ -343,11 +343,19 @@ def userView(user_name):
         .limit(10)
         .all()
     )
+    stats = Stats.query.order_by(Stats.date.desc()).first()
+    user_parts = Part.query.filter_by(user_id=display_user.id).count()
+    user_contribution = round(
+        (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
+    )
     return render_template(
         "user.html",
         user=current_user,
         display_user=display_user,
         recent_parts=recent_parts,
+        total_parts=stats.total_parts,
+        user_contribution=user_contribution,
+        user_parts=user_parts,
     )
 
 
