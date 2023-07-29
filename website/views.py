@@ -24,7 +24,7 @@ from werkzeug.utils import secure_filename
 
 from . import compression_process, db
 from .compression import compress_uploads
-from .models import Category, File, Part, User, View
+from .models import Category, File, Part, User, View, Stats
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
@@ -35,7 +35,8 @@ def home():
     parts = (
         Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(10).all()
     )
-    return render_template("home.html", user=current_user, parts=parts)
+    stats = Stats.query.order_by(Stats.date.desc()).first()
+    return render_template("home.html", user=current_user, parts=parts, stats=stats)
 
 
 @views.route("/library")
@@ -107,7 +108,20 @@ def account():
         .limit(5)
         .all()
     )
-    return render_template("account.html", user=current_user, recent_parts=recent_parts)
+    stats = Stats.query.order_by(Stats.date.desc()).first()
+    user_parts = Part.query.filter_by(user_id=current_user.id).count()
+    user_contribution = round(
+        (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
+    )
+
+    return render_template(
+        "account.html",
+        user=current_user,
+        recent_parts=recent_parts,
+        total_parts=stats.total_parts,
+        user_parts=user_parts,
+        user_contribution=user_contribution,
+    )
 
 
 @views.route("/accountsettings", methods=["GET", "POST"])
