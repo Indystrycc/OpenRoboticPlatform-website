@@ -31,6 +31,7 @@ x-website: &website-base
     - website_secrets.py
   networks: &website-base-net
     dbnet:
+    mail:
   restart: unless-stopped
 
 
@@ -57,6 +58,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db-prod
+      - postfix
     environment:
       <<: *website-base-env
       TRUSTED_PROXIES: "1"
@@ -105,6 +107,23 @@ services:
     profiles:
       - prod
 
+  postfix:
+    build:
+      context: mail/postfix
+      dockerfile: Dockerfile
+    container_name: postfix
+    env_file:
+      - mail/postfix/config.env
+    expose:
+      - 25
+    secrets:
+      - chain
+      - fullchain
+      - privkey
+    networks:
+      - mail
+    profiles:
+      - prod
 
 volumes:
   dbdata:
@@ -113,6 +132,7 @@ volumes:
 
 networks:
   dbnet:
+  mail:
 
 secrets:
   website_secrets.py:
