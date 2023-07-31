@@ -61,6 +61,8 @@ services:
     depends_on:
       - db-prod
       - postfix
+    env_file:
+      - prod/mail/config.env
     environment:
       <<: *website-base-env
       TRUSTED_PROXIES: "1"
@@ -111,11 +113,11 @@ services:
 
   postfix:
     build:
-      context: mail/postfix
+      context: prod/mail/postfix
       dockerfile: Dockerfile
     container_name: postfix
     env_file:
-      - mail/config.env
+      - prod/mail/config.env
     expose:
       - 25
     secrets:
@@ -129,11 +131,11 @@ services:
 
   opendkim:
     build:
-      context: mail/opendkim
+      context: prod/mail/opendkim
       dockerfile: Dockerfile
     container_name: opendkim
     env_file:
-      - mail/config.env
+      - prod/mail/config.env
     expose:
       - 12301
     volumes:
