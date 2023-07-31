@@ -18,7 +18,7 @@ FROM debian:stable-slim as deploy
 RUN \
 	--mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
 	apt-get update && \
-	apt-get install -y opendkim opendkim-tools openssl
+	apt-get install -y opendkim opendkim-tools openssl bind9-host
 
 COPY --from=builder /syslog2stdout/syslog2stdout /usr/bin/syslog2stdout
 COPY opendkim/ /etc/opendkim/

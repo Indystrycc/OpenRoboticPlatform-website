@@ -21,5 +21,6 @@ fi
 
 echo "$DKIM_SECTOR._domainkey.$MAIL_DOMAIN $MAIL_DOMAIN:$DKIM_SECTOR:$KEY_PATH" > /etc/opendkim/KeyTable
 echo "*@$MAIL_DOMAIN $DKIM_SECTOR._domainkey.$MAIL_DOMAIN" > /etc/opendkim/SigningTable
+host website | awk '/has address/ { print $4 }' >> /etc/opendkim/TrustedHosts
 
 /usr/bin/syslog2stdout /dev/log & exec "$@"

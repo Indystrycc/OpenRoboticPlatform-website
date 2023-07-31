@@ -32,6 +32,8 @@ x-website: &website-base
   networks: &website-base-net
     dbnet:
     mail:
+      aliases:
+        - website
   restart: unless-stopped
 
 
@@ -112,8 +114,6 @@ services:
       context: mail/postfix
       dockerfile: Dockerfile
     container_name: postfix
-    depends_on:
-      - opendkim
     env_file:
       - mail/config.env
     expose:

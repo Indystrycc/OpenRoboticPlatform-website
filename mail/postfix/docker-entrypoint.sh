@@ -8,5 +8,6 @@ cp /etc/resolv.conf /var/spool/postfix/etc/resolv.conf
 
 echo "$MAIL_DOMAIN" > /etc/mailname
 postconf myhostname=$MAIL_HOSTNAME
+host website | awk '/has address/ { print $4 }' > /etc/postfix/mynetworks
 
 exec "$@"
