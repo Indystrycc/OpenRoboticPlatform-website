@@ -112,8 +112,10 @@ services:
       context: mail/postfix
       dockerfile: Dockerfile
     container_name: postfix
+    depends_on:
+      - opendkim
     env_file:
-      - mail/postfix/config.env
+      - mail/config.env
     expose:
       - 25
     secrets:
@@ -125,10 +127,27 @@ services:
     profiles:
       - prod
 
+  opendkim:
+    build:
+      context: mail/opendkim
+      dockerfile: Dockerfile
+    container_name: opendkim
+    env_file:
+      - mail/config.env
+    expose:
+      - 12301
+    volumes:
+      - opendkim-keys:/etc/opendkim/keys
+    networks:
+      - mail
+    profiles:
+      - prod
+
 volumes:
   dbdata:
   uploads:
   proxy-conn-sock:
+  opendkim-keys:
 
 networks:
   dbnet:

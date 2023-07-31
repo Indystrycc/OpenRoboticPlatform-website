@@ -59,5 +59,9 @@ smtp_host_lookup = dns
 smtp_dns_support_level = dnssec
 
 always_add_missing_headers = yes
+milter_protocol = 6
+milter_default_action = accept
+smtpd_milters = inet:opendkim:12301
+non_smtpd_milters = inet:opendkim:12301
 
 maillog_file = /dev/stdout
