@@ -108,11 +108,7 @@ def account():
         .limit(5)
         .all()
     )
-    stats = Stats.query.get(1)
-    user_parts = Part.query.filter_by(user_id=current_user.id).count()
-    user_contribution = round(
-        (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
-    )
+    stats, user_parts, user_contribution = calculateUserContribution()
 
     return render_template(
         "account.html",
@@ -343,11 +339,7 @@ def userView(user_name):
         .limit(10)
         .all()
     )
-    stats = Stats.query.get(1)
-    user_parts = Part.query.filter_by(user_id=display_user.id).count()
-    user_contribution = round(
-        (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
-    )
+    stats, user_parts, user_contribution = calculateUserContribution()
     return render_template(
         "user.html",
         user=current_user,
@@ -440,3 +432,12 @@ def delete_part_uploads(part_id: int, username: str):
 
     for file in file_uploads_dir.glob(f"{username}-{part_id}-*"):
         file.unlink()
+
+
+def calculateUserContribution():
+    stats = Stats.query.get(1)
+    user_parts = Part.query.filter_by(user_id=current_user.id).count()
+    user_contribution = round(
+        (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
+    )
+    return stats, user_parts, user_contribution
