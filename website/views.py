@@ -35,7 +35,7 @@ def home():
     parts = (
         Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(10).all()
     )
-    stats = Stats.query.filter_by(id=1).first()
+    stats = Stats.query.get(1)
     return render_template("home.html", user=current_user, parts=parts, stats=stats)
 
 
@@ -108,7 +108,7 @@ def account():
         .limit(5)
         .all()
     )
-    stats = Stats.query.filter_by(id=1).first()
+    stats = Stats.query.get(1)
     user_parts = Part.query.filter_by(user_id=current_user.id).count()
     user_contribution = round(
         (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
@@ -343,7 +343,7 @@ def userView(user_name):
         .limit(10)
         .all()
     )
-    stats = Stats.query.filter_by(id=1).first()
+    stats = Stats.query.get(1)
     user_parts = Part.query.filter_by(user_id=display_user.id).count()
     user_contribution = round(
         (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
