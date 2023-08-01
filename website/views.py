@@ -24,7 +24,7 @@ from werkzeug.utils import secure_filename
 
 from . import compression_process, db
 from .compression import compress_uploads
-from .models import Category, File, Part, User, View
+from .models import Category, File, Part, User, View, Stats
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
@@ -35,7 +35,8 @@ def home():
     parts = (
         Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(10).all()
     )
-    return render_template("home.html", user=current_user, parts=parts)
+    stats = Stats.query.get(1)
+    return render_template("home.html", user=current_user, parts=parts, stats=stats)
 
 
 @views.route("/library")
@@ -107,7 +108,16 @@ def account():
         .limit(5)
         .all()
     )
-    return render_template("account.html", user=current_user, recent_parts=recent_parts)
+    stats, user_parts, user_contribution = calculate_user_contribution()
+
+    return render_template(
+        "account.html",
+        user=current_user,
+        recent_parts=recent_parts,
+        total_parts=stats.total_parts,
+        user_parts=user_parts,
+        user_contribution=user_contribution,
+    )
 
 
 @views.route("/accountsettings", methods=["GET", "POST"])
@@ -329,11 +339,15 @@ def userView(user_name):
         .limit(10)
         .all()
     )
+    stats, user_parts, user_contribution = calculate_user_contribution()
     return render_template(
         "user.html",
         user=current_user,
         display_user=display_user,
         recent_parts=recent_parts,
+        total_parts=stats.total_parts,
+        user_contribution=user_contribution,
+        user_parts=user_parts,
     )
 
 
@@ -418,3 +432,12 @@ def delete_part_uploads(part_id: int, username: str):
 
     for file in file_uploads_dir.glob(f"{username}-{part_id}-*"):
         file.unlink()
+
+
+def calculate_user_contribution():
+    stats = Stats.query.get(1)
+    user_parts = Part.query.filter_by(user_id=current_user.id).count()
+    user_contribution = round(
+        (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
+    )
+    return stats, user_parts, user_contribution

@@ -71,3 +71,16 @@ class View(db.Model):
     ip = db.Column(db.String(45), nullable=True)
     part_id = db.Column(db.Integer, db.ForeignKey("part.id"), nullable=False)
     event_date = db.Column(db.DateTime, nullable=False, default=func.now())
+
+
+class Stats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    total_users = db.Column(db.Integer)
+    total_verified_users = db.Column(db.Integer)
+    total_parts = db.Column(db.Integer)
+    total_verified_parts = db.Column(db.Integer)
+    total_featured_parts = db.Column(db.Integer)
+    total_rejected_parts = db.Column(db.Integer)
+    total_files = db.Column(db.Integer)
+    total_views = db.Column(db.Integer)
+    date = db.Column(db.DateTime, nullable=False, default=func.now())
