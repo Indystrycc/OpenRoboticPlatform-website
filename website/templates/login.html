@@ -10,13 +10,13 @@
             <h5 class="card-title text-center mb-5 fw-light fs-5">Log in</h5>
             <form method="POST" class="needs-validation" novalidate>
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com" maxlength="100" required>
+                <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com" autocomplete="email" maxlength="100" required>
                 <label for="emailInput">Email address</label>
                 <div class="invalid-feedback" id="emailError">Please enter a valid email address.</div>
               </div>
               <div class="form-floating mb-3">
-                <input type="password" class="form-control" id="passwordInput" name="password" placeholder="Password" minlength="8" maxlength="128" required>
-                <label for="passwordInput">Password</label>
+                <input type="password" class="form-control" id="current-password" name="password" placeholder="Password" autocomplete="current-password" minlength="8" maxlength="128" required>
+                <label for="current-password">Password</label>
                 <div class="invalid-feedback" id="passwordError">Please enter a password.</div>
               </div>
               <div class="form-check mb-3">
@@ -27,6 +27,9 @@
               </div>
               <div class="d-grid">
                 <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">Log in</button>
+              </div>
+              <div class="mt-2">
+                <a href="/reset-password">Forgot password?</a>
               </div>
               <hr class="my-4">
               <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">

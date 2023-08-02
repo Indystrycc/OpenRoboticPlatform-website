@@ -1,4 +1,5 @@
 import ipaddress
+import textwrap
 from email.headerregistry import Address
 from email.message import EmailMessage
 from os import getenv
@@ -39,38 +40,89 @@ def send_confirmation_mail(username: str, email_addr: str, url: str):
     msg["From"] = FROM_ADDR
     msg["To"] = addr
     msg.set_content(
-        f"""\
-Hello!
+        textwrap.dedent(
+            f"""\
+            Hello!
 
-Thank you for creating an OpenRoboticPlatform account. Before uploading your
-first part you have to confirm your email address using the link below:
-
-{url}
-
-If you did not create an OpenRoboticPlatform account please ignore this mail.
-
-Regards,
-OpenRoboticPlatform Team
-"""
-    )
-    msg.add_alternative(
-        f"""\
-<html>
-    <body>
-        <p>Hello!</p>
-        <p>
             Thank you for creating an OpenRoboticPlatform account. Before uploading your
             first part you have to confirm your email address using the link below:
-        </p>
-        <p><a href="{url}">{url}</a></p>
-        <p>If you did not create an OpenRoboticPlatform account please ignore this mail.</p>
-        <p>
-            Regards,<br>
+
+            {url}
+
+            If you did not create an OpenRoboticPlatform account please ignore this message.
+
+            Regards,
             OpenRoboticPlatform Team
-        </p>
-    </body>
-</html>
-""",
+            """
+        )
+    )
+    msg.add_alternative(
+        textwrap.dedent(
+            f"""\
+            <html>
+                <body>
+                    <p>Hello!</p>
+                    <p>
+                        Thank you for creating an OpenRoboticPlatform account. Before uploading your
+                        first part you have to confirm your email address using the link below:
+                    </p>
+                    <p><a href="{url}">{url}</a></p>
+                    <p>If you did not create an OpenRoboticPlatform account please ignore this message.</p>
+                    <p>
+                        Regards,<br>
+                        OpenRoboticPlatform Team
+                    </p>
+                </body>
+            </html>
+            """
+        ),
+        subtype="html",
+    )
+
+    with SMTP("postfix") as smtp:
+        smtp.send_message(msg)
+
+
+def send_password_reset_mail(username: str, email_addr: str, url: str):
+    msg = EmailMessage()
+    msg["Subject"] = "Password reset link"
+    msg["From"] = FROM_ADDR
+    msg["To"] = Address(username, addr_spec=email_addr)
+    msg.set_content(
+        textwrap.dedent(
+            f"""\
+            Hello!
+
+            To reset your password use the link below. The link is valid for 15 minutes.
+
+            {url}
+
+            If you did not request a password reset link please ignore this message.
+
+            Regards,
+            OpenRoboticPlatform Team
+            """
+        )
+    )
+    msg.add_alternative(
+        textwrap.dedent(
+            f"""\
+            <html>
+                <body>
+                    <p>Hello!</p>
+                    <p>
+                        To reset your password use the link below. The link is valid for 15 minutes.
+                    </p>
+                    <p><a href="{url}">{url}</a></p>
+                    <p>If you did not request a password reset link please ignore this message.</p>
+                    <p>
+                        Regards,<br>
+                        OpenRoboticPlatform Team
+                    </p>
+                </body>
+            </html>
+            """
+        ),
         subtype="html",
     )
 

@@ -4,7 +4,7 @@ import re
 import secrets
 import sys
 from datetime import UTC, datetime, timedelta
-from os import getenv
+from email.headerregistry import Address as EmailAddress
 
 import requests
 from flask import Blueprint, flash, redirect, render_template, request, url_for
@@ -16,7 +16,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import csp_captcha, db, production, talisman
-from .mailer import send_confirmation_mail
+from .mailer import send_confirmation_mail, send_password_reset_mail
 from .models import EmailToken, TokenType, User
 from .secrets_manager import *
 
@@ -58,17 +58,8 @@ def sign_up():
         email = request.form.get("email")
         password = request.form.get("password")
         username = request.form.get("username")
-        recaptcha_response = request.form.get("g-recaptcha-response")
 
-        url = "https://www.google.com/recaptcha/api/siteverify"
-        data = {"secret": RECAPTCHA_PRIVATE_KEY, "response": recaptcha_response}
-        response = requests.post(url, data=data)
-        captcha_result = response.json()
-
-        if captcha_result["success"] and (
-            getenv("FLASK_ENV") != "production"
-            or (captcha_result["score"] >= 0.5 and captcha_result["action"] == "signup")
-        ):
+        if check_captcha("signup"):
             user = User.query.filter_by(email=email).first()
             if user:
                 flash("This email is already registered.", category="error")
@@ -83,11 +74,9 @@ def sign_up():
                     "Username can contain only alphanumeric characters and '-'.",
                     category="error",
                 )
-            elif len(password) < 8:
-                flash("Password must be at least 8 characters long.", category="error")
-            # A completely arbitrary length limit
-            elif len(password.encode("utf-8")) > 128:
-                flash("Password must not be longer than 128 bytes.", category="error")
+            elif not check_password_rules(password):
+                # check_password_rules uses flash to show the errors
+                pass
             else:
                 try:
                     new_user_data = User(
@@ -167,7 +156,7 @@ def confirm_email(token_enc: str):
     return redirect("/")
 
 
-@auth.route("/signup/resend_mail", methods=["POST"])
+@auth.route("/signup/resend-mail", methods=["POST"])
 @login_required
 def resend_confirmation_email():
     if current_user.confirmed:
@@ -188,10 +177,9 @@ def resend_confirmation_email():
     )
     now = datetime.now(UTC)
     if allowed_after and now <= allowed_after:
-        wait = allowed_after - now
-        minutes, seconds = divmod(math.ceil(wait.total_seconds()), 60)
         # In theory we could end up with exactly 0 s, because of <=, but the chance is very low
-        wait_str = f"{minutes} min {seconds} s" if minutes else f"{seconds} s"
+        wait = allowed_after - now
+        wait_str = format_time_interval(wait)
         flash(
             f"Please wait {wait_str} before requesting another confirmation email.",
             "error",
@@ -225,3 +213,154 @@ def resend_confirmation_email():
     db.session.commit()
     flash("An email with a confirmation link was sent.")
     return redirect(url_for("views.account"))
+
+
+@auth.route("/reset-password", methods=["GET", "POST"])
+@talisman(content_security_policy=csp_captcha)
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+
+        if check_captcha("forgot_password"):
+            user = db.session.scalar(select(User).where(User.email == email))
+            if user:
+                now = datetime.now(UTC)
+                saved_token = db.session.scalar(
+                    select(EmailToken)
+                    .where(
+                        EmailToken.user_id == user.id,
+                        EmailToken.token_type == TokenType.password_reset,
+                    )
+                    .order_by(EmailToken.created_on.desc())
+                )
+                created_on = (
+                    saved_token.created_on if saved_token else datetime.min
+                ).replace(tzinfo=UTC)
+                resend_if_after = created_on + timedelta(minutes=1)
+                if now < resend_if_after:
+                    wait = resend_if_after - now
+                    wait_str = format_time_interval(wait)
+                    flash(
+                        f"Please wait {wait_str} before requesting another password reset email.",
+                        "error",
+                    )
+                    return render_template(
+                        "forgot-password.html",
+                        user=current_user,
+                        recaptcha_site_key=RECAPTCHA_PUBLIC_KEY,
+                    )
+
+                else:
+                    if saved_token:
+                        db.session.delete(saved_token)
+                    activation_token = secrets.token_bytes(32)
+                    reset_url = url_for(
+                        ".reset_password_token",
+                        _scheme="https",
+                        _external=True,
+                        token_enc=base64.urlsafe_b64encode(activation_token),
+                    )
+                    saved_token = EmailToken(
+                        token=activation_token,
+                        token_type=TokenType.password_reset,
+                        user_id=user.id,
+                    )
+                    db.session.add(saved_token)
+                    if production:
+                        send_password_reset_mail(user.username, user.email, reset_url)
+                    else:
+                        print(reset_url)
+                    db.session.commit()
+
+            flash(
+                f"Password reset link was sent to {email}. The link is valid for 15 minutes."
+            )
+        else:
+            flash("CAPTCHA validation failed. Please try again.", category="error")
+
+    return render_template(
+        "forgot-password.html",
+        user=current_user,
+        recaptcha_site_key=RECAPTCHA_PUBLIC_KEY,
+    )
+
+
+@auth.route("/reset-password/<token_enc>", methods=["GET", "POST"])
+@talisman(content_security_policy=csp_captcha)
+def reset_password_token(token_enc: str):
+    token = base64.urlsafe_b64decode(token_enc)
+    valid_time = datetime.now(UTC) - timedelta(minutes=15)
+    matching_token = db.session.scalar(
+        select(EmailToken).where(
+            EmailToken.token == token,
+            EmailToken.token_type == TokenType.password_reset,
+            EmailToken.created_on >= valid_time,
+        )
+    )
+    if not matching_token:
+        flash("Invalid or expired link.", "error")
+        return redirect("/")
+
+    user = matching_token.user
+    if request.method == "POST":
+        password = request.form.get("password")
+
+        if check_password_rules(password):
+            if check_captcha("reset_password"):
+                user.password = generate_password_hash(
+                    password, method="scrypt:131072:8:1"
+                )
+                db.session.delete(matching_token)
+                db.session.commit()
+                flash("You can now log in using the new password")
+                return redirect("/login")
+            else:
+                flash("CAPTCHA validation failed. Please try again.", category="error")
+
+    address = EmailAddress(addr_spec=user.email)
+    uname = address.username
+    uname_len = len(uname)
+    username = (
+        (uname[0] + "*" * (uname_len - 2) + uname[-1])
+        if uname_len > 2
+        else uname[0] + "*" * (uname_len - 1)
+    )
+    address = EmailAddress(username=username, domain=address.domain)
+    return render_template(
+        "reset-password.html",
+        user=current_user,
+        recaptcha_site_key=RECAPTCHA_PUBLIC_KEY,
+        mail_addr=address,
+    )
+
+
+def format_time_interval(wait: timedelta):
+    minutes, seconds = divmod(math.ceil(wait.total_seconds()), 60)
+    wait_str = f"{minutes} min {seconds} s" if minutes else f"{seconds} s"
+    return wait_str
+
+
+def verify_recaptcha():
+    recaptcha_response = request.form.get("g-recaptcha-response")
+    url = "https://www.google.com/recaptcha/api/siteverify"
+    data = {"secret": RECAPTCHA_PRIVATE_KEY, "response": recaptcha_response}
+    response = requests.post(url, data=data)
+    return response.json()
+
+
+def check_captcha(action: str, threshold=0.5):
+    captcha_result = verify_recaptcha()
+    return captcha_result["success"] and (
+        not production
+        or (captcha_result["score"] >= threshold and captcha_result["action"] == action)
+    )
+
+
+def check_password_rules(password: str):
+    if len(password) < 8:
+        flash("Password must be at least 8 characters long.", category="error")
+        return False
+    if len(password.encode("utf-8")) > 128:
+        flash("Password must not be longer than 128 bytes.", category="error")
+        return False
+    return True
