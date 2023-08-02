@@ -3,6 +3,7 @@ name: openroboticplatform
 x-database: &db-base
   image: mariadb:10
   container_name: db
+  command: ["--event_scheduler=ON"]
   environment:
     - MARIADB_ROOT_PASSWORD=rootroot
     - MARIADB_DATABASE=orp_db
