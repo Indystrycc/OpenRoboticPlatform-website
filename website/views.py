@@ -1,23 +1,15 @@
 import mimetypes
 import os
 import uuid
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from datetime import datetime, timedelta
 
 import MySQLdb.constants.ER as mysql_errors
 from bleach import clean
-from flask import (
-    Blueprint,
-    Markup,
-    abort,
-    flash,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from sqlalchemy import select, or_
+from markupsafe import Markup
+from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
@@ -184,7 +176,7 @@ def part(part_number):
         category = f"{category.name} - {subcategory.name}"
 
     ip_address = request.remote_addr
-    time_delta = datetime.utcnow() - timedelta(hours=3)
+    time_delta = datetime.now(UTC) - timedelta(hours=3)
     view_count_check: View | None = View.query.filter(
         or_(
             View.ip == ip_address,
@@ -227,6 +219,11 @@ def showcase():
 @login_required
 def addPart():
     ALLOWED_PART_EXTENSIONS = [".3mf", ".stl", ".step", ".dxf"]
+
+    if not current_user.confirmed:
+        flash("You have to confirm your email before uploading a part.", "error")
+        return redirect(url_for("views.account"))
+
     if request.method == "POST":
         # Retrieve the form data
         name = clean(request.form.get("name"))

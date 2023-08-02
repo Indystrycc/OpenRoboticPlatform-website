@@ -138,7 +138,7 @@ secret.py
 /scripts/secret
 /prod/nginx/certs
 *.pem
-/prod/mail/**/config.env
+/prod/**/config.env
 
 .vscode/*
 !/.vscode/extensions.json

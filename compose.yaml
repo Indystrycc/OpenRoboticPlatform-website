@@ -63,6 +63,7 @@ services:
       - postfix
     env_file:
       - prod/mail/config.env
+      - prod/config.env
     environment:
       <<: *website-base-env
       TRUSTED_PROXIES: "1"

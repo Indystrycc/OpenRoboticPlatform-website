@@ -10,6 +10,15 @@
 {% block content %}
 <section class="bg-secondary-subtle">
     <div class="container py-5">
+      {% if not user.confirmed %}
+      <div class="alert alert-warning" role="alert">
+        <form method="post" action="{{ url_for('auth.resend_confirmation_email') }}">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+          Your email has not been confirmed - the ability to upload parts is restricted and the account may be deleted after some time.
+          If you did not receive the email with an activation link you can <button class="btn btn-link p-0 border-0 align-baseline">resend the email</button>.
+        </form>
+      </div>
+      {% endif %}
       <div class="row">
         <div class="col-lg-4">
           <div class="card mb-4">
