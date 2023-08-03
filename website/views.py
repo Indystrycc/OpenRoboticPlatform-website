@@ -27,11 +27,15 @@ views = Blueprint("views", __name__)
 @views.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
-        if save_new_subscriber(clean(request.form.get("email"))):
-            flash("Congratulations! You're now subscribed to our newsletter", "success")
+        val, response = save_new_subscriber(clean(request.form.get("email")))
+        if val:
+            flash(
+                f"Congratulations! You're now subscribed to our newsletter. {response}",
+                "success",
+            )
         else:
             flash(
-                "Something went wrong while adding your email to our newsletter, please try again",
+                f"Something went wrong while adding your email to our newsletter, please try again. {response}",
                 "error",
             )
     parts = (
@@ -464,6 +468,6 @@ def save_new_subscriber(email):
     response = requests.post(url, json=data, headers=headers)
 
     if response.status_code == 200:
-        return True
+        return True, response
     else:
-        return False
+        return False, response
