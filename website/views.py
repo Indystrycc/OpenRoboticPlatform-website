@@ -456,7 +456,7 @@ def calculate_user_contribution(id):
 
 
 def save_new_subscriber(email):
-    url = "https://connect.mailerlite.com/"
+    url = "https://connect.mailerlite.com/api/subscribers"
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
