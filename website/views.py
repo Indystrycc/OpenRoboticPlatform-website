@@ -1,6 +1,7 @@
 import mimetypes
 import os
 import uuid
+import requests
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -17,17 +18,27 @@ from werkzeug.utils import secure_filename
 from . import compression_process, db
 from .compression import compress_uploads
 from .models import Category, File, Part, User, View, Stats
+from .secrets_manager import MAILERLITE_API_KEY
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
 
 
-@views.route("/")
+@views.route("/", methods=["GET", "POST"])
 def home():
+    if request.method == "POST":
+        if save_new_subscriber(clean(request.form.get("email"))):
+            flash("Congratulations! You're now subscribed to our newsletter", "success")
+        else:
+            flash(
+                "Something went wrong while adding your email to our newsletter, please try again",
+                "error",
+            )
     parts = (
         Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(10).all()
     )
     stats = Stats.query.get(1)
+
     return render_template("home.html", user=current_user, parts=parts, stats=stats)
 
 
@@ -438,3 +449,21 @@ def calculate_user_contribution(id):
         (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
     )
     return stats, user_parts, user_contribution
+
+
+def save_new_subscriber(email):
+    url = "https://connect.mailerlite.com/"
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {MAILERLITE_API_KEY}",
+    }
+
+    data = {"email": email}
+
+    response = requests.post(url, json=data, headers=headers)
+
+    if response.status_code == 200:
+        return True
+    else:
+        return False

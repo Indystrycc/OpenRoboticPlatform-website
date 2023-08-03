@@ -10,17 +10,29 @@ if "SECRETS_FILE" in environ.keys():
     SECRET_KEY: str = secret_module.SECRET_KEY
     RECAPTCHA_PUBLIC_KEY: str = secret_module.RECAPTCHA_PUBLIC_KEY
     RECAPTCHA_PRIVATE_KEY: str = secret_module.RECAPTCHA_PRIVATE_KEY
+    MAILERLITE_API_KEY: str = secret_module.MAILERLITE_API_KEY
 
-elif set(("SECRET_KEY", "RECAPTCHA_PUBLIC_KEY", "RECAPTCHA_PRIVATE_KEY")).issubset(
-    environ.keys()
-):
+elif set(
+    (
+        "SECRET_KEY",
+        "RECAPTCHA_PUBLIC_KEY",
+        "RECAPTCHA_PRIVATE_KEY",
+        "MAILERLITE_API_KEY",
+    )
+).issubset(environ.keys()):
     SECRET_KEY = environ.get("SECRET_KEY")
     RECAPTCHA_PUBLIC_KEY = environ.get("RECAPTCHA_PUBLIC_KEY")
     RECAPTCHA_PRIVATE_KEY = environ.get("RECAPTCHA_PRIVATE_KEY")
+    MAILERLITE_API_KEY = environ.get("MAILERLITE_API_KEY")
 
 else:
     try:
-        from .secret import SECRET_KEY, RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
+        from .secret import (
+            SECRET_KEY,
+            RECAPTCHA_PUBLIC_KEY,
+            RECAPTCHA_PRIVATE_KEY,
+            MAILERLITE_API_KEY,
+        )
     except ImportError:
         from sys import stderr
 
