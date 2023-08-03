@@ -30,12 +30,12 @@ def home():
         val, response = save_new_subscriber(clean(request.form.get("email")))
         if val:
             flash(
-                f"Congratulations! You're now subscribed to our newsletter. {response}",
+                "Congratulations! You're now subscribed to our newsletter.",
                 "success",
             )
         else:
             flash(
-                f"Something went wrong while adding your email to our newsletter, please try again. {response}",
+                "Something went wrong while adding your email to our newsletter, please try again.",
                 "error",
             )
     parts = (
@@ -463,11 +463,14 @@ def save_new_subscriber(email):
         "Authorization": f"Bearer {MAILERLITE_API_KEY}",
     }
 
-    data = {"email": email}
+    data = {
+        "email": email,
+        "groups": ["95057407892260283"],
+    }
 
     response = requests.post(url, json=data, headers=headers)
 
-    if response.status_code == 200:
+    if response.status_code == 200 or response.status_code == 201:
         return True, response
     else:
         return False, response
