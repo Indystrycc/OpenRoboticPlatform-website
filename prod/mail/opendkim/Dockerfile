@@ -2,7 +2,7 @@
 FROM debian:stable-slim as builder
 
 RUN \
-	--mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
+	--mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked \
 	apt-get update && \
 	apt-get install --no-install-recommends -y libc6-dev gcc ca-certificates wget unzip
 
@@ -16,7 +16,9 @@ RUN wget https://github.com/ossobv/syslog2stdout/archive/142793f15169fa01c0e1249
 FROM debian:stable-slim as deploy
 
 RUN \
-	--mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
+	--mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked \
+	rm -f /etc/apt/apt.conf.d/docker-clean; \
+	echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache; \
 	apt-get update && \
 	apt-get install -y opendkim opendkim-tools openssl bind9-host
 
