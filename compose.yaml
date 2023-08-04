@@ -60,7 +60,6 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db-prod
-      - postfix
     env_file:
       - prod/mail/config.env
       - prod/config.env
