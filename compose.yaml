@@ -116,7 +116,8 @@ services:
       context: prod/mail/postfix
       dockerfile: Dockerfile
     container_name: postfix
-    depends_on: website-prod
+    depends_on: 
+      - website-prod
     env_file:
       - prod/mail/config.env
     expose:
@@ -135,7 +136,8 @@ services:
       context: prod/mail/opendkim
       dockerfile: Dockerfile
     container_name: opendkim
-    depends_on: website-prod
+    depends_on: 
+      - website-prod
     env_file:
       - prod/mail/config.env
     expose:
