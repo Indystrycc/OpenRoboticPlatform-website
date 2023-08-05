@@ -31,6 +31,9 @@ x-website: &website-base
     - website_secrets.py
   networks: &website-base-net
     dbnet:
+    mail:
+      aliases:
+        - website
   restart: unless-stopped
 
 
@@ -57,6 +60,9 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db-prod
+    env_file:
+      - prod/mail/config.env
+      - prod/config.env
     environment:
       <<: *website-base-env
       TRUSTED_PROXIES: "1"
@@ -105,14 +111,53 @@ services:
     profiles:
       - prod
 
+  postfix:
+    build:
+      context: prod/mail/postfix
+      dockerfile: Dockerfile
+    container_name: postfix
+    depends_on: 
+      - website-prod
+    env_file:
+      - prod/mail/config.env
+    expose:
+      - 25
+    secrets:
+      - chain
+      - fullchain
+      - privkey
+    networks:
+      - mail
+    profiles:
+      - prod
+
+  opendkim:
+    build:
+      context: prod/mail/opendkim
+      dockerfile: Dockerfile
+    container_name: opendkim
+    depends_on: 
+      - website-prod
+    env_file:
+      - prod/mail/config.env
+    expose:
+      - 12301
+    volumes:
+      - opendkim-keys:/etc/opendkim/keys
+    networks:
+      - mail
+    profiles:
+      - prod
 
 volumes:
   dbdata:
   uploads:
   proxy-conn-sock:
+  opendkim-keys:
 
 networks:
   dbnet:
+  mail:
 
 secrets:
   website_secrets.py:

@@ -1,8 +1,9 @@
 from functools import wraps
 
 from bleach import clean
-from flask import Blueprint, Markup, abort, flash, render_template, request, url_for
+from flask import Blueprint, abort, flash, render_template, request, url_for
 from flask_login import current_user, login_required
+from markupsafe import Markup
 from sqlalchemy import exists, select
 from sqlalchemy.orm import joinedload
 

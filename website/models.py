@@ -1,3 +1,4 @@
+import enum
 import uuid
 
 from flask_login import UserMixin
@@ -67,7 +68,11 @@ class Category(db.Model):
 
 class View(db.Model):
     view_event_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"), nullable=True)
+    user_id = db.Column(
+        db.UUID(as_uuid=True),
+        db.ForeignKey("user.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     ip = db.Column(db.String(45), nullable=True)
     part_id = db.Column(db.Integer, db.ForeignKey("part.id"), nullable=False)
     event_date = db.Column(db.DateTime, nullable=False, default=func.now())
@@ -84,3 +89,21 @@ class Stats(db.Model):
     total_files = db.Column(db.Integer)
     total_views = db.Column(db.Integer)
     date = db.Column(db.DateTime, nullable=False, default=func.now())
+
+
+class TokenType(enum.Enum):
+    mail_confirmation = 1
+    password_reset = 2
+
+
+class EmailToken(db.Model):
+    token = db.Column(db.BINARY(32), primary_key=True)
+    token_type = db.Column(db.Enum(TokenType), nullable=False)
+    user_id = db.Column(
+        db.UUID(as_uuid=True),
+        db.ForeignKey("user.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    created_on = db.Column(db.DateTime, nullable=False, default=func.now())
+
+    user: Mapped[User] = db.relationship()

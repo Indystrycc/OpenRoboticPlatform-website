@@ -10,18 +10,18 @@
             <h5 class="card-title text-center mb-5 fw-light fs-5">Sign Up</h5>
             <form method="POST" id="signup_form" class="needs-validation" novalidate>
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com" maxlength="100" required>
+                <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com" autocomplete="email" maxlength="100" required>
                 <label for="emailInput">Email address</label>
                 <div class="invalid-feedback">Enter a valid email address (max 100 characters)</div>
               </div>
               <div class="form-floating mb-3">
-                <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" aria-describedby="passwordHelp" minlength="8" maxlength="128" required>
-                <label for="floatingPassword">Password</label>
+                <input type="password" class="form-control" id="new-password" name="password" placeholder="Password" autocomplete="new-password" aria-describedby="passwordHelp" minlength="8" maxlength="128" required>
+                <label for="new-password">Password</label>
                 <div id="passwordHelp" class="form-text">Password must be between 8 and 128 characters long.</div>
                 <div class="invalid-feedback">Password does not meet requirements</div>
               </div>
               <div class="form-floating mb-3">
-                <input class="form-control" id="usernameInput" name="username" placeholder="User name" aria-describedby="usernameHelp" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]+" required>
+                <input class="form-control" id="usernameInput" name="username" placeholder="User name" autocomplete="username" aria-describedby="usernameHelp" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]+" required>
                 <label for="usernameInput">User name</label>
                 <div id="usernameHelp" class="form-text">Username must be between 4 and 20 characters long. Only letters, digits and underscores are allowed.</div>
                 <div class="invalid-feedback">Username does not meet the requirements</div>
