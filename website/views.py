@@ -33,20 +33,8 @@ ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
 
 
-@views.route("/", methods=["GET", "POST"])
+@views.route("/")
 def home():
-    if request.method == "POST":
-        val, response = save_new_subscriber(clean(request.form.get("email")))
-        if val:
-            flash(
-                "Congratulations! You're now subscribed to our newsletter.",
-                "success",
-            )
-        else:
-            flash(
-                "Something went wrong while adding your email to our newsletter, please try again.",
-                "error",
-            )
     parts = (
         Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(10).all()
     )
@@ -374,9 +362,8 @@ def userView(user_name):
 
 @views.route("/newsletterAdd", methods=["POST"])
 def newsletterAdd():
-    if request.method == "POST":
-        success, message = save_new_subscriber(clean(request.form.get("email")))
-        return jsonify({"success": success})
+    success, message = save_new_subscriber(clean(request.form.get("email")))
+    return jsonify({"success": success})
 
 
 def save_image(image, part_id, username):
