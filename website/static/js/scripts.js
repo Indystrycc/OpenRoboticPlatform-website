@@ -58,13 +58,13 @@ window.addEventListener('DOMContentLoaded', event => {
         try {
             const response = await fetch("/newsletterAdd", {method: "POST", data});
             const { success, message } = await response.json();
-            if (success == "200" || success == "201" || success == "202" || success == "204"){
+            if (success == true){
                 addBootstrapAlert("alert-success", "Congratulations! You're now subscribed to our newsletter.")
             }else{
                 addBootstrapAlert("alert-danger", "Something went wrong while adding your email to our newsletter, please try again.")
             }
         } catch (e) {
-            addBootstrapAlert("alert-danger", "Something went wrong while adding your email to our newsletter, please try again.")
+            addBootstrapAlert("alert-danger", "There was an error, please try again.")
             console.log(e)
         }
     });
