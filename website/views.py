@@ -363,7 +363,7 @@ def userView(user_name):
     )
 
 
-@views.route("/newsletterAdd", methods=["GET", "POST"])
+@views.route("/newsletterAdd", methods=["POST"])
 def newsletterAdd():
     if request.method == "POST":
         success, message = save_new_subscriber(clean(request.form.get("email")))

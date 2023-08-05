@@ -55,10 +55,12 @@ window.addEventListener('DOMContentLoaded', event => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = new FormData(form); 
+        console.log(data)
         try {
             const response = await fetch("/newsletterAdd", {method: "POST", data});
             const { success, message } = await response.json();
-            if (success == true){
+            console.log(success)
+            if (success){
                 addBootstrapAlert("alert-success", "Congratulations! You're now subscribed to our newsletter.")
             }else{
                 addBootstrapAlert("alert-danger", "Something went wrong while adding your email to our newsletter, please try again.")
