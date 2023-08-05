@@ -28,6 +28,7 @@ default_csp = {
     "style-src": ["'self'", "https://fonts.googleapis.com"],
     "font-src": "https://fonts.gstatic.com",
     "script-src": "",  # allow only nonce-based scripts (csp_nonce() adds values here)
+    "connect-src": "'self'",
     "img-src": [
         "'self'",
         "data:",  # Bootstrap has some SVGs as data: URL in the stylesheet
