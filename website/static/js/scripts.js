@@ -52,15 +52,36 @@ window.addEventListener('DOMContentLoaded', event => {
     });
 
     const form = document.getElementById("newsletter_form");
-    form.addEventListener("subscribe-btn", (e) => {
+    form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        // nie wiem czy tu nie trzeba jeszcze sprawdzić czy formularz jest poprawny
-        const data = new FormData(form);
-        fetch("/newsletterAdd", {
-            method: "POST", // albo PUT
-            data, // 'data' to to samo co 'data: data', ale krócej
-        }); // możesz użyć '.then' i '.catch' do obsłużenia odpowiedzi, albo prościej będzie dopisać 'async' między '"submit",' a '(e)' i zrobić const response = await fetch() i synchronicznie obsłużyć
+        const data = new FormData(form); 
+        try {
+            const response = await fetch("/newsletterAdd", {method: "POST", data});
+            const { success, message } = await response.json();
+            if (success == "200" || success == "201" || success == "202" || success == "204"){
+                addBootstrapAlert("alert-success", "Congratulations! You're now subscribed to our newsletter.")
+            }else{
+                addBootstrapAlert("alert-danger", "Something went wrong while adding your email to our newsletter, please try again.")
+            }
+        } catch (e) {
+            addBootstrapAlert("alert-danger", "Something went wrong while adding your email to our newsletter, please try again.")
+            console.log(e)
+        }
     });
-
 });
 
+function addBootstrapAlert(type, message) {
+    const alertDiv = document.createElement("div");
+    alertDiv.classList.add("alert", type , "alert-dismissible", "fade", "show", "fixed-bottom", "col-11", "m-auto", "mb-2");
+    alertDiv.setAttribute("role", "alert");
+    alertDiv.textContent = message;
+
+    const closeButton = document.createElement("button");
+    closeButton.setAttribute("type", "button");
+    closeButton.classList.add("btn-close");
+    closeButton.setAttribute("data-bs-dismiss", "alert");
+    closeButton.setAttribute("aria-label", "Close");
+
+    alertDiv.appendChild(closeButton);
+    document.body.appendChild(alertDiv);
+}

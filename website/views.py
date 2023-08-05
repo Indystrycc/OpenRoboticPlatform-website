@@ -7,7 +7,7 @@ from pathlib import Path
 
 import MySQLdb.constants.ER as mysql_errors
 from bleach import clean
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for, jsonify
 from flask_login import current_user, login_required
 from markupsafe import Markup
 from sqlalchemy import or_, select
@@ -366,17 +366,13 @@ def userView(user_name):
 @views.route("/newsletterAdd", methods=["GET", "POST"])
 def newsletterAdd():
     if request.method == "POST":
-        val, response = save_new_subscriber(clean(request.form.get("email")))
-        if val:
-            flash(
-                "Congratulations! You're now subscribed to our newsletter.",
-                "success",
-            )
-        else:
-            flash(
-                "Something went wrong while adding your email to our newsletter, please try again.",
-                "error",
-            )
+        success, message = save_new_subscriber(clean(request.form.get("email")))
+        response_data = {
+            'success': success,
+            'message': message
+        }
+        return jsonify(response_data)
+
 
 
 def save_image(image, part_id, username):
