@@ -70,7 +70,7 @@
             <div class="col-md-4">
                 <h4>Newsletter</h4>
                 <p>Subscribe to our newsletter to stay updated with the latest news and announcements.</p>
-                <form action="{{ url_for('views.home') }}" method="POST">
+                <form id="newsletter_form" method="POST">
                     <div class="input-group mb-3">
                         <input type="email" class="form-control" placeholder="Email address" name="email" aria-label="Email address" aria-describedby="subscribe-btn">
                         <button class="btn btn-primary" type="submit" id="subscribe-btn">Subscribe</button>

@@ -363,6 +363,22 @@ def userView(user_name):
     )
 
 
+@views.route("/newsletterAdd", methods=["GET", "POST"])
+def newsletterAdd():
+    if request.method == "POST":
+        val, response = save_new_subscriber(clean(request.form.get("email")))
+        if val:
+            flash(
+                "Congratulations! You're now subscribed to our newsletter.",
+                "success",
+            )
+        else:
+            flash(
+                "Something went wrong while adding your email to our newsletter, please try again.",
+                "error",
+            )
+
+
 def save_image(image, part_id, username):
     # Specify the directory where you want to save the images
     upload_folder = "website/static/uploads/images"

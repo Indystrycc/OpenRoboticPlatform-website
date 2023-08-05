@@ -52,3 +52,14 @@ window.addEventListener('DOMContentLoaded', event => {
     });
 
 });
+
+const form = document.getElementById("newsletter_form");
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    // nie wiem czy tu nie trzeba jeszcze sprawdzić czy formularz jest poprawny
+    const data = new FormData(form);
+    fetch("/newsletterAdd", {
+        method: "POST", // albo PUT
+        data, // 'data' to to samo co 'data: data', ale krócej
+    }); // możesz użyć '.then' i '.catch' do obsłużenia odpowiedzi, albo prościej będzie dopisać 'async' między '"submit",' a '(e)' i zrobić const response = await fetch() i synchronicznie obsłużyć
+});
