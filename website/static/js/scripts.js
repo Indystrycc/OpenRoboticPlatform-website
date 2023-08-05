@@ -57,7 +57,7 @@ window.addEventListener('DOMContentLoaded', event => {
         const data = new FormData(form); 
         console.log(data)
         try {
-            const response = await fetch("/newsletterAdd", {method: "POST", data});
+            const response = await fetch("/newsletterAdd", {method: "POST", body: data, credentials: "same-origin"});
             const { success, message } = await response.json();
             console.log(success)
             if (success){
