@@ -55,11 +55,9 @@ window.addEventListener('DOMContentLoaded', event => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = new FormData(form); 
-        console.log(data)
         try {
             const response = await fetch("/newsletterAdd", {method: "POST", body: data, credentials: "same-origin"});
             const success = await response
-            console.log(success)
             if (success){
                 addBootstrapAlert("alert-success", "Congratulations! You're now subscribed to our newsletter.")
             }else{

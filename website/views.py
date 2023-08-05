@@ -376,7 +376,6 @@ def userView(user_name):
 def newsletterAdd():
     if request.method == "POST":
         success, message = save_new_subscriber(clean(request.form.get("email")))
-        response_data = {"success": success, "message": message}
         return success
 
 
