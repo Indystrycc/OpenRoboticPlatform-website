@@ -58,7 +58,7 @@ window.addEventListener('DOMContentLoaded', event => {
         console.log(data)
         try {
             const response = await fetch("/newsletterAdd", {method: "POST", body: data, credentials: "same-origin"});
-            const { success, message } = await response.json();
+            const success = await response
             console.log(success)
             if (success){
                 addBootstrapAlert("alert-success", "Congratulations! You're now subscribed to our newsletter.")
