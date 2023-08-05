@@ -1,12 +1,22 @@
 import mimetypes
 import os
 import uuid
+import requests
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import MySQLdb.constants.ER as mysql_errors
 from bleach import clean
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+    jsonify,
+)
 from flask_login import current_user, login_required
 from markupsafe import Markup
 from sqlalchemy import or_, select
@@ -17,6 +27,7 @@ from werkzeug.utils import secure_filename
 from . import compression_process, db
 from .compression import compress_uploads
 from .models import Category, File, Part, User, View, Stats
+from .secrets_manager import MAILERLITE_API_KEY
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
@@ -28,6 +39,7 @@ def home():
         Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(10).all()
     )
     stats = Stats.query.get(1)
+
     return render_template("home.html", user=current_user, parts=parts, stats=stats)
 
 
@@ -348,6 +360,12 @@ def userView(user_name):
     )
 
 
+@views.route("/newsletterAdd", methods=["POST"])
+def newsletterAdd():
+    success, message = save_new_subscriber(clean(request.form.get("email")))
+    return jsonify({"success": success})
+
+
 def save_image(image, part_id, username):
     # Specify the directory where you want to save the images
     upload_folder = "website/static/uploads/images"
@@ -438,3 +456,24 @@ def calculate_user_contribution(id):
         (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
     )
     return stats, user_parts, user_contribution
+
+
+def save_new_subscriber(email):
+    url = "https://connect.mailerlite.com/api/subscribers"
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {MAILERLITE_API_KEY}",
+    }
+
+    data = {
+        "email": email,
+        "groups": ["95057407892260283"],
+    }
+
+    response = requests.post(url, json=data, headers=headers)
+
+    if response.status_code == 200 or response.status_code == 201:
+        return True, response
+    else:
+        return False, response

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -71,10 +70,11 @@
             <div class="col-md-4">
                 <h4>Newsletter</h4>
                 <p>Subscribe to our newsletter to stay updated with the latest news and announcements.</p>
-                <form>
+                <form id="newsletter_form">
                     <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Email address" aria-label="Email address" aria-describedby="subscribe-btn">
-                        <button class="btn btn-primary" type="button" id="subscribe-btn">Subscribe</button>
+                        <input type="email" class="form-control" placeholder="Email address" name="email" aria-label="Email address" aria-describedby="subscribe-btn">
+                        <button class="btn btn-primary" type="submit" id="subscribe-btn">Subscribe</button>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     </div>
                 </form>
             </div>

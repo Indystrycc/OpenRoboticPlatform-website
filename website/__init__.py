@@ -28,6 +28,7 @@ default_csp = {
     "style-src": ["'self'", "https://fonts.googleapis.com"],
     "font-src": "https://fonts.gstatic.com",
     "script-src": "",  # allow only nonce-based scripts (csp_nonce() adds values here)
+    "connect-src": "'self'",
     "img-src": [
         "'self'",
         "data:",  # Bootstrap has some SVGs as data: URL in the stylesheet
@@ -51,6 +52,7 @@ def create_app():
     app.config["RECAPTCHA_PUBLIC_KEY"] = RECAPTCHA_PUBLIC_KEY
     app.config["RECAPTCHA_PRIVATE_KEY"] = RECAPTCHA_PRIVATE_KEY
     app.config["SERVER_NAME"] = domain if production else f"{domain}:5004"
+    app.config["MAILERLITE_API_KEY"] = MAILERLITE_API_KEY
 
     if getenv("TRUSTED_PROXIES", "0") == "1":
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
