@@ -52,7 +52,7 @@ window.addEventListener('DOMContentLoaded', event => {
     });
 
     const form = document.getElementById("newsletter_form");
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("subscribe-btn", (e) => {
         e.preventDefault();
         // nie wiem czy tu nie trzeba jeszcze sprawdzić czy formularz jest poprawny
         const data = new FormData(form);
