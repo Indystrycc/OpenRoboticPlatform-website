@@ -376,7 +376,7 @@ def userView(user_name):
 def newsletterAdd():
     if request.method == "POST":
         success, message = save_new_subscriber(clean(request.form.get("email")))
-        return success
+        return jsonify({"success": success})
 
 
 def save_image(image, part_id, username):
