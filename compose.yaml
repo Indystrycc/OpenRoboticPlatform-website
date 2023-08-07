@@ -97,6 +97,8 @@ services:
     stop_signal: SIGQUIT
     depends_on:
       - website-prod
+    env_file:
+      - prod/config.env
     environment:
       - NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
     volumes:
@@ -116,7 +118,7 @@ services:
       context: prod/mail/postfix
       dockerfile: Dockerfile
     container_name: postfix
-    depends_on: 
+    depends_on:
       - website-prod
     env_file:
       - prod/mail/config.env
@@ -136,7 +138,7 @@ services:
       context: prod/mail/opendkim
       dockerfile: Dockerfile
     container_name: opendkim
-    depends_on: 
+    depends_on:
       - website-prod
     env_file:
       - prod/mail/config.env
