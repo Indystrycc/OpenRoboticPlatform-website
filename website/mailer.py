@@ -5,6 +5,8 @@ from email.message import EmailMessage
 from os import getenv
 from smtplib import SMTP
 
+from . import production
+
 FROM_ADDR = Address(
     getenv("MAIL_FULL_NAME", "OpenRoboticPlatform"),
     getenv("MAIL_USER", "noreply"),
@@ -30,6 +32,17 @@ def check_addr_restrictions(address: Address):
             raise ValueError("Mail uses a forbidden IP address")
     elif "." not in domain:
         raise ValueError("Mail is registered under a TLD")
+
+
+def send_message(msg: EmailMessage):
+    if production:
+        with SMTP("postfix") as smtp:
+            smtp.send_message(msg)
+    else:
+        print(f'To: {msg["To"]}')
+        print(f'From: {msg["From"]}')
+        print(f'Subject: {msg["Subject"]}\n')
+        print(msg.get_body(("plain",)).get_content())
 
 
 def send_confirmation_mail(username: str, email_addr: str, url: str):
@@ -79,8 +92,7 @@ def send_confirmation_mail(username: str, email_addr: str, url: str):
         subtype="html",
     )
 
-    with SMTP("postfix") as smtp:
-        smtp.send_message(msg)
+    send_message(msg)
 
 
 def send_password_reset_mail(username: str, email_addr: str, url: str):
@@ -126,5 +138,4 @@ def send_password_reset_mail(username: str, email_addr: str, url: str):
         subtype="html",
     )
 
-    with SMTP("postfix") as smtp:
-        smtp.send_message(msg)
+    send_message(msg)
