@@ -17,9 +17,9 @@
         <meta name="msapplication-TileColor" content="#ffc800">
         <meta name="theme-color" content="##ffc800">
         <!-- Font Awesome icons (free version)-->
-        <script src="{{ url_for('static', filename='fa/fontawesome.min.js') }}" data-auto-add-css="false" nonce="{{ csp_nonce() }}"></script>
-        <script src="{{ url_for('static', filename='fa/brands.min.js') }}" nonce="{{ csp_nonce() }}"></script>
-        <script src="{{ url_for('static', filename='fa/solid.min.js') }}" nonce="{{ csp_nonce() }}"></script>
+        <script src="{{ url_for('static', filename='fa/fontawesome.min.js') }}" data-auto-add-css="false" defer nonce="{{ csp_nonce() }}"></script>
+        <script src="{{ url_for('static', filename='fa/brands.min.js') }}" defer nonce="{{ csp_nonce() }}"></script>
+        <script src="{{ url_for('static', filename='fa/solid.min.js') }}" defer nonce="{{ csp_nonce() }}"></script>
         <link href="{{ url_for('static', filename='fa/svg-with-js.min.css') }}" rel="stylesheet" />
         <!-- Google fonts-->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet" type="text/css" crossorigin="anonymous" />
