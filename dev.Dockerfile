@@ -12,7 +12,7 @@ FROM python:3.11-slim as build
 
 # install mysqlclient requirements
 RUN \
-	--mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
+	--mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
 	rm -f /etc/apt/apt.conf.d/docker-clean; \
 	echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache; \
 	apt-get update && \
@@ -37,10 +37,9 @@ RUN \
 
 FROM python:3.11-slim as deploy
 
-# install mysqlclient without build-essential (this copy will work only with --no-cache)
-COPY --from=build /var/lib/apt/lists /var/lib/apt/lists
+# install mysqlclient without build-essential
 RUN \
-	--mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
+	--mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
 	rm -f /etc/apt/apt.conf.d/docker-clean; \
 	echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache; \
 	apt-get update && \

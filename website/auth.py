@@ -87,22 +87,21 @@ def sign_up():
                         ),
                     )
                     db.session.add(new_user_data)
-                    if production:
-                        db.session.flush()
-                        activation_token = secrets.token_bytes(32)
-                        confirmation_url = url_for(
-                            ".confirm_email",
-                            _scheme="https",
-                            _external=True,
-                            token_enc=base64.urlsafe_b64encode(activation_token),
-                        )
-                        saved_token = EmailToken(
-                            token=activation_token,
-                            token_type=TokenType.mail_confirmation,
-                            user_id=new_user_data.id,
-                        )
-                        db.session.add(saved_token)
-                        send_confirmation_mail(username, email, confirmation_url)
+                    db.session.flush()
+                    activation_token = secrets.token_bytes(32)
+                    confirmation_url = url_for(
+                        ".confirm_email",
+                        _scheme="https",
+                        _external=True,
+                        token_enc=base64.urlsafe_b64encode(activation_token),
+                    )
+                    saved_token = EmailToken(
+                        token=activation_token,
+                        token_type=TokenType.mail_confirmation,
+                        user_id=new_user_data.id,
+                    )
+                    db.session.add(saved_token)
+                    send_confirmation_mail(username, email, confirmation_url)
                     db.session.commit()
                     login_user(new_user_data, remember=True)
                     flash("Account created successfully!", category="success")
@@ -204,12 +203,7 @@ def resend_confirmation_email():
         )
         db.session.add(saved_token)
 
-    if production:
-        send_confirmation_mail(
-            current_user.username, current_user.email, confirmation_url
-        )
-    else:
-        print(confirmation_url)
+    send_confirmation_mail(current_user.username, current_user.email, confirmation_url)
     db.session.commit()
     flash("An email with a confirmation link was sent.")
     return redirect(url_for("views.account"))
@@ -266,10 +260,7 @@ def forgot_password():
                         user_id=user.id,
                     )
                     db.session.add(saved_token)
-                    if production:
-                        send_password_reset_mail(user.username, user.email, reset_url)
-                    else:
-                        print(reset_url)
+                    send_password_reset_mail(user.username, user.email, reset_url)
                     db.session.commit()
 
             flash(

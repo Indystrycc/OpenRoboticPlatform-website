@@ -13,7 +13,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from .secrets_manager import *
 
 production = getenv("FLASK_ENV") == "production"
-domain = getenv("DOMAIN", "orp.testing" if production else "localhost")
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -51,8 +50,9 @@ def create_app():
     app.config["SECRET_KEY"] = SECRET_KEY
     app.config["RECAPTCHA_PUBLIC_KEY"] = RECAPTCHA_PUBLIC_KEY
     app.config["RECAPTCHA_PRIVATE_KEY"] = RECAPTCHA_PRIVATE_KEY
-    app.config["SERVER_NAME"] = domain if production else f"{domain}:5004"
     app.config["MAILERLITE_API_KEY"] = MAILERLITE_API_KEY
+    if production:
+        app.config["SERVER_NAME"] = getenv("DOMAIN", "orp.testing")
 
     if getenv("TRUSTED_PROXIES", "0") == "1":
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
