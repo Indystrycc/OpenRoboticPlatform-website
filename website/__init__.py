@@ -1,8 +1,8 @@
-import uuid
+import uuid, os
 from concurrent.futures import ProcessPoolExecutor
 from os import getenv
 
-from flask import Flask, Response
+from flask import Flask, Response, send_from_directory
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
@@ -28,6 +28,7 @@ default_csp = {
     "font-src": "https://fonts.gstatic.com",
     "script-src": "",  # allow only nonce-based scripts (csp_nonce() adds values here)
     "connect-src": "'self'",
+    "manifest-src": "'self'",
     "img-src": [
         "'self'",
         "data:",  # Bootstrap has some SVGs as data: URL in the stylesheet
@@ -115,5 +116,13 @@ def create_app():
         # only allow loading resources with CORP or (if marked as crossorigin) CORS
         response.headers.set("Cross-Origin-Embedder-Policy", "require-corp")
         return response
+
+    @app.route("/favicon.ico")
+    def favicon():
+        return send_from_directory(
+            os.path.join(app.root_path, "static/assets/favicon"),
+            "favicon.ico",
+            mimetype="image/vnd.microsoft.icon",
+        )
 
     return app
