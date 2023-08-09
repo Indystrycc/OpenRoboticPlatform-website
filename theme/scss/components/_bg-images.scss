@@ -21,9 +21,9 @@
 @supports (background-image: image-set("" type("image/png"))) {
     .bg-img-home {
         background-image: image-set(
-            "/static/assets/img/opt/header-bg.avif" type("image/avif"),
-            "/static/assets/img/opt/header-bg.jxl" type("image/jxl"),
-            "/static/assets/img/opt/header-bg.webp" type("image/webp")
+            "/static/assets/img/opt/header-bg2.avif" type("image/avif"),
+            "/static/assets/img/opt/header-bg2.jxl" type("image/jxl"),
+            "/static/assets/img/opt/header-bg2.webp" type("image/webp")
         );
     }
 
