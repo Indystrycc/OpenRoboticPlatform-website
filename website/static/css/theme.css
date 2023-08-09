@@ -12048,7 +12048,7 @@ p {
 }
 
 .bg-img-home {
-  background-image: url("/static/assets/img/header-bg.jpg");
+  background-image: url("/static/assets/img/header-bg2.jpg");
 }
 
 .bg-img-design {
@@ -12069,8 +12069,8 @@ p {
 
 @supports ((background-image: -webkit-image-set("" type("image/png"))) or (background-image: image-set("" type("image/png")))) {
   .bg-img-home {
-    background-image: -webkit-image-set("/static/assets/img/opt/header-bg.avif" type("image/avif"), "/static/assets/img/opt/header-bg.jxl" type("image/jxl"), "/static/assets/img/opt/header-bg.webp" type("image/webp"));
-    background-image: image-set("/static/assets/img/opt/header-bg.avif" type("image/avif"), "/static/assets/img/opt/header-bg.jxl" type("image/jxl"), "/static/assets/img/opt/header-bg.webp" type("image/webp"));
+    background-image: -webkit-image-set("/static/assets/img/opt/header-bg2.avif" type("image/avif"), "/static/assets/img/opt/header-bg2.jxl" type("image/jxl"), "/static/assets/img/opt/header-bg2.webp" type("image/webp"));
+    background-image: image-set("/static/assets/img/opt/header-bg2.avif" type("image/avif"), "/static/assets/img/opt/header-bg2.jxl" type("image/jxl"), "/static/assets/img/opt/header-bg2.webp" type("image/webp"));
   }
   .bg-img-design {
     background-image: -webkit-image-set("/static/assets/img/opt/design_rules_bg.jxl" type("image/jxl"), "/static/assets/img/opt/design_rules_bg.avif" type("image/avif"), "/static/assets/img/opt/design_rules_bg.webp" type("image/webp"));
@@ -12290,6 +12290,7 @@ header.masthead .masthead-subheading {
   line-height: 1.5rem;
   margin-bottom: 25px;
   font-family: "Roboto Slab", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  text-shadow: 2px 2px 10px black;
 }
 header.masthead .masthead-heading {
   font-size: 3.25rem;
@@ -12297,6 +12298,7 @@ header.masthead .masthead-heading {
   line-height: 3.25rem;
   margin-bottom: 2rem;
   font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  text-shadow: 5px 5px 20px black;
 }
 
 @media (min-width: 768px) {

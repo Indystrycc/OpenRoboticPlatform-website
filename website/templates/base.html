@@ -5,9 +5,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="Open-source project and set of design rules to simplify robotics" />
         <meta name="author" content="Nikodem Bartnik" />
-        <title>{% block title %}ORP{%endblock%}</title>
+        <title>ORP - {% block title %}ORP{%endblock%}</title>
         <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicon/apple-touch-icon.png') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicon/favicon-32x32.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/favicon/favicon-16x16.png') }}">
+        <link rel="icon" href="/favicon.ico" sizes="48x48">
+        <link rel="icon" href="{{ url_for('static', filename='assets/favicon/favicon.svg') }}" sizes="any" type="image/svg+xml">
+        <link rel="manifest" href="{{ url_for('static', filename='assets/favicon/site.webmanifest') }}">
+        <link rel="mask-icon" href="{{ url_for('static', filename='assets/favicon/safari-pinned-tab.svg') }}" color="#ffc800">
+        <meta name="msapplication-TileColor" content="#ffc800">
+        <meta name="theme-color" content="##ffc800">
         <!-- Font Awesome icons (free version)-->
         <script src="{{ url_for('static', filename='fa/fontawesome.min.js') }}" data-auto-add-css="false" nonce="{{ csp_nonce() }}"></script>
         <script src="{{ url_for('static', filename='fa/brands.min.js') }}" nonce="{{ csp_nonce() }}"></script>
@@ -62,6 +70,11 @@
             <div class="col-md-4">
                 <h4>About Us</h4>
                 <p>We are dedicated to providing an open and versatile platform for robotics enthusiasts. Join our community and explore the possibilities!</p>
+                <h5>Website authors</h5>
+                <ul class="list-unstyled">
+                    <li><a href="https://github.com/krzysdz" target="_blank">krzysdz</a></li>
+                    <li><a href="https://nikodembartnik.pl" target="_blank">Nikodem Bartnik</a></li>
+                </ul>
             </div>
             <div class="col-md-4">
                 <h4>Contact Us</h4>
@@ -82,7 +95,7 @@
         <hr class="my-4">
         <div class="row">
             <div class="col-md-12 text-center">
-                <p class="text-body-secondary">&copy; 2023 Open Robotic Platform. All rights reserved.</p>
+                <p>&copy; 2023 Open Robotic Platform. All rights reserved.</p>
             </div>
         </div>
     </div>
