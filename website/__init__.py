@@ -1,6 +1,6 @@
-import uuid, os
+import uuid
 from concurrent.futures import ProcessPoolExecutor
-from os import getenv
+from os import getenv, path
 
 from flask import Flask, Response, send_from_directory
 from flask_login import LoginManager
@@ -120,7 +120,7 @@ def create_app():
     @app.route("/favicon.ico")
     def favicon():
         return send_from_directory(
-            os.path.join(app.root_path, "static/assets/favicon"),
+            path.join(app.root_path, "static/assets/favicon"),
             "favicon.ico",
             mimetype="image/vnd.microsoft.icon",
         )
