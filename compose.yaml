@@ -151,6 +151,24 @@ services:
     profiles:
       - prod
 
+  matomo:
+    image: matomo:latest
+    container_name: matomo
+    restart: unless-stopped
+    environment:
+      - MATOMO_DATABASE_HOST=db-prod
+      - MATOMO_DATABASE_USERNAME=root
+      - MATOMO_DATABASE_PASSWORD=rootroot
+      - MATOMO_DATABASE_DBNAME=matomo_db
+    volumes:
+      - matomo-data:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db-prod
+    networks:
+      - dbnet
+
 volumes:
   dbdata:
   uploads:
