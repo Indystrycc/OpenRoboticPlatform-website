@@ -1,21 +1,21 @@
 import mimetypes
 import os
 import uuid
-import requests
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import MySQLdb.constants.ER as mysql_errors
+import requests
 from bleach import clean
 from flask import (
     Blueprint,
     abort,
     flash,
+    jsonify,
     redirect,
     render_template,
     request,
     url_for,
-    jsonify,
 )
 from flask_login import current_user, login_required
 from markupsafe import Markup
@@ -26,7 +26,7 @@ from werkzeug.utils import secure_filename
 
 from . import compression_process, db
 from .compression import compress_uploads
-from .models import Category, File, Part, User, View, Stats
+from .models import Category, File, Part, Stats, User, View
 from .secrets_manager import MAILERLITE_API_KEY
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
@@ -176,6 +176,8 @@ def accountsettings():
 
 @views.route("/part:<int:part_number>")
 def part(part_number):
+    # A few substrings which can be often found in web crawlers
+    BOT_UA_FRAGMENTS = ["bot", "crawler", "spider", "slurp", "spyder"]
     part: Part | None = Part.query.get(part_number)
     if not part:
         abort(404)
@@ -198,7 +200,10 @@ def part(part_number):
         View.event_date >= time_delta,
     ).first()
 
-    if not view_count_check:
+    ua_lower = request.user_agent.string.lower()
+    if not view_count_check and not any(
+        bot_ua_fragment in ua_lower for bot_ua_fragment in BOT_UA_FRAGMENTS
+    ):
         part.views = int(part.views) + 1
         if current_user.is_authenticated:
             new_view = View(user_id=current_user.id, ip=ip_address, part_id=part_number)
