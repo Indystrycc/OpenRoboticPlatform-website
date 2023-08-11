@@ -1,33 +1,36 @@
 import mimetypes
 import os
 import uuid
-import requests
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import MySQLdb.constants.ER as mysql_errors
+import requests
 from bleach import clean
 from flask import (
     Blueprint,
     abort,
     flash,
+    jsonify,
     redirect,
     render_template,
     request,
     url_for,
-    jsonify,
 )
 from flask_login import current_user, login_required
 from markupsafe import Markup
+from PIL import Image, UnidentifiedImageError
 from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
+from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
 from . import compression_process, db
 from .compression import compress_uploads
-from .models import Category, File, Part, User, View, Stats
+from .models import Category, File, Part, Stats, User, View
 from .secrets_manager import MAILERLITE_API_KEY
+from .thumbnailer import create_thumbnails, load_check_image
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 views = Blueprint("views", __name__)
@@ -288,7 +291,19 @@ def addPart():
         ):
             db.session.rollback()
             return abort(400)
-        image_filename, image_path = save_image(image, part.id, current_user.username)
+        try:
+            image_filename, image_path = save_image(
+                image, part.id, current_user.username
+            )
+        except ValueError as e:
+            flash(e.args[0], "error")
+            return redirect(url_for("views.addPart"))
+        except UnidentifiedImageError:
+            flash("The image is not a proper JPEG or PNG file", "error")
+            return redirect(url_for("views.addPart"))
+        except Image.DecompressionBombError:
+            flash("The image has more then 64 MP. Please use a smaller image", "error")
+            return redirect(url_for("views.addPart"))
         if os.path.getsize(image_path) > 5 * 1024 * 1024:
             delete_part_uploads(part.id, current_user.username)
             db.session.rollback()
@@ -366,20 +381,30 @@ def newsletterAdd():
     return jsonify({"success": success})
 
 
-def save_image(image, part_id, username):
+def save_image(image: FileStorage, part_id, username):
     # Specify the directory where you want to save the images
     upload_folder = "website/static/uploads/images"
+    thumbs_dir = os.path.join(upload_folder, "thumbs")
 
     # Create the directory if it doesn't exist
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
+
+    # Load the image and check if it is correct (PNG or JPEG with minimal dimensions)
+    img = load_check_image(image)
 
     # Generate a secure filename and save the image to the upload folder
     filename = secure_filename(image.filename)
     ext = os.path.splitext(filename)[1]
     filename = f"part-{username}-{part_id}-{uuid.uuid4()}{ext}"
     save_path = os.path.join(upload_folder, filename)
+    # The stream was read by PIL and needs to be "rewound" before saving (otherwise we won't get the full file)
+    image.stream.seek(0)
     image.save(save_path)
+
+    # Generate and save thumbnails
+    create_thumbnails(img, thumbs_dir, filename)
+    img.close()
 
     return filename, save_path
 
@@ -442,7 +467,7 @@ def delete_part_uploads(part_id: int, username: str):
     image_uploads_dir = Path("website/static/uploads/images")
     file_uploads_dir = Path("website/static/uploads/files")
 
-    for img in image_uploads_dir.glob(f"part-{username}-{part_id}-*"):
+    for img in image_uploads_dir.rglob(f"part-{username}-{part_id}-*"):
         img.unlink()
 
     for file in file_uploads_dir.glob(f"{username}-{part_id}-*"):

@@ -18,7 +18,8 @@
                         <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                             <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
-                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" data-max-size="5M" data-feedback="imageFeedback" required>
+                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" aria-describedby="imageHelp" data-max-size="5M" data-feedback="imageFeedback" required>
+                                <div id="imageHelp" class="form-text">Minimum dimensions are 548x411 px, but not more than 64 MPx or 5 MiB.</div>
                                 <div class="invalid-feedback" id="imageFeedback">A thumbnail is required (max size 5 MiB).</div>
                                 <div id="image-preview"></div>
                             </div>

@@ -81,7 +81,12 @@
                 <a href="/part:{{part.id}}" class="text-decoration-none">
                 <div class="card">
                     <div class="card-img-container">
-                       <img src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Part Image" class="card-img-top" />
+                        <picture>
+                            {% for thumbnail, mime in part.thumbnail.optimized %}
+                            <source srcset="{{ url_for('static', filename='uploads/images/thumbs/' + thumbnail) }}" type="{{ mime }}">
+                            {% endfor %}
+                            <img class="card-img-top" src="{{ url_for('static', filename='uploads/images/thumbs/' + part.thumbnail.fallback) }}" alt="Part Image">
+                        </picture>
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ part.name }}</h5>

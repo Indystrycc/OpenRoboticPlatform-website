@@ -6,6 +6,7 @@ Flask-SeaSurf @ https://github.com/maxcountryman/flask-seasurf/archive/f383b482c
 Flask-SQLAlchemy>=3.0.5
 flask-talisman>=1.1.0
 bleach>=6.0.0
+Pillow>=10.0.0
 requests>=2.31.0
 
 # DB driver required by SQLAlchemy

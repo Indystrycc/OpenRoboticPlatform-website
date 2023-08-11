@@ -1,5 +1,7 @@
 import enum
+import os
 import uuid
+from dataclasses import dataclass
 
 from flask_login import UserMixin
 from sqlalchemy.orm import Mapped
@@ -43,6 +45,23 @@ class Part(db.Model):
 
     cat = db.relationship("Category", backref=db.backref("part", lazy=True))
     author: Mapped[User] = db.relationship("User", back_populates="parts")
+
+    @property
+    def thumbnail(self):
+        @dataclass
+        class ThumbnailDetails:
+            fallback: str
+            """Fallback (jpg or png) thumbnail to be used in <img>"""
+            optimized: list[tuple[str, str]]
+            """An ordered list of (filename, mime type) tuples in preferred order"""
+
+        base, ext = os.path.splitext(self.image)
+        preferred_thumnails = [(base + ".webp", "image/webp")]
+        ext = ext.lower()
+        fallback_thumbnail = base + (".png" if ext == ".png" else ".jpg")
+        return ThumbnailDetails(
+            fallback=fallback_thumbnail, optimized=preferred_thumnails
+        )
 
 
 class File(db.Model):
