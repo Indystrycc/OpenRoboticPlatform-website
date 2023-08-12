@@ -179,6 +179,8 @@ def accountsettings():
 
 @views.route("/part:<int:part_number>")
 def part(part_number):
+    # A few substrings which can be often found in web crawlers
+    BOT_UA_FRAGMENTS = ["bot", "crawler", "spider", "slurp", "spyder"]
     part: Part | None = Part.query.get(part_number)
     if not part:
         abort(404)
@@ -201,7 +203,10 @@ def part(part_number):
         View.event_date >= time_delta,
     ).first()
 
-    if not view_count_check:
+    ua_lower = request.user_agent.string.lower()
+    if not view_count_check and not any(
+        bot_ua_fragment in ua_lower for bot_ua_fragment in BOT_UA_FRAGMENTS
+    ):
         part.views = int(part.views) + 1
         if current_user.is_authenticated:
             new_view = View(user_id=current_user.id, ip=ip_address, part_id=part_number)
