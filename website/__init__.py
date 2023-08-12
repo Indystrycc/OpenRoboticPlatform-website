@@ -82,7 +82,6 @@ def create_app():
         session_cookie_secure=production,
         strict_transport_security=False,  # nginx already does it
         referrer_policy="same-origin",
-        x_xss_protection=False,  # it's not supported any more, because it wasn't always working and could introduce new vulnerabilities
     )
     app.config["CSRF_COOKIE_SECURE"] = production
     app.config["CSRF_COOKIE_HTTPONLY"] = True
