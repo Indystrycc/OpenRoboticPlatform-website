@@ -22,6 +22,7 @@ class BaseModel(DeclarativeBase, MappedAsDataclass):
 
 
 production = getenv("FLASK_ENV") == "production"
+DOMAIN = getenv("DOMAIN", "orp.testing")
 
 db = SQLAlchemy(model_class=BaseModel)
 from . import models
@@ -38,7 +39,7 @@ default_csp: dict[str, str | list[str]] = {
     "form-action": "'self'",
     "style-src": ["'self'", "https://fonts.googleapis.com"],
     "font-src": "https://fonts.gstatic.com",
-    "script-src": "",  # allow only nonce-based scripts (csp_nonce() adds values here)
+    "script-src": "'strict-dynamic'",  # allow only nonce-based scripts (csp_nonce() adds values here) and other injected by those
     "connect-src": "'self'",
     "manifest-src": "'self'",
     "img-src": [
@@ -46,10 +47,17 @@ default_csp: dict[str, str | list[str]] = {
         "data:",  # Bootstrap has some SVGs as data: URL in the stylesheet
     ],
 }
+if production:
+    default_csp = extend_talisman_csp(
+        default_csp,
+        {
+            "connect-src": f"https://analytics.{DOMAIN}",
+            "img-src": f"https://analytics.{DOMAIN}",
+        },
+    )
 csp_captcha = extend_talisman_csp(
     default_csp,
     {
-        "script-src": "'strict-dynamic'",
         "frame-src": [
             "https://www.google.com/recaptcha/",
             "https://recaptcha.google.com/recaptcha/",
@@ -78,7 +86,9 @@ def create_app() -> Flask:
     app.config["RECAPTCHA_PRIVATE_KEY"] = RECAPTCHA_PRIVATE_KEY
     app.config["MAILERLITE_API_KEY"] = MAILERLITE_API_KEY
     if production:
-        app.config["SERVER_NAME"] = getenv("DOMAIN", "orp.testing")
+        app.config["SERVER_NAME"] = DOMAIN
+        app.jinja_env.globals["DOMAIN"] = DOMAIN
+        app.jinja_env.globals["ENV_production"] = True
 
     if getenv("TRUSTED_PROXIES", "0") == "1":
         # This assignment is correct. See https://flask.palletsprojects.com/en/2.3.x/deploying/proxy_fix/

@@ -3,7 +3,7 @@ name: openroboticplatform
 x-database: &db-base
   image: mariadb:10
   container_name: db
-  command: ["--event_scheduler=ON"]
+  command: ["--event_scheduler=ON", "--max_allowed_packet=64M"]
   environment:
     - MARIADB_ROOT_PASSWORD=rootroot
     - MARIADB_DATABASE=orp_db
@@ -104,12 +104,35 @@ services:
     volumes:
       - uploads:/data/static/uploads
       - proxy-conn-sock:/run/gunicorn
+      - matomo:/var/www/html
+      - matomo-sock:/run/matomo
     secrets:
       - chain
       - fullchain
       - privkey
     network_mode: host
     restart: on-failure
+    profiles:
+      - prod
+
+  matomo:
+    build:
+      context: prod/matomo
+      dockerfile: Dockerfile
+    container_name: matomo
+    depends_on:
+      - db-prod
+    environment:
+      - MATOMO_DATABASE_HOST=db
+      - MATOMO_DATABASE_USERNAME=root
+      - MATOMO_DATABASE_PASSWORD=rootroot
+      - MATOMO_DATABASE_DBNAME=matomo_db
+    volumes:
+      - matomo:/var/www/html
+      - matomo-sock:/run/matomo
+    networks:
+      - dbnet
+    restart: unless-stopped
     profiles:
       - prod
 
@@ -155,6 +178,8 @@ volumes:
   dbdata:
   uploads:
   proxy-conn-sock:
+  matomo:
+  matomo-sock:
   opendkim-keys:
 
 networks:

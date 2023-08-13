@@ -40,6 +40,7 @@ nsComment            = "OpenSSL Generated Certificate for ORP dev"
 DNS.1  = orp.localhost
 DNS.2  = localhost
 DNS.3  = orp.testing
+DNS.4  = *.orp.testing
 
 IP.1 = 127.0.0.1
 IP.2 = ::1
