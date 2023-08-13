@@ -80,24 +80,26 @@
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
+                                <ul class="list-group list-group-flush">
                                 {% if author.name_github %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                        <i class="fa-brands fa-github fa-lg social-gh"></i>
-                                        <p class="mb-0"><a href="https://github.com/{{ author.name_github }}" target="_blank">{{author.name_github}}</a></p>
+                                        <i class="fa-brands fa-github fa-lg social-gh me-2"></i>
+                                        <p class="mb-0 overflow-x-auto"><a href="https://github.com/{{ author.name_github }}" target="_blank">{{author.name_github}}</a></p>
                                     </li>
                                 {% endif %}
                                 {% if author.name_youtube %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                        <i class="fa-brands fa-youtube fa-lg social-yt"></i>
-                                        <p class="mb-0"><a href="https://youtube.com/@{{ author.name_youtube }}" target="_blank">{{author.name_youtube}}</a></p>
+                                        <i class="fa-brands fa-youtube fa-lg social-yt me-2"></i>
+                                        <p class="mb-0 overflow-x-auto"><a href="https://youtube.com/@{{ author.name_youtube }}" target="_blank">{{author.name_youtube}}</a></p>
                                     </li>
                                 {% endif %}
                                 {% if author.name_instagram %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                        <i class="fa-brands fa-instagram fa-lg social-ig"></i>
-                                        <p class="mb-0"><a href="https://instagram.com/{{ author.name_instagram }}" target="_blank">{{author.name_instagram}}</a></p>
+                                        <i class="fa-brands fa-instagram fa-lg social-ig me-2"></i>
+                                        <p class="mb-0 overflow-x-auto"><a href="https://instagram.com/{{ author.name_instagram }}" target="_blank">{{author.name_instagram}}</a></p>
                                     </li>
                                 {% endif %}
+                                </ul>
                             </div>
                         </div>
                     </div>
