@@ -34,7 +34,7 @@
                 </picture>
               {% endif %}
               <h5 class="my-3">{{ user.username }}</h5>
-              <p class="text-body-secondary mb-1">{{ user.description }}</p>
+              <p class="text-body-secondary mb-1">{{ user.description if user.description else "" }}</p>
             </div>
           </div>
           <div class="card mb-4 mb-lg-0">
