@@ -1,5 +1,21 @@
 {% extends "base.html" %}
 {% block title %}{{ display_user.username }}{% endblock %}
+{% block head_additional %}
+<!-- Open Graph metadata -->
+<meta property="og:title" content="ORP - {{ display_user.username }}">
+<meta property="og:url" content="{{ url_for('views.userView', user_name=display_user.username, _external=True, _scheme='https') }}">
+{% if display_user.image %}
+<meta property="og:image" content="{{ url_for('static', filename='uploads/profile_images/' + display_user.image, _external=True, _scheme='https') }}">
+<meta property="og:image:alt" content="{{ display_user.username }} profile picture">
+{% else %}
+<meta property="og:image" content="{{ url_for('static', filename='assets/img/opt/default_avatar.png', _external=True, _scheme='https') }}">
+<meta property="og:image:alt" content="default profile picture">
+{% endif %}
+<meta property="og:site_name" content="Open Robotic Platform">
+<meta property="og:type" content="profile">
+<meta property="profile:username" content="{{ display_user.username }}">
+<meta property="og:description" content="{{ display_user.username }}, an author of {{ user_parts }} part{% if user_parts != 1 %}s{% endif %}{% if display_user.description %}: {{ display_user.description }}{% else %}.{% endif %}">
+{% endblock %}
 {% block navbar_add_class %}masthead-no-img{% endblock %}
 {% block header%}
 <header class="masthead masthead-no-img">
