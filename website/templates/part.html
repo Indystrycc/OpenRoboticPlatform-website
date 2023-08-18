@@ -1,5 +1,15 @@
 {% extends "base.html" %}
-{% block title %}{{ part.name }} by {{author.username}} {% endblock %}
+{% block title %}{{ part.name }} by {{author.username}}{% endblock %}
+{% block head_additional %}
+<!-- Open Graph metadata -->
+<meta property="og:title" content="ORP - {{ part.name }} by {{ author.username }}">
+<meta property="og:url" content="{{ url_for('views.part', part_number=part.id, _external=True, _scheme='https') }}">
+<meta property="og:image" content="{{ url_for('static', filename='uploads/images/' + part.image, _external=True, _scheme='https') }}">
+<meta property="og:image:alt" content="{{ part.name }}">
+<meta property="og:site_name" content="Open Robotic Platform">
+<meta property="og:type" content="object">
+<meta property="og:description" content="{{ part.description }}">
+{% endblock %}
 {% block navbar_add_class %}masthead-no-img{% endblock %}
 {% block header %}
 <header class="masthead masthead-no-img">

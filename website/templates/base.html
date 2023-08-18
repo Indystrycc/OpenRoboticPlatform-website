@@ -26,6 +26,7 @@
         <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700&display=swap" rel="stylesheet" type="text/css" crossorigin="anonymous" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet" />
+        {% block head_additional %}{% endblock %}
     </head>
     <body id="page-top">
         <!-- Navigation-->
