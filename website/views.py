@@ -238,7 +238,7 @@ def showcase():
 @views.route("/addpart", methods=["GET", "POST"])
 @login_required
 def addPart():
-    ALLOWED_PART_EXTENSIONS = [".3mf", ".stl", ".step", ".dxf"]
+    ALLOWED_PART_EXTENSIONS = [".3mf", ".stl", ".step", ".dxf", ".scad"]
 
     if not current_user.confirmed:
         flash("You have to confirm your email before uploading a part.", "error")
