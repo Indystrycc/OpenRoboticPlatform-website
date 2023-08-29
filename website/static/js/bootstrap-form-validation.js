@@ -49,10 +49,11 @@ function initFileInputValidation() {
     for (const input of fileInputs) {
         const maxFiles = Number.parseInt(input.getAttribute("data-max-files"));
         const maxSize = sizeToBytes(input.getAttribute("data-max-size"));
+        const preexistingFiles = Number.parseInt(input.getAttribute("data-preexisting-files")) || 0;
         const feedbackFieldId = input.getAttribute("data-feedback");
         const feedbackField = feedbackFieldId ? document.getElementById(feedbackFieldId) : null;
         const validateField = () => {
-            const tooManyFiles = maxFiles !== NaN && input.files.length > maxFiles;
+            const tooManyFiles = maxFiles !== NaN && preexistingFiles + input.files.length > maxFiles;
             /** @type {{name: string; size: number}[]} */
             const tooLargeFiles = [];
             let feedback = document.createDocumentFragment();
@@ -62,7 +63,7 @@ function initFileInputValidation() {
                 }
             }
             if (tooManyFiles) {
-                const validationMessage = `Too many files. (max ${maxFiles}, selected ${input.files.length})`;
+                const validationMessage = `Too many files. (max ${maxFiles}, selected ${input.files.length})${preexistingFiles ? ` including ${preexistingFiles} previously uploaded` : ""}`;
                 feedback.appendChild(new Text(validationMessage));
                 input.setCustomValidity(validationMessage);
             }

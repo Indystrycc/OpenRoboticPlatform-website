@@ -33,6 +33,7 @@ from .secrets_manager import MAILERLITE_API_KEY
 from .thumbnailer import create_thumbnails, load_check_image
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
+ALLOWED_PART_EXTENSIONS = [".3mf", ".stl", ".step", ".dxf", ".scad"]
 views = Blueprint("views", __name__)
 
 
@@ -238,8 +239,6 @@ def showcase():
 @views.route("/addpart", methods=["GET", "POST"])
 @login_required
 def addPart():
-    ALLOWED_PART_EXTENSIONS = [".3mf", ".stl", ".step", ".dxf", ".scad"]
-
     if not current_user.confirmed:
         flash("You have to confirm your email before uploading a part.", "error")
         return redirect(url_for("views.account"))
@@ -354,6 +353,23 @@ def addPart():
         part_extensions=ALLOWED_PART_EXTENSIONS,
         image_types=ALLOWED_IMAGE_MIME,
         categories=categories,
+    )
+
+
+@views.route("/part:<int:part_number>/edit", methods=["GET", "POST"])
+@login_required
+def edit_part(part_number: int):
+    part = db.session.scalar(select(Part).where(Part.id == part_number))
+    if part is None:
+        abort(404)
+    if part.user_id != current_user.id:
+        abort(403)
+    return render_template(
+        "edit-part.html",
+        user=current_user,
+        part=part,
+        part_extensions=ALLOWED_PART_EXTENSIONS,
+        image_types=ALLOWED_IMAGE_MIME,
     )
 
 

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ part.name }}{% endblock %}
+{% block navbar_add_class %}masthead-no-img{% endblock %}
+{% block header %}
+<header class="masthead masthead-no-img">
+    <div class="masthead-heading text-uppercase">Edit {{ part.name }}</div>
+</header>
+{% endblock %}
+
+{% block content %}
+<section class="bg-secondary-subtle">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Edit Part</h5>
+                        <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Image</label>
+                                <input type="file" class="form-control" id="image" name="image" accept="{{ image_types|join(', ') }}" aria-describedby="imageHelp" data-max-size="5M" data-feedback="imageFeedback">
+                                <div id="imageHelp" class="form-text">Minimum dimensions are 548x411 px, but not more than 64 MPx or 5 MiB.</div>
+                                <div class="invalid-feedback" id="imageFeedback">A thumbnail is required (max size 5 MiB).</div>
+                                <div id="image-preview">
+                                    <img class="uploaded-image" src="{{ url_for('static', filename='uploads/images/' + part.image) }}" alt="Current part image">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <h6>Existing files</h6>
+                                {% for file in part.files %}
+                                    <div><div>{{ file.file_name }}</div><div><i class="fa-solid fa-trash-can"></i></div></div>
+                                    <div><div class="text-decoration-line-through text-body-secondary">{{ file.file_name }}</div><div><i class="fa-solid fa-reply"></i></div></div>
+                                {% endfor %}
+                                <label for="filesInput" class="form-label">Add files</label>
+                                <input type="file" class="form-control" name="files" id="filesInput" accept="{{ part_extensions|join(', ') }}" aria-describedby="fileHelp" data-max-files="20" data-max-size="10M" data-preexisting-files="{{ part.files|length }}" data-feedback="fileFeedback" multiple required>
+                                <div id="fileHelp" class="form-text">Max. file size 10 MiB, up to 20 files allowed including existing.</div>
+                                <div class="invalid-feedback" id="fileFeedback">At least one file (model or drawing) is required.</div>
+                                <div id="file-preview" class="mt-2">
+                                    <div>
+                                        <i class="fa-solid fa-file me-2"></i>
+                                        <span>No file selected</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name"
+                                    placeholder="Enter the part name" value="{{ part.name }}" maxlength="200" required>
+                                <div class="invalid-feedback">Enter part name (max 200 characters)</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description"
+                                    placeholder="Enter the part description" maxlength="5000" required>{{ part.description }}</textarea>
+                                <div class="invalid-feedback">Enter part description (max 5000 characters)</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category" disabled>
+                                    <option>{{ part.cat.parent_cat.name }} - {{ part.cat.name }}</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">Tags</label>
+                                <input type="text" class="form-control" id="tags" name="tags"
+                                    placeholder="Enter tags separated by commas" value="{{ part.tags }}" autocomplete="off" maxlength="200">
+                                <div class="invalid-feedback">Maximum length is 200 characters</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/parent-in-select.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/file-preview.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+{% endblock %}
