@@ -364,6 +364,10 @@ def edit_part(part_number: int):
         abort(404)
     if part.user_id != current_user.id:
         abort(403)
+
+    if request.method == "POST":
+        pass
+
     return render_template(
         "edit-part.html",
         user=current_user,

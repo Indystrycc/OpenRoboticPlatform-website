@@ -26,13 +26,19 @@
                                 </div>
                             </div>
                             <div class="mb-3">
+                                <section id="existingFiles">
                                 <h6>Existing files</h6>
-                                {% for file in part.files %}
-                                    <div><div>{{ file.file_name }}</div><div><i class="fa-solid fa-trash-can"></i></div></div>
-                                    <div><div class="text-decoration-line-through text-body-secondary">{{ file.file_name }}</div><div><i class="fa-solid fa-reply"></i></div></div>
-                                {% endfor %}
+                                    {% for file in part.files %}
+                                        <div class="d-flex justify-content-between" data-existing-file data-file-not-deleted>
+                                            <div class="existing-file-name text-break align-self-center">{{ file.file_name }}</div>
+                                            <button class="existing-file-action-btn align-self-center btn btn-danger" type="button">Delete <i class="fa-solid fa-trash-can"></i></button>
+                                        </div>
+                                        {% if not loop.last %}<hr class="my-1">{% endif %}
+                                    {% endfor %}
+                                </section>
+                                <div class="d-none" id="filesToRemove"></div>
                                 <label for="filesInput" class="form-label">Add files</label>
-                                <input type="file" class="form-control" name="files" id="filesInput" accept="{{ part_extensions|join(', ') }}" aria-describedby="fileHelp" data-max-files="20" data-max-size="10M" data-preexisting-files="{{ part.files|length }}" data-feedback="fileFeedback" multiple required>
+                                <input type="file" class="form-control" name="files" id="filesInput" accept="{{ part_extensions|join(', ') }}" aria-describedby="fileHelp" data-max-files="20" data-max-size="10M" data-preexisting-files="existingFiles" data-required data-feedback="fileFeedback" multiple>
                                 <div id="fileHelp" class="form-text">Max. file size 10 MiB, up to 20 files allowed including existing.</div>
                                 <div class="invalid-feedback" id="fileFeedback">At least one file (model or drawing) is required.</div>
                                 <div id="file-preview" class="mt-2">
@@ -76,7 +82,7 @@
     </div>
 </section>
 
-<script src="{{ url_for('static', filename='js/parent-in-select.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/edit-part.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 <script src="{{ url_for('static', filename='js/image-preview.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 <script src="{{ url_for('static', filename='js/file-preview.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>

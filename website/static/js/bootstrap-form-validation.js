@@ -49,11 +49,15 @@ function initFileInputValidation() {
     for (const input of fileInputs) {
         const maxFiles = Number.parseInt(input.getAttribute("data-max-files"));
         const maxSize = sizeToBytes(input.getAttribute("data-max-size"));
-        const preexistingFiles = Number.parseInt(input.getAttribute("data-preexisting-files")) || 0;
+        const preexistingFilesId = input.getAttribute("data-preexisting-files");
         const feedbackFieldId = input.getAttribute("data-feedback");
+        // The input can't be `required` when editing, but files are required and must not all be deleted
+        const required = input.required || input.getAttribute("data-required") != null;
         const feedbackField = feedbackFieldId ? document.getElementById(feedbackFieldId) : null;
         const validateField = () => {
-            const tooManyFiles = maxFiles !== NaN && preexistingFiles + input.files.length > maxFiles;
+            const preexistingFiles = preexistingFilesId ? document.getElementById(preexistingFilesId)?.querySelectorAll("[data-existing-file][data-file-not-deleted]").length ?? 0 : 0;
+            const totalFiles = preexistingFiles + input.files.length;
+            const tooManyFiles = maxFiles !== NaN && totalFiles > maxFiles;
             /** @type {{name: string; size: number}[]} */
             const tooLargeFiles = [];
             let feedback = document.createDocumentFragment();
@@ -63,7 +67,9 @@ function initFileInputValidation() {
                 }
             }
             if (tooManyFiles) {
-                const validationMessage = `Too many files. (max ${maxFiles}, selected ${input.files.length})${preexistingFiles ? ` including ${preexistingFiles} previously uploaded` : ""}`;
+                let validationMessage = `Too many files. max ${maxFiles}, selected ${totalFiles}`;
+                if (preexistingFiles)
+                    validationMessage += ` including ${preexistingFiles} previously uploaded`;
                 feedback.appendChild(new Text(validationMessage));
                 input.setCustomValidity(validationMessage);
             }
@@ -83,7 +89,7 @@ function initFileInputValidation() {
                 }
                 feedback.appendChild(list);
             } else if (!tooManyFiles) {
-                if (input.required && !input.files.length) {
+                if (required && !(totalFiles)) {
                     const validationMessage = input.multiple ? "At least one file is required." : "A file is required";
                     input.setCustomValidity(validationMessage);
                     feedback.appendChild(new Text(validationMessage));
@@ -94,6 +100,7 @@ function initFileInputValidation() {
             feedbackField.replaceChildren(feedback);
         }
         input.addEventListener("change", validateField);
+        if (preexistingFilesId) input.addEventListener("existingFileChange", validateField);
         // Firefox preserves input content between reloads and we may not get the "change" event
         validateField();
     }
