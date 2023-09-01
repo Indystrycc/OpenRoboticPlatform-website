@@ -289,29 +289,8 @@ def addPart():
             return redirect(url_for("views.addPart"))
 
         # Process and save the image
-        if (
-            not image
-            or mimetypes.guess_type(image.filename)[0] not in ALLOWED_IMAGE_MIME
-        ):
-            db.session.rollback()
-            return abort(400)
-        try:
-            image_filename, image_path = save_image(
-                image, part.id, current_user.username
-            )
-        except ValueError as e:
-            flash(e.args[0], "error")
-            return redirect(url_for("views.addPart"))
-        except UnidentifiedImageError:
-            flash("The image is not a proper JPEG or PNG file", "error")
-            return redirect(url_for("views.addPart"))
-        except Image.DecompressionBombError:
-            flash("The image has more then 64 MP. Please use a smaller image", "error")
-            return redirect(url_for("views.addPart"))
-        if os.path.getsize(image_path) > 5 * 1024 * 1024:
-            delete_part_uploads(part.id, current_user.username)
-            db.session.rollback()
-            flash(f"The image is too large.", "error")
+        image_filename = save_image_and_validate(part, image, True)
+        if not image_filename:
             return redirect(url_for("views.addPart"))
         part.image = image_filename
 
@@ -319,15 +298,12 @@ def addPart():
         for file in files:
             if os.path.splitext(file.filename)[1] not in ALLOWED_PART_EXTENSIONS:
                 delete_part_uploads(part.id, current_user.username)
-                db.session.rollback()
-                return abort(400)
+                abort(400)
             file_filename, file_path = save_file(file, part.id, current_user.username)
             if os.path.getsize(file_path) > 10 * 1024 * 1024:
                 delete_part_uploads(part.id, current_user.username)
-                db.session.rollback()
                 flash(f"File {file.filename} is too large.", "error")
                 return redirect(url_for("views.addPart"))
-            part.file_name = file_filename
             db_file = File(part_id=part.id, file_name=file_filename)
             db.session.add(db_file)
         db.session.commit()
@@ -366,7 +342,98 @@ def edit_part(part_number: int):
         abort(403)
 
     if request.method == "POST":
-        pass
+        upload_folder = "website/static/uploads/files"
+        name = request.form.get("name")
+        description = request.form.get("description")
+        tags = request.form.get("tags")
+        if not name or not description:
+            flash("Name and descriptio are required.", "error")
+            return redirect(url_for(".edit_part", part_number=part.id))
+
+        # Replace part image if a new one was sent
+        image = request.files.get("image")
+        old_image = part.image
+        image_filename = None
+        if image:
+            image_filename = save_image_and_validate(part, image, False)
+            if not image_filename:
+                return redirect(url_for(".edit_part", part_number=part.id))
+            part.image = image_filename
+
+        def img_cleanup():
+            if image_filename:
+                delete_part_image(image_filename)
+
+        deleted_files = request.form.getlist("removedFiles")
+        for df in deleted_files:
+            exists = False
+            for pf in part.files:
+                if pf.file_name == df:
+                    exists = True
+                    db.session.delete(pf)
+                    break
+            if not exists:
+                flash(f"File {df} does not exist.", "error")
+                return redirect(url_for(".edit_part", part_number=part.id))
+
+        # Flush changes to DB before adding new files or we'll get duplicate error
+        db.session.flush()
+
+        # Process and save new files
+        new_files = []
+        for file in request.files.getlist("files"):
+            if not file:
+                # No file selected
+                continue
+            if os.path.splitext(file.filename)[1] not in ALLOWED_PART_EXTENSIONS:
+                delete_part_uploads(part.id, current_user.username, tmp_only=True)
+                img_cleanup()
+                abort(400)
+            file_filename, file_path = save_file(
+                file, part.id, current_user.username, tmp=True
+            )
+            if os.path.getsize(file_path) > 10 * 1024 * 1024:
+                delete_part_uploads(part.id, current_user.username, tmp_only=True)
+                img_cleanup()
+                flash(f"File {file.filename} is too large.", "error")
+                return redirect(url_for(".edit_part", part_number=part.id))
+            final_filename = file_filename[:-5]  # remove __tmp
+            if (
+                os.path.isfile(os.path.join(upload_folder, final_filename))
+                and final_filename not in deleted_files
+            ):
+                delete_part_uploads(part.id, current_user.username, tmp_only=True)
+                img_cleanup()
+                flash(
+                    f"File {file.filename} already exists and is not marked for deletion.",
+                    "error",
+                )
+                return redirect(url_for(".edit_part", part_number=part.id))
+            db_file = File(part_id=part.id, file_name=final_filename)
+            db.session.add(db_file)
+            new_files.append(final_filename)
+
+        part.name = name
+        part.description = description
+        part.tags = tags
+
+        # Everything is ok, apply filesystem (and db) changes
+        if image:
+            delete_part_image(old_image)
+
+        for df in deleted_files:
+            f_path = os.path.join(upload_folder, df)
+            os.unlink(f_path)
+
+        upload_dir = Path(upload_folder)
+        for nf in new_files:
+            ext = os.path.splitext(nf)[1]
+            f = upload_dir / f"{nf}__tmp"
+            f.rename(f.with_suffix(ext))
+
+        db.session.commit()
+
+        return redirect(url_for(".part", part_number=part.id))
 
     return render_template(
         "edit-part.html",
@@ -434,6 +501,31 @@ def save_image(image: FileStorage, part_id, username):
     return filename, save_path
 
 
+def save_image_and_validate(part: Part, image: FileStorage, delete_all: bool):
+    if not image or mimetypes.guess_type(image.filename)[0] not in ALLOWED_IMAGE_MIME:
+        abort(400)
+    try:
+        image_filename, image_path = save_image(image, part.id, current_user.username)
+    except ValueError as e:
+        flash(e.args[0], "error")
+        return None
+    except UnidentifiedImageError:
+        flash("The image is not a proper JPEG or PNG file.", "error")
+        return None
+    except Image.DecompressionBombError:
+        flash("The image has more then 64 MP. Please use a smaller image.", "error")
+        return None
+    if os.path.getsize(image_path) > 5 * 1024 * 1024:
+        if delete_all:
+            delete_part_uploads(part.id, current_user.username)
+        else:
+            delete_part_image(image_filename)
+        flash(f"The image is too large.", "error")
+        return None
+
+    return image_filename
+
+
 def save_profile_image(image, username):
     upload_folder = "website/static/uploads/profile_images"
     filename, file_extension = os.path.splitext(image.filename)
@@ -449,6 +541,13 @@ def save_profile_image(image, username):
     return filename, save_path
 
 
+def delete_part_image(image_filename: str):
+    image_uploads_dir = Path("website/static/uploads/images")
+    filename_base = os.path.splitext(image_filename)[0]
+    for img in image_uploads_dir.rglob(filename_base + ".*"):
+        img.unlink()
+
+
 def delete_profile_image(filename: str):
     upload_folder = "website/static/uploads/profile_images"
 
@@ -459,7 +558,7 @@ def delete_profile_image(filename: str):
         pass
 
 
-def save_file(file, part_id, username):
+def save_file(file, part_id, username, tmp=False):
     upload_folder = "website/static/uploads/files"
 
     # Create the directory if it doesn't exist
@@ -469,6 +568,8 @@ def save_file(file, part_id, username):
     # Generate a secure filename and save the file to the upload folder
     filename = secure_filename(file.filename)
     filename = f"{username}-{part_id}-{filename}"
+    if tmp:
+        filename += "__tmp"
     if len(filename) > 100:
         f_name, f_ext = os.path.splitext(filename)
         # 97, because there will be (at most) 2 digits and '~'
@@ -488,14 +589,18 @@ def save_file(file, part_id, username):
     return filename, save_path
 
 
-def delete_part_uploads(part_id: int, username: str):
+def delete_part_uploads(part_id: int, username: str, tmp_only=False):
     image_uploads_dir = Path("website/static/uploads/images")
     file_uploads_dir = Path("website/static/uploads/files")
 
-    for img in image_uploads_dir.rglob(f"part-{username}-{part_id}-*"):
-        img.unlink()
+    if not tmp_only:
+        for img in image_uploads_dir.rglob(f"part-{username}-{part_id}-*"):
+            img.unlink()
 
-    for file in file_uploads_dir.glob(f"{username}-{part_id}-*"):
+    suffix = ""
+    if tmp_only:
+        suffix += "__tmp"
+    for file in file_uploads_dir.glob(f"{username}-{part_id}-*{suffix}"):
         file.unlink()
 
 
