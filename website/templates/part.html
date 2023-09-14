@@ -19,6 +19,9 @@
 {% block content %}
 <section class="bg-secondary-subtle">
     <div class="container py-5">
+        {% if part.user_id == user.id %}
+        <a class="btn btn-primary mb-4" href="{{ url_for('views.edit_part', part_number=part.id) }}">Edit part</a>
+        {% endif %}
         <div class="row">
             <div class="col-lg-4">
                 <div class="card mb-4">
@@ -114,9 +117,6 @@
                         </div>
                     </div>
                 </div>
-                {% if part.user_id == user.id %}
-                <a href="{{ url_for('views.edit_part', part_number=part.id) }}">Edit part</a>
-                {% endif %}
             </div>
         </div>
     </div>
