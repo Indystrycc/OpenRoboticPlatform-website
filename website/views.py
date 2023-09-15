@@ -216,6 +216,10 @@ def part(part_number):
         db.session.add(new_view)
         db.session.commit()
 
+    # DB does not store timezone, but it's always UTC
+    if part.last_modified is not None:
+        part.last_modified = part.last_modified.replace(tzinfo=UTC)
+
     return render_template(
         "part.html",
         part=part,
@@ -416,6 +420,7 @@ def edit_part(part_number: int):
         part.name = name
         part.description = description
         part.tags = tags
+        part.last_modified = datetime.now(UTC)
 
         # Everything is ok, apply filesystem (and db) changes
         if image:

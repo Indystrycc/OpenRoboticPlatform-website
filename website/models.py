@@ -42,6 +42,7 @@ class Part(db.Model):
     downloads = db.Column(db.Integer, default=0)
     tags = db.Column(db.String(200))
     views = db.Column(db.Integer, nullable=False, default=0)
+    last_modified = db.Column(db.DateTime)
 
     cat = db.relationship("Category", backref=db.backref("part", lazy=True))
     author: Mapped[User] = db.relationship("User", back_populates="parts")
