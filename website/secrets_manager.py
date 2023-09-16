@@ -38,8 +38,8 @@ else:
 
         print(
             """Please configure secrets using one of the following methods:
-1. SECRETS_FILE environmental variable pointing to a Python file exposing constants SECRET_KEY, RECAPTCHA_PUBLIC_KEY and RECAPTCHA_PRIVATE_KEY
-2. SECRET_KEY, RECAPTCHA_PUBLIC_KEY and RECAPTCHA_PRIVATE_KEY environmental variables
+1. SECRETS_FILE environmental variable pointing to a Python file exposing constants SECRET_KEY, RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY and MAILERLITE_API_KEY
+2. SECRET_KEY, RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY and MAILERLITE_API_KEY environmental variables
 3. website/secret.py file with the same content as in 1.""",
             file=stderr,
         )

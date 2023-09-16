@@ -42,9 +42,11 @@ class Part(db.Model):
     downloads = db.Column(db.Integer, default=0)
     tags = db.Column(db.String(200))
     views = db.Column(db.Integer, nullable=False, default=0)
+    last_modified = db.Column(db.DateTime)
 
     cat = db.relationship("Category", backref=db.backref("part", lazy=True))
     author: Mapped[User] = db.relationship("User", back_populates="parts")
+    files: Mapped[list["File"]] = db.relationship("File", back_populates="part")
 
     @property
     def thumbnail(self):
@@ -69,7 +71,7 @@ class File(db.Model):
     part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
     file_name = db.Column(db.String(100), unique=True)
 
-    part = db.relationship("Part", backref=db.backref("files", lazy=True))
+    part: Mapped[Part] = db.relationship("Part", back_populates="files")
 
 
 class Category(db.Model):

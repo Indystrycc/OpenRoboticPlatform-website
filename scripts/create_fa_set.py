@@ -5,16 +5,18 @@ from pathlib import Path
 
 import requests
 
-FA_VERSION = "6.4.0"
-BRAND_ICONS = ["github", "youtube", "instagram"]
+FA_VERSION = "6.4.2"
+BRAND_ICONS = ["github", "instagram", "youtube"]
 SOLID_ICONS = [
+    "bars",
+    "circle-plus",
     "file",
     "globe",
-    "bars",
-    "search",
-    "question-circle",
-    "circle-plus",
     "pen-to-square",
+    "question-circle",
+    "reply",
+    "search",
+    "trash-can",
 ]
 
 TARGET_DIR = os.path.join(

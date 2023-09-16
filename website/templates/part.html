@@ -19,6 +19,9 @@
 {% block content %}
 <section class="bg-secondary-subtle">
     <div class="container py-5">
+        {% if part.user_id == user.id %}
+        <a class="btn btn-primary mb-4" href="{{ url_for('views.edit_part', part_number=part.id) }}">Edit part</a>
+        {% endif %}
         <div class="row">
             <div class="col-lg-4">
                 <div class="card mb-4">
@@ -46,6 +49,12 @@
                                 Tags
                                 <p class="mb-0">{{ part.tags }}</p>
                             </li>
+                            {% if part.last_modified %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                Last edited
+                                <p class="mb-0"><time datetime="{{ part.last_modified.isoformat(timespec='seconds') }}">{{ part.last_modified }}</time></p>
+                            </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
@@ -118,4 +127,5 @@
         </div>
     </div>
 </section>
+<script src="{{ url_for('static', filename='js/time-formatter.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}
