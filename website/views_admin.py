@@ -44,7 +44,11 @@ def panel():
 
 
 @views_admin.route("/editpart:<int:part_number>", methods=["GET", "POST"])
-def editPart(part_number):
+def editPart(part_number: int):
+    part = db.session.get(Part, part_number)
+    if part is None:
+        abort(404)
+
     if request.method == "POST":
         name = clean(request.form.get("name"))
         description = clean(request.form.get("description"))
@@ -54,31 +58,27 @@ def editPart(part_number):
         public = request.form.get("public")
         rejected = request.form.get("rejected")
         featured = request.form.get("featured")
-        category = request.form.get("category")
+        category = request.form.get("category", type=int)
 
         # Update the part with the new values using the provided part_id and updated_values
-        part = Part.query.get(part_number)
-        if part:
-            part.name = name
-            part.description = description
-            part.category = category
-            part.verified = True if verified == "on" else False
-            part.featured = True if featured == "on" else False
-            part.public = True if public == "on" else False
-            part.rejected = True if rejected == "on" else False
-            part.tags = tags
+        part.name = name
+        part.description = description
+        part.category = category
+        part.verified = True if verified == "on" else False
+        part.featured = True if featured == "on" else False
+        part.public = True if public == "on" else False
+        part.rejected = True if rejected == "on" else False
+        part.tags = tags
 
-            # Save the changes to the database
-            db.session.commit()
+        # Save the changes to the database
+        db.session.commit()
 
-            # Return a success response
-            message = Markup(
-                f'Part updated! <a class="link-success" href="{url_for("views.part", part_number=part_number)}">Go to the part view.</a>'
-            )
-            flash(message, "success")
-        else:
-            flash(f"Part {part_number} was not found!", "error")
-    part = Part.query.filter_by(id=part_number).first()
+        # Return a success response
+        message = Markup(
+            f'Part updated! <a class="link-success" href="{url_for("views.part", part_number=part_number)}">Go to the part view.</a>'
+        )
+        flash(message, "success")
+
     categories = (
         db.session.scalars(
             select(Category)
