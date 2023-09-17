@@ -272,6 +272,8 @@ def addPart():
             category=category,
             tags=tags,
             user_id=current_user.id,
+            # TODO: Generate image name now and use it when saving
+            image="",
         )
         db.session.add(part)
         try:

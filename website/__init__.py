@@ -8,13 +8,19 @@ from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
+from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
 
+
+class BaseModel(DeclarativeBase, MappedAsDataclass):
+    pass
+
+
 production = getenv("FLASK_ENV") == "production"
 
-db = SQLAlchemy()
+db = SQLAlchemy(model_class=BaseModel)
 migrate = Migrate()
 talisman = Talisman()
 csrf = SeaSurf()
