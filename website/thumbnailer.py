@@ -61,7 +61,7 @@ def create_thumbnails(
 def load_check_image(
     file: FileStorage, min_size: ImgSize = (548, 411), allowed_formats=("JPEG", "PNG")
 ):
-    img = Image.open(file, formats=allowed_formats)
+    img = Image.open(file, formats=allowed_formats)  # type: ignore - file.read() is proxied to file.stream.read()
 
     w, h = img.size
     if w < min_size[0] or h < min_size[1]:

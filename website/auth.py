@@ -5,6 +5,7 @@ import secrets
 import sys
 from datetime import UTC, datetime, timedelta
 from email.headerregistry import Address as EmailAddress
+from typing import TypeGuard
 
 import requests
 from flask import Blueprint, flash, redirect, render_template, request, url_for
@@ -30,7 +31,7 @@ auth = Blueprint("auth", __name__)
 def login():
     if request.method == "POST":
         email = request.form.get("email")
-        password = request.form.get("password")
+        password = request.form.get("password", "")
 
         user = db.session.scalar(select(User).where(User.email == email))
         if user:
@@ -64,7 +65,7 @@ def sign_up():
             user = db.session.scalar(select(User).where(User.email == email))
             if user:
                 flash("This email is already registered.", category="error")
-            elif len(username) < 4:
+            elif username is None or len(username) < 4:
                 flash("Username must be longer than 4 characters.", category="error")
             elif len(username) > 20:
                 flash(
@@ -78,6 +79,8 @@ def sign_up():
             elif not check_password_rules(password):
                 # check_password_rules uses flash to show the errors
                 pass
+            elif not email:
+                flash("Email is required", category="error")
             else:
                 try:
                     new_user_data = User(
@@ -108,7 +111,7 @@ def sign_up():
                     flash("Account created successfully!", category="success")
                     return redirect(url_for("views.home"))
                 except IntegrityError as e:
-                    if e.orig.args[0] == DUP_ENTRY:
+                    if e.orig and e.orig.args[0] == DUP_ENTRY:
                         flash("This username is already registered.", category="error")
                     else:
                         print(e, file=sys.stderr)
@@ -345,8 +348,8 @@ def check_captcha(action: str, threshold=0.5):
     )
 
 
-def check_password_rules(password: str):
-    if len(password) < 8:
+def check_password_rules(password: str | None) -> TypeGuard[str]:
+    if password is None or len(password) < 8:
         flash("Password must be at least 8 characters long.", category="error")
         return False
     if len(password.encode("utf-8")) > 128:

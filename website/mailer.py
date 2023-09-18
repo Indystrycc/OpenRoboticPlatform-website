@@ -1,7 +1,7 @@
 import ipaddress
 import textwrap
 from email.headerregistry import Address
-from email.message import EmailMessage
+from email.message import EmailMessage, MIMEPart
 from os import getenv
 from smtplib import SMTP
 
@@ -42,7 +42,9 @@ def send_message(msg: EmailMessage):
         print(f'To: {msg["To"]}')
         print(f'From: {msg["From"]}')
         print(f'Subject: {msg["Subject"]}\n')
-        print(msg.get_body(("plain",)).get_content())
+        body = msg.get_body(("plain", "html"))
+        if isinstance(body, MIMEPart):
+            print(body.get_content())
 
 
 def send_confirmation_mail(username: str, email_addr: str, url: str):

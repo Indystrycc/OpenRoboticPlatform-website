@@ -1,7 +1,7 @@
 from functools import wraps
 
 from bleach import clean
-from flask import Blueprint, abort, flash, render_template, request, url_for
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import login_required
 from markupsafe import Markup
 from sqlalchemy import exists, select
@@ -52,15 +52,14 @@ def editPart(part_number: int):
         abort(404)
 
     if request.method == "POST":
-        name = clean(request.form.get("name"))
-        description = clean(request.form.get("description"))
-        category = clean(request.form.get("category"))
-        tags = clean(request.form.get("tags"))
+        name = clean(request.form.get("name", part.name))
+        description = clean(request.form.get("description", part.description))
+        tags = clean(request.form.get("tags", part.tags))
         verified = request.form.get("verified")
         public = request.form.get("public")
         rejected = request.form.get("rejected")
         featured = request.form.get("featured")
-        category = request.form.get("category", type=int)
+        category = request.form.get("category", part.category, type=int)
 
         # Update the part with the new values using the provided part_id and updated_values
         part.name = name
@@ -99,6 +98,9 @@ def categories():
         category_id = request.form.get("categoryId", type=int)
         category_name = request.form.get("categoryName")
         parent_id = request.form.get("parentCategory", type=int)
+        if category_id is None or category_name is None or parent_id is None:
+            flash("Something is missing", "error")
+            abort(redirect(url_for(".categories")))
         if parent_id == -1:
             parent_id = None
 
@@ -107,6 +109,8 @@ def categories():
             db.session.add(category)
         else:
             category = db.session.get(Category, category_id)
+            if not category:
+                abort(404)
             has_children = db.session.scalar(
                 exists(Category.id).where(Category.parent_id == category_id).select()
             )
