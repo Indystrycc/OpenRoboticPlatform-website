@@ -2,13 +2,14 @@ from functools import wraps
 
 from bleach import clean
 from flask import Blueprint, abort, flash, render_template, request, url_for
-from flask_login import current_user, login_required
+from flask_login import login_required
 from markupsafe import Markup
 from sqlalchemy import exists, select
 from sqlalchemy.orm import joinedload
 
 from . import db
 from .models import Category, Part
+from .session_utils import get_user
 
 views_admin = Blueprint("views_admin", __name__)
 
@@ -16,6 +17,7 @@ views_admin = Blueprint("views_admin", __name__)
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        current_user = get_user()
         if not current_user.is_admin:
             abort(403)
         return f(*args, **kwargs)
@@ -40,7 +42,7 @@ def panel():
         ),
         per_page=20,
     )
-    return render_template("adminpanel.html", user=current_user, parts=parts)
+    return render_template("adminpanel.html", parts=parts)
 
 
 @views_admin.route("/editpart:<int:part_number>", methods=["GET", "POST"])
@@ -88,9 +90,7 @@ def editPart(part_number: int):
         .unique()
         .all()
     )
-    return render_template(
-        "admineditpart.html", user=current_user, part=part, categories=categories
-    )
+    return render_template("admineditpart.html", part=part, categories=categories)
 
 
 @views_admin.route("/categories", methods=["GET", "POST"])
@@ -131,6 +131,4 @@ def categories():
         .unique()
         .all()
     )
-    return render_template(
-        "admin-categories.html", user=current_user, categories=categories
-    )
+    return render_template("admin-categories.html", categories=categories)

@@ -17,7 +17,7 @@ from flask import (
     request,
     url_for,
 )
-from flask_login import current_user, login_required
+from flask_login import login_required
 from markupsafe import Markup
 from PIL import Image, UnidentifiedImageError
 from sqlalchemy import func, or_, select
@@ -30,6 +30,7 @@ from . import compression_process, db
 from .compression import compress_uploads
 from .models import Category, File, Part, Stats, User, View
 from .secrets_manager import MAILERLITE_API_KEY
+from .session_utils import get_session, get_user
 from .thumbnailer import create_thumbnails, load_check_image
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
@@ -44,7 +45,7 @@ def home():
     )
     stats = db.session.get(Stats, 1)
 
-    return render_template("home.html", user=current_user, parts=parts, stats=stats)
+    return render_template("home.html", parts=parts, stats=stats)
 
 
 @views.route("/library")
@@ -98,7 +99,6 @@ def library():
     parts = db.paginate(parts_query, per_page=per_page)
     return render_template(
         "library.html",
-        user=current_user,
         parts=parts,
         sort_option=sort_option,
         categories=categories,
@@ -110,6 +110,7 @@ def library():
 @views.route("/account")
 @login_required
 def account():
+    current_user = get_user()
     recent_parts = db.session.scalars(
         select(Part)
         .where(Part.user_id == current_user.id)
@@ -120,7 +121,6 @@ def account():
 
     return render_template(
         "account.html",
-        user=current_user,
         recent_parts=recent_parts,
         total_parts=stats.total_parts,
         user_parts=user_parts,
@@ -132,6 +132,7 @@ def account():
 @login_required
 def accountsettings():
     if request.method == "POST":
+        current_user = get_user()
         previous_image = None
         new_image = None
         image = request.files.get("image")
@@ -173,13 +174,12 @@ def accountsettings():
             'Settings saved! <a href="/account" class="link-success">Go to your account.</a>'
         )
         flash(message, "success")
-    return render_template(
-        "accountsettings.html", user=current_user, image_types=ALLOWED_IMAGE_MIME
-    )
+    return render_template("accountsettings.html", image_types=ALLOWED_IMAGE_MIME)
 
 
 @views.route("/part:<int:part_number>")
 def part(part_number):
+    current_user = get_session()
     # A few substrings which can be often found in web crawlers
     BOT_UA_FRAGMENTS = ["bot", "crawler", "spider", "slurp", "spyder"]
     part = db.session.get(Part, part_number)
@@ -195,14 +195,13 @@ def part(part_number):
 
     ip_address = request.remote_addr
     time_delta = datetime.now(UTC) - timedelta(hours=3)
+    if isinstance(current_user, User):
+        same_user_filter = or_(View.ip == ip_address, View.user_id == current_user.id)
+    else:
+        same_user_filter = View.ip == ip_address
     view_count_check: View | None = db.session.scalar(
         select(View).where(
-            or_(
-                View.ip == ip_address,
-                View.user_id == current_user.id
-                if current_user.is_authenticated
-                else False,
-            ),
+            same_user_filter,
             View.part_id == part_number,
             View.event_date >= time_delta,
         )
@@ -213,7 +212,7 @@ def part(part_number):
         bot_ua_fragment in ua_lower for bot_ua_fragment in BOT_UA_FRAGMENTS
     ):
         part.views = int(part.views) + 1
-        if current_user.is_authenticated:
+        if isinstance(current_user, User):
             new_view = View(user_id=current_user.id, ip=ip_address, part_id=part_number)
         else:
             new_view = View(user_id=None, ip=ip_address, part_id=part_number)
@@ -227,7 +226,6 @@ def part(part_number):
     return render_template(
         "part.html",
         part=part,
-        user=current_user,
         files_list=files_list,
         author=author,
         category=category,
@@ -236,17 +234,18 @@ def part(part_number):
 
 @views.route("/designrules")
 def designRules():
-    return render_template("design-rules.html", user=current_user)
+    return render_template("design-rules.html")
 
 
 @views.route("/showcase")
 def showcase():
-    return render_template("showcase.html", user=current_user)
+    return render_template("showcase.html")
 
 
 @views.route("/addpart", methods=["GET", "POST"])
 @login_required
 def addPart():
+    current_user = get_user()
     if not current_user.confirmed:
         flash("You have to confirm your email before uploading a part.", "error")
         return redirect(url_for("views.account"))
@@ -299,7 +298,9 @@ def addPart():
             return redirect(url_for("views.addPart"))
 
         # Process and save the image
-        image_filename = save_image_and_validate(part, image, True)
+        image_filename = save_image_and_validate(
+            part, image, True, current_user.username
+        )
         if not image_filename:
             return redirect(url_for("views.addPart"))
         part.image = image_filename
@@ -335,7 +336,6 @@ def addPart():
     # Render the addpart.html template for GET requests
     return render_template(
         "addpart.html",
-        user=current_user,
         part_extensions=ALLOWED_PART_EXTENSIONS,
         image_types=ALLOWED_IMAGE_MIME,
         categories=categories,
@@ -345,6 +345,7 @@ def addPart():
 @views.route("/part:<int:part_number>/edit", methods=["GET", "POST"])
 @login_required
 def edit_part(part_number: int):
+    current_user = get_user()
     part = db.session.get(Part, part_number)
     if part is None:
         abort(404)
@@ -365,7 +366,9 @@ def edit_part(part_number: int):
         old_image = part.image
         image_filename = None
         if image:
-            image_filename = save_image_and_validate(part, image, False)
+            image_filename = save_image_and_validate(
+                part, image, False, current_user.username
+            )
             if not image_filename:
                 return redirect(url_for(".edit_part", part_number=part.id))
             part.image = image_filename
@@ -448,7 +451,6 @@ def edit_part(part_number: int):
 
     return render_template(
         "edit-part.html",
-        user=current_user,
         part=part,
         part_extensions=ALLOWED_PART_EXTENSIONS,
         image_types=ALLOWED_IMAGE_MIME,
@@ -469,7 +471,6 @@ def userView(user_name):
     stats, user_parts, user_contribution = calculate_user_contribution(display_user.id)
     return render_template(
         "user.html",
-        user=current_user,
         display_user=display_user,
         recent_parts=recent_parts,
         total_parts=stats.total_parts,
@@ -512,11 +513,13 @@ def save_image(image: FileStorage, part_id, username):
     return filename, save_path
 
 
-def save_image_and_validate(part: Part, image: FileStorage, delete_all: bool):
+def save_image_and_validate(
+    part: Part, image: FileStorage, delete_all: bool, username: str
+):
     if not image or mimetypes.guess_type(image.filename)[0] not in ALLOWED_IMAGE_MIME:
         abort(400)
     try:
-        image_filename, image_path = save_image(image, part.id, current_user.username)
+        image_filename, image_path = save_image(image, part.id, username)
     except ValueError as e:
         flash(e.args[0], "error")
         return None
@@ -528,7 +531,7 @@ def save_image_and_validate(part: Part, image: FileStorage, delete_all: bool):
         return None
     if os.path.getsize(image_path) > 5 * 1024 * 1024:
         if delete_all:
-            delete_part_uploads(part.id, current_user.username)
+            delete_part_uploads(part.id, username)
         else:
             delete_part_image(image_filename)
         flash(f"The image is too large.", "error")

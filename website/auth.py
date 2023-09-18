@@ -8,7 +8,7 @@ from email.headerregistry import Address as EmailAddress
 
 import requests
 from flask import Blueprint, flash, redirect, render_template, request, url_for
-from flask_login import current_user, login_required, login_user, logout_user
+from flask_login import AnonymousUserMixin, login_required, login_user, logout_user
 from markupsafe import Markup
 from MySQLdb.constants.ER import DUP_ENTRY
 from sqlalchemy import select
@@ -19,6 +19,7 @@ from . import csp_captcha, db, production, talisman
 from .mailer import send_confirmation_mail, send_password_reset_mail
 from .models import EmailToken, TokenType, User
 from .secrets_manager import *
+from .session_utils import get_session, get_user
 
 USERNAME_PATTERN = re.compile(r"[\w]+", flags=re.ASCII)
 
@@ -41,7 +42,7 @@ def login():
                 flash("Incorrect password", category="error")
         else:
             flash("No user registered with this email", category="error")
-    return render_template("login.html", user=current_user)
+    return render_template("login.html")
 
 
 @auth.route("logout")
@@ -120,9 +121,7 @@ def sign_up():
                     flash("Invalid data provided", "error")
         else:
             flash("CAPTCHA validation failed. Please try again.", category="error")
-    return render_template(
-        "signup.html", user=current_user, recaptcha_site_key=RECAPTCHA_PUBLIC_KEY
-    )
+    return render_template("signup.html", recaptcha_site_key=RECAPTCHA_PUBLIC_KEY)
 
 
 @auth.route("/signup/confirm/<token_enc>")
@@ -137,7 +136,8 @@ def confirm_email(token_enc: str):
         )
     )
     if not matching_token:
-        if not current_user.confirmed:
+        current_user = get_session()
+        if isinstance(current_user, AnonymousUserMixin) or not current_user.confirmed:
             flash(
                 Markup(
                     f'Invalid or expired link. You can request a new activation link on the <a href="{url_for("views.account")}">profile page</a>.'
@@ -158,6 +158,7 @@ def confirm_email(token_enc: str):
 @auth.route("/signup/resend-mail", methods=["POST"])
 @login_required
 def resend_confirmation_email():
+    current_user = get_user()
     if current_user.confirmed:
         flash("Your email has already been confirmed.")
         return redirect(url_for("views.account"))
@@ -240,7 +241,6 @@ def forgot_password():
                     )
                     return render_template(
                         "forgot-password.html",
-                        user=current_user,
                         recaptcha_site_key=RECAPTCHA_PUBLIC_KEY,
                     )
 
@@ -271,7 +271,6 @@ def forgot_password():
 
     return render_template(
         "forgot-password.html",
-        user=current_user,
         recaptcha_site_key=RECAPTCHA_PUBLIC_KEY,
     )
 
@@ -319,7 +318,6 @@ def reset_password_token(token_enc: str):
     address = EmailAddress(username=username, domain=address.domain)
     return render_template(
         "reset-password.html",
-        user=current_user,
         recaptcha_site_key=RECAPTCHA_PUBLIC_KEY,
         mail_addr=address,
     )

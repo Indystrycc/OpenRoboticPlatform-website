@@ -8,7 +8,6 @@ from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
-from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -25,6 +24,7 @@ db = SQLAlchemy(model_class=BaseModel)
 migrate = Migrate()
 talisman = Talisman()
 csrf = SeaSurf()
+login_manager = LoginManager()
 compression_process = ProcessPoolExecutor(1) if production else None
 
 default_csp = {
@@ -105,8 +105,7 @@ def create_app():
     # Register models
     from . import models
 
-    login_manager = LoginManager()
-    login_manager.login_view = "auth.login"
+    login_manager.login_view = "auth.login"  # type: ignore
     login_manager.init_app(app)
 
     @login_manager.user_loader
@@ -122,6 +121,12 @@ def create_app():
         # only allow loading resources with CORP or (if marked as crossorigin) CORS
         response.headers.set("Cross-Origin-Embedder-Policy", "require-corp")
         return response
+
+    @app.context_processor
+    def inject_template_globals():
+        from .session_utils import get_session
+
+        return {"user": get_session()}
 
     @app.route("/favicon.ico")
     def favicon():
