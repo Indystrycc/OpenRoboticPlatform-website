@@ -62,9 +62,9 @@ class Part(Model):
     last_modified: Mapped[Optional[datetime]] = mapped_column(default=None, init=False)
 
     cat: Mapped["Category"] = relationship(
-        "Category", back_populates="parts", default=None
+        "Category", back_populates="parts", init=False
     )
-    author: Mapped[User] = relationship("User", back_populates="parts", default=None)
+    author: Mapped[User] = relationship("User", back_populates="parts", init=False)
     files: Mapped[list["File"]] = relationship(
         "File", back_populates="part", default_factory=list
     )
@@ -92,7 +92,7 @@ class File(Model):
     part_id: Mapped[int] = mapped_column(ForeignKey("part.id"))
     file_name: Mapped[str] = mapped_column(String(100), unique=True)
 
-    part: Mapped[Part] = relationship("Part", back_populates="files", default=None)
+    part: Mapped[Part] = relationship("Part", back_populates="files", init=False)
 
 
 class Category(Model):
@@ -106,7 +106,7 @@ class Category(Model):
         "Category", back_populates="parent_cat", default_factory=list
     )
     parent_cat: Mapped[Optional["Category"]] = relationship(
-        "Category", back_populates="subcategories", remote_side=[id], default=None
+        "Category", back_populates="subcategories", remote_side=[id], init=False
     )
     parts: Mapped[list[Part]] = relationship(
         "Part", back_populates="cat", default_factory=list
@@ -151,4 +151,4 @@ class EmailToken(Model):
     )
     created_on: Mapped[datetime] = mapped_column(default=func.now(), init=False)
 
-    user: Mapped[User] = relationship(default=None)
+    user: Mapped[User] = relationship(init=False)
