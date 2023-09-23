@@ -276,7 +276,7 @@ def addPart():
             category=category,
             tags=tags,
             user_id=current_user.id,
-            # TODO: Generate image name now and use it when saving
+            # The image path can only be generated if part id is known
             image="",
         )
         db.session.add(part)
