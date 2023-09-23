@@ -14,7 +14,8 @@ from . import BaseModel, db
 
 if TYPE_CHECKING:
     # db.Model is based on BaseModel, but the type checker doesn't see this
-    class Model(db.Model, BaseModel):
+    # ignore is necessary because of https://github.com/python/mypy/issues/8603#issuecomment-1245490717
+    class Model(db.Model, BaseModel):  # type: ignore[name-defined]
         pass
 
 else:

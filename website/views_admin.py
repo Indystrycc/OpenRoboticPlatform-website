@@ -108,7 +108,8 @@ def categories():
             category = Category(name=category_name, parent_id=parent_id)
             db.session.add(category)
         else:
-            category = db.session.get(Category, category_id)
+            # mypy complains, because category is of type Category above and here it can be None in which case further processing will be aborted
+            category = db.session.get(Category, category_id)  # type: ignore
             if not category:
                 abort(404)
             has_children = db.session.scalar(

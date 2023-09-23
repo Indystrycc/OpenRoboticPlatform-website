@@ -208,7 +208,7 @@ def part(part_number):
         same_user_filter = or_(View.ip == ip_address, View.user_id == current_user.id)
     else:
         same_user_filter = View.ip == ip_address
-    view_count_check: View | None = db.session.scalar(
+    view_count_check = db.session.scalar(
         select(View).where(
             same_user_filter,
             View.part_id == part_number,

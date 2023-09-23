@@ -1,6 +1,7 @@
 import uuid
 from concurrent.futures import ProcessPoolExecutor
 from os import getenv, path
+from typing import TYPE_CHECKING
 
 from flask import Flask, Response, send_from_directory
 from flask_login import LoginManager
@@ -13,6 +14,9 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
 
+if TYPE_CHECKING:
+    from .models import User
+
 
 class BaseModel(DeclarativeBase, MappedAsDataclass):
     pass
@@ -24,10 +28,10 @@ db = SQLAlchemy(model_class=BaseModel)
 migrate = Migrate()
 talisman = Talisman()
 csrf = SeaSurf()
-login_manager = LoginManager()
+login_manager: LoginManager["User"] = LoginManager()
 compression_process = ProcessPoolExecutor(1) if production else None
 
-default_csp = {
+default_csp: dict[str, str | list[str]] = {
     "default-src": "'none'",
     "base-uri": "'none'",
     "form-action": "'self'",
@@ -63,7 +67,8 @@ def create_app():
         app.config["SERVER_NAME"] = getenv("DOMAIN", "orp.testing")
 
     if getenv("TRUSTED_PROXIES", "0") == "1":
-        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+        # This assignment is correct. See https://flask.palletsprojects.com/en/2.3.x/deploying/proxy_fix/
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)  # type: ignore[method-assign]
 
     app.config[
         "SQLALCHEMY_DATABASE_URI"
@@ -76,15 +81,15 @@ def create_app():
         content_security_policy_nonce_in=["script-src"],
         force_https=production,
         permissions_policy={
-            "accelerometer": (),
-            "camera": (),
-            "browsing-topics": (),  # prevent Chrome from tracking visitors on this website
-            "geolocation": (),
-            "gyroscope": (),
-            "magnetometer": (),
-            "microphone": (),
-            "payment": (),
-            "usb": (),
+            "accelerometer": "()",
+            "camera": "()",
+            "browsing-topics": "()",  # prevent Chrome from tracking visitors on this website
+            "geolocation": "()",
+            "gyroscope": "()",
+            "magnetometer": "()",
+            "microphone": "()",
+            "payment": "()",
+            "usb": "()",
         },
         session_cookie_secure=production,
         strict_transport_security=False,  # nginx already does it
@@ -105,11 +110,11 @@ def create_app():
     # Register models
     from . import models
 
-    login_manager.login_view = "auth.login"  # type: ignore
+    login_manager.login_view = "auth.login"
     login_manager.init_app(app)
 
     @login_manager.user_loader
-    def load_user(id):
+    def load_user(id: str) -> User | None:
         return db.session.get(models.User, uuid.UUID(id))
 
     @app.after_request
