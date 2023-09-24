@@ -2,51 +2,72 @@ import enum
 import os
 import uuid
 from dataclasses import dataclass
+from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 
 from flask_login import UserMixin
-from sqlalchemy.orm import Mapped
+from sqlalchemy import BINARY, UUID, Enum, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
-from . import db
+from . import BaseModel, db
+
+if TYPE_CHECKING:
+    # db.Model is based on BaseModel, but the type checker doesn't see this
+    class Model(db.Model, BaseModel):
+        pass
+
+else:
+    Model = db.Model
 
 
-class User(db.Model, UserMixin):
-    id = db.Column(db.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(163))
-    username = db.Column(db.String(20), unique=True)
-    confirmed = db.Column(db.Boolean, default=False)
-    description = db.Column(db.String(500))
-    image = db.Column(db.String(100))
-    name_github = db.Column(db.String(100))
-    name_youtube = db.Column(db.String(100))
-    name_instagram = db.Column(db.String(100))
-    is_admin = db.Column(db.Boolean, default=False)
-    date = db.Column(db.DateTime, default=func.now())
+class User(UserMixin, Model):
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), init=False, primary_key=True, default_factory=uuid.uuid4
+    )
+    email: Mapped[str] = mapped_column(String(100), unique=True)
+    password: Mapped[str] = mapped_column(String(163))
+    username: Mapped[str] = mapped_column(String(20), unique=True)
+    confirmed: Mapped[bool] = mapped_column(default=False)
+    description: Mapped[Optional[str]] = mapped_column(String(500), default=None)
+    image: Mapped[Optional[str]] = mapped_column(String(100), default=None)
+    name_github: Mapped[Optional[str]] = mapped_column(String(100), default=None)
+    name_youtube: Mapped[Optional[str]] = mapped_column(String(100), default=None)
+    name_instagram: Mapped[Optional[str]] = mapped_column(String(100), default=None)
+    is_admin: Mapped[bool] = mapped_column(default=False)
+    date: Mapped[datetime] = mapped_column(default=func.now(), init=False)
 
-    parts: Mapped[list["Part"]] = db.relationship("Part", back_populates="author")
+    parts: Mapped[list["Part"]] = relationship(
+        "Part", back_populates="author", default_factory=list
+    )
 
 
-class Part(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200))
-    description = db.Column(db.String(5000))
-    image = db.Column(db.String(100), unique=True)
-    category = db.Column(db.Integer, db.ForeignKey("category.id"))
-    user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("user.id"))
-    date = db.Column(db.DateTime, default=func.now())
-    verified = db.Column(db.Boolean, default=False)
-    featured = db.Column(db.Boolean, default=False)
-    public = db.Column(db.Boolean, default=False)
-    rejected = db.Column(db.Boolean, default=False)
-    downloads = db.Column(db.Integer, default=0)
-    tags = db.Column(db.String(200))
-    views = db.Column(db.Integer, nullable=False, default=0)
-    last_modified = db.Column(db.DateTime)
+class Part(Model):
+    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    name: Mapped[str] = mapped_column(String(200))
+    description: Mapped[str] = mapped_column(String(5000))
+    image: Mapped[str] = mapped_column(String(100), unique=True)
+    category: Mapped[int] = mapped_column(ForeignKey("category.id"))
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("user.id")
+    )
+    date: Mapped[datetime] = mapped_column(default=func.now(), init=False)
+    verified: Mapped[bool] = mapped_column(default=False)
+    featured: Mapped[bool] = mapped_column(default=False)
+    public: Mapped[bool] = mapped_column(default=False)
+    rejected: Mapped[bool] = mapped_column(default=False)
+    downloads: Mapped[int] = mapped_column(default=0, init=False)
+    tags: Mapped[str] = mapped_column(String(200), default_factory=str)
+    views: Mapped[int] = mapped_column(default=0, init=False)
+    last_modified: Mapped[Optional[datetime]] = mapped_column(default=None, init=False)
 
-    cat = db.relationship("Category", backref=db.backref("part", lazy=True))
-    author: Mapped[User] = db.relationship("User", back_populates="parts")
-    files: Mapped[list["File"]] = db.relationship("File", back_populates="part")
+    cat: Mapped["Category"] = relationship(
+        "Category", back_populates="parts", init=False
+    )
+    author: Mapped[User] = relationship("User", back_populates="parts", init=False)
+    files: Mapped[list["File"]] = relationship(
+        "File", back_populates="part", default_factory=list
+    )
 
     @property
     def thumbnail(self):
@@ -58,58 +79,63 @@ class Part(db.Model):
             """An ordered list of (filename, mime type) tuples in preferred order"""
 
         base, ext = os.path.splitext(self.image)
-        preferred_thumnails = [(base + ".webp", "image/webp")]
+        preferred_thumbnails: list[tuple[str, str]] = [(base + ".webp", "image/webp")]
         ext = ext.lower()
         fallback_thumbnail = base + (".png" if ext == ".png" else ".jpg")
         return ThumbnailDetails(
-            fallback=fallback_thumbnail, optimized=preferred_thumnails
+            fallback=fallback_thumbnail, optimized=preferred_thumbnails
         )
 
 
-class File(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
-    file_name = db.Column(db.String(100), unique=True)
+class File(Model):
+    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    part_id: Mapped[int] = mapped_column(ForeignKey("part.id"))
+    file_name: Mapped[str] = mapped_column(String(100), unique=True)
 
-    part: Mapped[Part] = db.relationship("Part", back_populates="files")
+    part: Mapped[Part] = relationship("Part", back_populates="files", init=False)
 
 
-class Category(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    parent_id = db.Column(db.Integer, db.ForeignKey("category.id"))
-
-    subcategories: Mapped[list["Category"]] = db.relationship(
-        "Category", back_populates="parent_cat"
-    )
-    parent_cat: Mapped["Category"] = db.relationship(
-        "Category", back_populates="subcategories", remote_side=[id]
+class Category(Model):
+    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    name: Mapped[str] = mapped_column(String(50))
+    parent_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("category.id"), default=None
     )
 
-
-class View(db.Model):
-    view_event_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(
-        db.UUID(as_uuid=True),
-        db.ForeignKey("user.id", ondelete="SET NULL"),
-        nullable=True,
+    subcategories: Mapped[list["Category"]] = relationship(
+        "Category", back_populates="parent_cat", default_factory=list
     )
-    ip = db.Column(db.String(45), nullable=True)
-    part_id = db.Column(db.Integer, db.ForeignKey("part.id"), nullable=False)
-    event_date = db.Column(db.DateTime, nullable=False, default=func.now())
+    parent_cat: Mapped[Optional["Category"]] = relationship(
+        "Category", back_populates="subcategories", remote_side=[id], init=False
+    )
+    parts: Mapped[list[Part]] = relationship(
+        "Part", back_populates="cat", default_factory=list
+    )
 
 
-class Stats(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    total_users = db.Column(db.Integer)
-    total_verified_users = db.Column(db.Integer)
-    total_parts = db.Column(db.Integer)
-    total_verified_parts = db.Column(db.Integer)
-    total_featured_parts = db.Column(db.Integer)
-    total_rejected_parts = db.Column(db.Integer)
-    total_files = db.Column(db.Integer)
-    total_views = db.Column(db.Integer)
-    date = db.Column(db.DateTime, nullable=False, default=func.now())
+class View(Model):
+    view_event_id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    part_id: Mapped[int] = mapped_column(ForeignKey("part.id"))
+    ip: Mapped[Optional[str]] = mapped_column(String(45))
+    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("user.id", ondelete="SET NULL"),
+        default=None,
+    )
+    event_date: Mapped[datetime] = mapped_column(default=func.now(), init=False)
+
+
+class Stats(Model):
+    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    total_users: Mapped[Optional[int]]
+    total_verified_users: Mapped[Optional[int]]
+    total_parts: Mapped[Optional[int]]
+    total_verified_parts: Mapped[Optional[int]]
+    total_featured_parts: Mapped[Optional[int]]
+    total_rejected_parts: Mapped[Optional[int]]
+    total_files: Mapped[Optional[int]]
+    total_views: Mapped[Optional[int]]
+    date: Mapped[datetime] = mapped_column(default=func.now())
 
 
 class TokenType(enum.Enum):
@@ -117,14 +143,12 @@ class TokenType(enum.Enum):
     password_reset = 2
 
 
-class EmailToken(db.Model):
-    token = db.Column(db.BINARY(32), primary_key=True)
-    token_type = db.Column(db.Enum(TokenType), nullable=False)
-    user_id = db.Column(
-        db.UUID(as_uuid=True),
-        db.ForeignKey("user.id", ondelete="CASCADE"),
-        nullable=False,
+class EmailToken(Model):
+    token: Mapped[bytes] = mapped_column(BINARY(32), primary_key=True)
+    token_type: Mapped[TokenType] = mapped_column(Enum(TokenType))
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("user.id", ondelete="CASCADE")
     )
-    created_on = db.Column(db.DateTime, nullable=False, default=func.now())
+    created_on: Mapped[datetime] = mapped_column(default=func.now(), init=False)
 
-    user: Mapped[User] = db.relationship()
+    user: Mapped[User] = relationship(init=False)

@@ -20,7 +20,7 @@ from flask import (
 from flask_login import current_user, login_required
 from markupsafe import Markup
 from PIL import Image, UnidentifiedImageError
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from werkzeug.datastructures import FileStorage
@@ -39,17 +39,16 @@ views = Blueprint("views", __name__)
 
 @views.route("/")
 def home():
-    parts = (
-        Part.query.filter_by(rejected=False).order_by(Part.date.desc()).limit(10).all()
+    parts = db.session.scalars(
+        select(Part).where(Part.rejected == False).order_by(Part.date.desc()).limit(10)
     )
-    stats = Stats.query.get(1)
+    stats = db.session.get(Stats, 1)
 
     return render_template("home.html", user=current_user, parts=parts, stats=stats)
 
 
 @views.route("/library")
 def library():
-    page = request.args.get("page", 1, type=int)
     per_page = 20
     search_query = request.args.get("search", "")
     sort_option = request.args.get("sort", "date_desc")
@@ -66,17 +65,18 @@ def library():
         .all()
     )
 
+    parts_query = select(Part).where(Part.rejected == False)
     if search_query:
-        parts = Part.query.filter(
-            Part.name.icontains(search_query, autoescape=True)
-            | Part.description.icontains(search_query, autoescape=True)
-            | Part.tags.icontains(search_query, autoescape=True)
-        ).filter_by(rejected=False)
-    else:
-        parts = Part.query.filter_by(rejected=False)
+        parts_query = parts_query.where(
+            or_(
+                Part.name.icontains(search_query, autoescape=True),
+                Part.description.icontains(search_query, autoescape=True),
+                Part.tags.icontains(search_query, autoescape=True),
+            )
+        )
 
     if verified_only:
-        parts = parts.filter_by(verified=True)
+        parts_query = parts_query.where(Part.verified == True)
 
     if selected_category != -1:
         if any(category.id == selected_category for category in categories):
@@ -84,18 +84,18 @@ def library():
                 c.subcategories for c in categories if c.id == selected_category
             )
             category_ids = [category.id for category in category_group]
-            parts = parts.filter(Part.category.in_(category_ids))
+            parts_query = parts_query.where(Part.category.in_(category_ids))
         else:
-            parts = parts.filter_by(category=selected_category)
+            parts_query = parts_query.where(Part.category == selected_category)
 
     if sort_option == "date_asc":
-        parts = parts.order_by(Part.date.asc())
+        parts_query = parts_query.order_by(Part.date.asc())
     elif sort_option == "popularity":
-        parts = parts.order_by(Part.views.desc())
+        parts_query = parts_query.order_by(Part.views.desc())
     else:
-        parts = parts.order_by(Part.date.desc())
+        parts_query = parts_query.order_by(Part.date.desc())
 
-    parts = parts.paginate(page=page, per_page=per_page)
+    parts = db.paginate(parts_query, per_page=per_page)
     return render_template(
         "library.html",
         user=current_user,
@@ -110,11 +110,11 @@ def library():
 @views.route("/account")
 @login_required
 def account():
-    recent_parts = (
-        Part.query.filter_by(user_id=current_user.id)
+    recent_parts = db.session.scalars(
+        select(Part)
+        .where(Part.user_id == current_user.id)
         .order_by(Part.date.desc())
         .limit(5)
-        .all()
     )
     stats, user_parts, user_contribution = calculate_user_contribution(current_user.id)
 
@@ -182,12 +182,12 @@ def accountsettings():
 def part(part_number):
     # A few substrings which can be often found in web crawlers
     BOT_UA_FRAGMENTS = ["bot", "crawler", "spider", "slurp", "spyder"]
-    part: Part | None = Part.query.get(part_number)
+    part = db.session.get(Part, part_number)
     if not part:
         abort(404)
-    author: User | None = User.query.get(part.user_id)
+    author = part.author
     files_list = part.files
-    subcategory: Category | None = part.cat
+    subcategory = part.cat
     category = subcategory.name
     if subcategory.parent_cat:
         category = subcategory.parent_cat
@@ -195,14 +195,18 @@ def part(part_number):
 
     ip_address = request.remote_addr
     time_delta = datetime.now(UTC) - timedelta(hours=3)
-    view_count_check: View | None = View.query.filter(
-        or_(
-            View.ip == ip_address,
-            View.user_id == current_user.id if current_user.is_authenticated else False,
-        ),
-        View.part_id == part_number,
-        View.event_date >= time_delta,
-    ).first()
+    view_count_check: View | None = db.session.scalar(
+        select(View).where(
+            or_(
+                View.ip == ip_address,
+                View.user_id == current_user.id
+                if current_user.is_authenticated
+                else False,
+            ),
+            View.part_id == part_number,
+            View.event_date >= time_delta,
+        )
+    )
 
     ua_lower = request.user_agent.string.lower()
     if not view_count_check and not any(
@@ -251,7 +255,7 @@ def addPart():
         # Retrieve the form data
         name = clean(request.form.get("name"))
         description = clean(request.form.get("description"))
-        category = clean(request.form.get("category"))
+        category = request.form.get("category", type=int)
         tags = clean(request.form.get("tags"))
         image = request.files.get("image")
         files = request.files.getlist("files")
@@ -272,6 +276,8 @@ def addPart():
             category=category,
             tags=tags,
             user_id=current_user.id,
+            # The image path can only be generated if part id is known
+            image="",
         )
         db.session.add(part)
         try:
@@ -339,7 +345,7 @@ def addPart():
 @views.route("/part:<int:part_number>/edit", methods=["GET", "POST"])
 @login_required
 def edit_part(part_number: int):
-    part = db.session.scalar(select(Part).where(Part.id == part_number))
+    part = db.session.get(Part, part_number)
     if part is None:
         abort(404)
     if part.user_id != current_user.id:
@@ -451,14 +457,14 @@ def edit_part(part_number: int):
 
 @views.route("/user:<string:user_name>")
 def userView(user_name):
-    display_user = User.query.filter_by(username=user_name).first()
+    display_user = db.session.scalar(select(User).where(User.username == user_name))
     if not display_user:
         abort(404)
-    recent_parts = (
-        Part.query.filter_by(user_id=display_user.id)
+    recent_parts = db.session.scalars(
+        select(Part)
+        .where(Part.user_id == display_user.id)
         .order_by(Part.date.desc())
         .limit(10)
-        .all()
     )
     stats, user_parts, user_contribution = calculate_user_contribution(display_user.id)
     return render_template(
@@ -610,8 +616,10 @@ def delete_part_uploads(part_id: int, username: str, tmp_only=False):
 
 
 def calculate_user_contribution(id):
-    stats = Stats.query.get(1)
-    user_parts = Part.query.filter_by(user_id=id).count()
+    stats = db.session.get(Stats, 1)
+    user_parts = db.session.scalar(
+        select(func.count()).select_from(Part).where(Part.user_id == id)
+    )
     user_contribution = round(
         (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
     )

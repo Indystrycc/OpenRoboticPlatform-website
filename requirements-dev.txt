@@ -1,4 +1,4 @@
 # Install the base requirements too
 -r requirements.txt
 
-black>=23.7.0
+black>=23.9.1

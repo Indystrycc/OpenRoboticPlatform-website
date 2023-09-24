@@ -31,7 +31,7 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        user = User.query.filter_by(email=email).first()
+        user = db.session.scalar(select(User).where(User.email == email))
         if user:
             if check_password_hash(user.password, password):
                 login_user(user, remember=True)
@@ -60,7 +60,7 @@ def sign_up():
         username = request.form.get("username")
 
         if check_captcha("signup"):
-            user = User.query.filter_by(email=email).first()
+            user = db.session.scalar(select(User).where(User.email == email))
             if user:
                 flash("This email is already registered.", category="error")
             elif len(username) < 4:
