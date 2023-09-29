@@ -15,7 +15,7 @@ from . import BaseModel, db
 if TYPE_CHECKING:
     # db.Model is based on BaseModel, but the type checker doesn't see this
     # ignore is necessary because of https://github.com/python/mypy/issues/8603#issuecomment-1245490717
-    class Model(db.Model, BaseModel):  # type: ignore[name-defined]
+    class Model(db.Model, BaseModel):  # type: ignore[name-defined,misc]
         pass
 
 else:
@@ -71,14 +71,7 @@ class Part(Model):
     )
 
     @property
-    def thumbnail(self):
-        @dataclass
-        class ThumbnailDetails:
-            fallback: str
-            """Fallback (jpg or png) thumbnail to be used in <img>"""
-            optimized: list[tuple[str, str]]
-            """An ordered list of (filename, mime type) tuples in preferred order"""
-
+    def thumbnail(self) -> "ThumbnailDetails":
         base, ext = os.path.splitext(self.image)
         preferred_thumbnails: list[tuple[str, str]] = [(base + ".webp", "image/webp")]
         ext = ext.lower()
@@ -153,3 +146,11 @@ class EmailToken(Model):
     created_on: Mapped[datetime] = mapped_column(default=func.now(), init=False)
 
     user: Mapped[User] = relationship(init=False)
+
+
+@dataclass
+class ThumbnailDetails:
+    fallback: str
+    """Fallback (jpg or png) thumbnail to be used in <img>"""
+    optimized: list[tuple[str, str]]
+    """An ordered list of (filename, mime type) tuples in preferred order"""

@@ -1,7 +1,9 @@
 from functools import wraps
+from typing import Callable, ParamSpec, TypeVar
 
 from bleach import clean
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask.typing import BeforeRequestCallable, ResponseReturnValue, RouteCallable
 from flask_login import login_required
 from markupsafe import Markup
 from sqlalchemy import exists, select
@@ -13,10 +15,15 @@ from .session_utils import get_user
 
 views_admin = Blueprint("views_admin", __name__)
 
+P = ParamSpec("P")
+R = TypeVar("R")
 
-def admin_required(f):
+
+def admin_required(
+    f: Callable[P, R],
+) -> Callable[P, R]:
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    def decorated_function(*args: P.args, **kwargs: P.kwargs) -> R:
         current_user = get_user()
         if not current_user.is_admin:
             abort(403)
@@ -28,12 +35,12 @@ def admin_required(f):
 @views_admin.before_request
 @login_required
 @admin_required
-def before_request():
+def before_request() -> None:
     pass
 
 
 @views_admin.route("/panel")
-def panel():
+def panel() -> ResponseReturnValue:
     parts = db.paginate(
         select(Part).options(
             joinedload(Part.author),
@@ -46,7 +53,7 @@ def panel():
 
 
 @views_admin.route("/editpart:<int:part_number>", methods=["GET", "POST"])
-def editPart(part_number: int):
+def editPart(part_number: int) -> ResponseReturnValue:
     part = db.session.get(Part, part_number)
     if part is None:
         abort(404)
@@ -93,7 +100,7 @@ def editPart(part_number: int):
 
 
 @views_admin.route("/categories", methods=["GET", "POST"])
-def categories():
+def categories() -> ResponseReturnValue:
     if request.method == "POST":
         category_id = request.form.get("categoryId", type=int)
         category_name = request.form.get("categoryName")

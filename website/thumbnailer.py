@@ -12,7 +12,7 @@ Image.MAX_IMAGE_PIXELS = 32_000_000
 
 # Largest possible thumbnail size is 548 x 411 px
 # Thumbnails have 4:3 aspect ratio
-def prepare_thumbnail(img: Image.Image, size: ImgSize):
+def prepare_thumbnail(img: Image.Image, size: ImgSize) -> Image.Image:
     w, h = img.size
     x = min(w // 4, h // 3)
     cropped_w, cropped_h = 4 * x, 3 * x
@@ -38,7 +38,7 @@ def create_thumbnails(
     filename: str,
     size: ImgSize = (548, 411),
     extensions: list[str] = [".webp"],
-):
+) -> None:
     thumb = prepare_thumbnail(img, size)
     dir = Path(dir)
     if not dir.is_dir():
@@ -59,9 +59,11 @@ def create_thumbnails(
 
 
 def load_check_image(
-    file: FileStorage, min_size: ImgSize = (548, 411), allowed_formats=("JPEG", "PNG")
-):
-    img = Image.open(file, formats=allowed_formats)  # type: ignore # file.read() is proxied to file.stream.read()
+    file: FileStorage,
+    min_size: ImgSize = (548, 411),
+    allowed_formats: list[str] | tuple[str, ...] = ("JPEG", "PNG"),
+) -> Image.Image:
+    img = Image.open(file.stream, formats=allowed_formats)
 
     w, h = img.size
     if w < min_size[0] or h < min_size[1]:

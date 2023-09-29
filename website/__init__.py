@@ -4,7 +4,7 @@ from os import getenv, path
 from typing import TYPE_CHECKING
 
 from flask import Flask, Response, send_from_directory
-from flask_login import LoginManager
+from flask_login import AnonymousUserMixin, LoginManager
 from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
@@ -28,7 +28,10 @@ db = SQLAlchemy(model_class=BaseModel)
 migrate = Migrate()
 talisman = Talisman()
 csrf = SeaSurf()
-login_manager: LoginManager["User"] = LoginManager()
+if TYPE_CHECKING:
+    login_manager: LoginManager["User"] = LoginManager()
+else:
+    login_manager: LoginManager = LoginManager()
 compression_process = ProcessPoolExecutor(1) if production else None
 
 default_csp: dict[str, str | list[str]] = {
@@ -57,7 +60,7 @@ csp_captcha = dict(
 )
 
 
-def create_app():
+def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = SECRET_KEY
     app.config["RECAPTCHA_PUBLIC_KEY"] = RECAPTCHA_PUBLIC_KEY
@@ -114,11 +117,11 @@ def create_app():
     login_manager.init_app(app)
 
     @login_manager.user_loader
-    def load_user(id: str) -> User | None:
+    def load_user(id: str) -> models.User | None:
         return db.session.get(models.User, uuid.UUID(id))
 
     @app.after_request
-    def set_important_headers(response: Response):
+    def set_important_headers(response: Response) -> Response:
         # enable process isolation and prevent XS-Leaks
         response.headers.set("Cross-Origin-Opener-Policy", "same-origin")
         # block no-cors cross-origin requests to our site, change it (on /static) if we want to allow cross-origin embedding of our resources
@@ -128,13 +131,13 @@ def create_app():
         return response
 
     @app.context_processor
-    def inject_template_globals():
+    def inject_template_globals() -> dict[str, models.User | AnonymousUserMixin]:
         from .session_utils import get_session
 
         return {"user": get_session()}
 
     @app.route("/favicon.ico")
-    def favicon():
+    def favicon() -> Response:
         return send_from_directory(
             path.join(app.root_path, "static/assets/favicon"),
             "favicon.ico",

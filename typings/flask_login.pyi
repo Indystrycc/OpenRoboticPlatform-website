@@ -2,6 +2,7 @@ from datetime import timedelta
 from typing import Any, Callable, Generic, Literal, NoReturn, TypeVar
 
 from flask import Flask, Response
+from flask.typing import BeforeRequestCallable, RouteCallable
 from werkzeug.local import LocalProxy
 
 class UserMixin:
@@ -51,7 +52,7 @@ class LoginManager(Generic[_FL_USER]):
     def __init__(
         self, app: Flask | None = None, add_context_processor: bool = True
     ) -> None: ...
-    def init_app(self, app: Flask, add_context_processor=True) -> None: ...
+    def init_app(self, app: Flask, add_context_processor: bool = True) -> None: ...
     def unauthorized(self) -> Any | Response | NoReturn: ...
     def user_loader(
         self, callback: Callable[[str], _FL_USER | None]
@@ -60,7 +61,9 @@ class LoginManager(Generic[_FL_USER]):
     def user_callback(self) -> Callable[[str], _FL_USER | None] | None: ...
     def needs_refresh(self) -> Any | Response | NoReturn: ...
 
-_FL_CALLABLE_ROUTE = TypeVar("_FL_CALLABLE_ROUTE", bound=Callable)
+_FL_CALLABLE_ROUTE = TypeVar(
+    "_FL_CALLABLE_ROUTE", bound=RouteCallable | BeforeRequestCallable
+)
 
 current_user: LocalProxy[UserMixin | AnonymousUserMixin]
 

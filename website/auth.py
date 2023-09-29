@@ -3,12 +3,14 @@ import math
 import re
 import secrets
 import sys
+from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from email.headerregistry import Address as EmailAddress
-from typing import TypeGuard
+from typing import Any, TypeGuard
 
 import requests
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask.typing import ResponseReturnValue
 from flask_login import AnonymousUserMixin, login_required, login_user, logout_user
 from markupsafe import Markup
 from MySQLdb.constants.ER import DUP_ENTRY
@@ -28,7 +30,7 @@ auth = Blueprint("auth", __name__)
 
 
 @auth.route("/login", methods=["GET", "POST"])
-def login():
+def login() -> ResponseReturnValue:
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password", "")
@@ -48,14 +50,14 @@ def login():
 
 @auth.route("logout")
 @login_required
-def logout():
+def logout() -> ResponseReturnValue:
     logout_user()
     return redirect(url_for("auth.login"))
 
 
 @auth.route("/signup", methods=["GET", "POST"])
 @talisman(content_security_policy=csp_captcha)
-def sign_up():
+def sign_up() -> ResponseReturnValue:
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
@@ -128,7 +130,7 @@ def sign_up():
 
 
 @auth.route("/signup/confirm/<token_enc>")
-def confirm_email(token_enc: str):
+def confirm_email(token_enc: str) -> ResponseReturnValue:
     token = base64.urlsafe_b64decode(token_enc)
     valid_time = datetime.now(UTC) - timedelta(hours=48)
     matching_token = db.session.scalar(
@@ -160,7 +162,7 @@ def confirm_email(token_enc: str):
 
 @auth.route("/signup/resend-mail", methods=["POST"])
 @login_required
-def resend_confirmation_email():
+def resend_confirmation_email() -> ResponseReturnValue:
     current_user = get_user()
     if current_user.confirmed:
         flash("Your email has already been confirmed.")
@@ -215,7 +217,7 @@ def resend_confirmation_email():
 
 @auth.route("/reset-password", methods=["GET", "POST"])
 @talisman(content_security_policy=csp_captcha)
-def forgot_password():
+def forgot_password() -> ResponseReturnValue:
     if request.method == "POST":
         email = request.form.get("email")
 
@@ -280,7 +282,7 @@ def forgot_password():
 
 @auth.route("/reset-password/<token_enc>", methods=["GET", "POST"])
 @talisman(content_security_policy=csp_captcha)
-def reset_password_token(token_enc: str):
+def reset_password_token(token_enc: str) -> ResponseReturnValue:
     token = base64.urlsafe_b64decode(token_enc)
     valid_time = datetime.now(UTC) - timedelta(minutes=15)
     matching_token = db.session.scalar(
@@ -326,25 +328,26 @@ def reset_password_token(token_enc: str):
     )
 
 
-def format_time_interval(wait: timedelta):
+def format_time_interval(wait: timedelta) -> str:
     minutes, seconds = divmod(math.ceil(wait.total_seconds()), 60)
     wait_str = f"{minutes} min {seconds} s" if minutes else f"{seconds} s"
     return wait_str
 
 
-def verify_recaptcha():
+def verify_recaptcha() -> "CaptchaV3Result":
     recaptcha_response = request.form.get("g-recaptcha-response")
     url = "https://www.google.com/recaptcha/api/siteverify"
     data = {"secret": RECAPTCHA_PRIVATE_KEY, "response": recaptcha_response}
     response = requests.post(url, data=data)
-    return response.json()
+    return CaptchaV3Result(response.json())
 
 
-def check_captcha(action: str, threshold=0.5):
+def check_captcha(action: str, threshold: float = 0.5) -> bool:
     captcha_result = verify_recaptcha()
-    return captcha_result["success"] and (
+    print(captcha_result)
+    return captcha_result.success and (
         not production
-        or (captcha_result["score"] >= threshold and captcha_result["action"] == action)
+        or (captcha_result.score >= threshold and captcha_result.action == action)
     )
 
 
@@ -356,3 +359,41 @@ def check_password_rules(password: str | None) -> TypeGuard[str]:
         flash("Password must not be longer than 128 bytes.", category="error")
         return False
     return True
+
+
+@dataclass
+class CaptchaV3Result:
+    success: bool
+    challenge_ts: datetime
+    hostname: str
+    score: float
+    action: str
+
+    def __init__(self, data: Any) -> None:
+        assert isinstance(data, dict)
+        success = data["success"]
+        challenge_ts = data["challenge_ts"]
+        hostname = data["hostname"]
+        score = data["score"]
+        action = data["action"]
+
+        correct = (
+            isinstance(success, bool)
+            and isinstance(challenge_ts, str)
+            and isinstance(hostname, str)
+            and isinstance(score, float)
+            and isinstance(action, str)
+        )
+        if not correct:
+            print("Invalid captcha data", data)
+            self.success = False
+            self.challenge_ts = datetime.min
+            self.hostname = ""
+            self.score = 0.0
+            self.action = ""
+        else:
+            self.success = success
+            self.challenge_ts = datetime.fromisoformat(challenge_ts)
+            self.hostname = hostname
+            self.score = score
+            self.action = action

@@ -1,6 +1,7 @@
-from typing import Literal, Mapping, NotRequired, Sequence, TypedDict, Unpack
+from typing import Callable, Literal, Mapping, NotRequired, Sequence, TypedDict, Unpack
 
 from flask import Flask
+from flask.typing import RouteCallable
 
 DENY: Literal["DENY"] = "DENY"
 SAMEORIGIN: Literal["SAMEORIGIN"] = "SAMEORIGIN"
@@ -157,6 +158,8 @@ class Talisman:
         x_content_type_options: bool = True,
         x_xss_protection: bool = False,
     ) -> None: ...
-    def __call__(self, **kwargs: Unpack[TalismanViewOptions]): ...
+    def __call__(
+        self, **kwargs: Unpack[TalismanViewOptions]
+    ) -> Callable[[RouteCallable], RouteCallable]: ...
 
 def get_random_string(length: int) -> str: ...

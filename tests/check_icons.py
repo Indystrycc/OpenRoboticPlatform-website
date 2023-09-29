@@ -91,7 +91,7 @@ fa_path = project_path / "static/fa"
 
 
 def process_single_class_list(
-    classes: list[str], file_path: str | os.PathLike
+    classes: list[str], file_path: str | os.PathLike[str]
 ) -> tuple[list[str], set[str], IconStyle]:
     errors: list[str] = []
     icons = set()
@@ -202,7 +202,7 @@ def find_all_icons() -> tuple[list[str], Icons]:
     return errors, icons
 
 
-def check_in_create_script(icons: Icons):
+def check_in_create_script(icons: Icons) -> tuple[list[str], Icons, Icons]:
     errors: list[str] = []
     not_found_icons: Icons = {"brands": set(), "regular": set(), "solid": set()}
     found_icons: Icons = {"brands": set(), "regular": set(), "solid": set()}
@@ -234,7 +234,7 @@ def check_in_create_script(icons: Icons):
     return errors, not_found_icons, unnecessary_icons
 
 
-def all_names_from_js(script: str):
+def all_names_from_js(script: str) -> list[str]:
     names: list[str] = []
     for match in ICON_LINE.finditer(script):
         name = match.group("name").strip('"')
@@ -246,7 +246,7 @@ def all_names_from_js(script: str):
     return names
 
 
-def check_minimized_fa_scripts(icons: Icons):
+def check_minimized_fa_scripts(icons: Icons) -> tuple[list[str], Icons]:
     errors: list[str] = []
     not_found_icons: Icons = {"brands": set(), "regular": set(), "solid": set()}
     with open(fa_path / "brands.min.js", "rt") as brands_file:
@@ -271,7 +271,7 @@ def check_minimized_fa_scripts(icons: Icons):
     return errors, not_found_icons
 
 
-def test_icons():
+def test_icons() -> tuple[list[str], Icons, Icons, Icons]:
     errors, icons = find_all_icons()
     e, nf_py_script, nu_py_script = check_in_create_script(icons)
     errors.extend(e)
