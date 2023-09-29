@@ -115,10 +115,10 @@ def categories() -> ResponseReturnValue:
             category = Category(name=category_name, parent_id=parent_id)
             db.session.add(category)
         else:
-            # mypy complains, because category is of type Category above and here it can be None in which case further processing will be aborted
-            category = db.session.get(Category, category_id)  # type: ignore
-            if not category:
+            _category = db.session.get(Category, category_id)
+            if not _category:
                 abort(404)
+            category = _category
             has_children = db.session.scalar(
                 exists(Category.id).where(Category.parent_id == category_id).select()
             )

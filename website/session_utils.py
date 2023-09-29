@@ -10,7 +10,9 @@ def get_session() -> User | AnonymousUserMixin:
     Returns the current_user extracted from its LocalProxy whether
     the user is logged in (`User`) or not (`AnonymousUserMixin`).
     """
-    return current_user._get_current_object()  # type: ignore
+    user = current_user._get_current_object()
+    assert isinstance(user, (User, AnonymousUserMixin))
+    return user
 
 
 def get_user() -> User:
