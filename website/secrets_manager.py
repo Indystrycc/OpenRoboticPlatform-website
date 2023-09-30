@@ -42,12 +42,12 @@ elif set(
 
 else:
     try:
-        from .secret import (
-            MAILERLITE_API_KEY,
-            RECAPTCHA_PRIVATE_KEY,
-            RECAPTCHA_PUBLIC_KEY,
-            SECRET_KEY,
-        )
+        from . import secret
+
+        SECRET_KEY = secret.SECRET_KEY
+        RECAPTCHA_PUBLIC_KEY = secret.RECAPTCHA_PUBLIC_KEY
+        RECAPTCHA_PRIVATE_KEY = secret.RECAPTCHA_PRIVATE_KEY
+        MAILERLITE_API_KEY = secret.MAILERLITE_API_KEY
     except ImportError:
         from sys import stderr
 
