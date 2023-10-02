@@ -84,6 +84,21 @@
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card project-card">
                     <picture>
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot4.avif') }}" type="image/avif">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot4.webp') }}" type="image/webp">
+                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot4.jxl') }}" type="image/jxl">
+                        <img  class="card-img-top" src="{{ url_for('static', filename='assets/img/robot4.JPG') }}" alt="Machine learning robot with LIDAR">
+                    </picture>
+                    <div class="card-body">
+                        <h5 class="card-title">Arduino, LIDAR, machine learning</h5>
+                        <p class="card-text">Running simple classifiers on Arduino UNO R4 with LIDAR data and ORP chassis.</p>
+                        <a href="https://www.youtube.com/watch?v=PdSDhdciSpE" target="_blank" class="btn btn-primary">Watch Video</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card project-card">
+                    <picture>
                         <source srcset="{{ url_for('static', filename='assets/img/opt/robot1.avif') }}" type="image/avif">
                         <source srcset="{{ url_for('static', filename='assets/img/opt/robot1.webp') }}" type="image/webp">
                         <source srcset="{{ url_for('static', filename='assets/img/opt/robot1.jxl') }}" type="image/jxl">
@@ -108,21 +123,6 @@
                         <h5 class="card-title">Arduino LIDAR Robot</h5>
                         <p class="card-text">A research platform powered by CubeMars motors, enabling precise mapping and navigation using LIDAR technology.</p>
                         <a href="https://www.youtube.com/watch?v=xSrjtJ2AZqw" target="_blank" class="btn btn-primary">Watch Video</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card project-card">
-                    <picture>
-                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot3.avif') }}" type="image/avif">
-                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot3.webp') }}" type="image/webp">
-                        <source srcset="{{ url_for('static', filename='assets/img/opt/robot3.jxl') }}" type="image/jxl">
-                        <img  class="card-img-top" src="{{ url_for('static', filename='assets/img/robot3.JPG') }}" alt="Overpowered Robot">
-                    </picture>
-                    <div class="card-body">
-                        <h5 class="card-title">Overpowered Robot</h5>
-                        <p class="card-text">A versatile research platform utilizing the robust CubeMars motors for high-performance robotic applications.</p>
-                        <a href="https://www.youtube.com/watch?v=k6F_VQQY3RE" target="_blank" class="btn btn-primary">Watch Video</a>
                     </div>
                 </div>
             </div>
