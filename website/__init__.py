@@ -14,9 +14,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
 
-if TYPE_CHECKING:
-    from .models import User
-
 
 class BaseModel(DeclarativeBase, MappedAsDataclass):
     pass
@@ -25,11 +22,13 @@ class BaseModel(DeclarativeBase, MappedAsDataclass):
 production = getenv("FLASK_ENV") == "production"
 
 db = SQLAlchemy(model_class=BaseModel)
+from . import models
+
 migrate = Migrate()
 talisman = Talisman()
 csrf = SeaSurf()
 if TYPE_CHECKING:
-    login_manager: LoginManager["User"] = LoginManager()
+    login_manager: LoginManager[models.User] = LoginManager()
 else:
     login_manager: LoginManager = LoginManager()
 compression_process = ProcessPoolExecutor(1) if production else None
@@ -109,9 +108,6 @@ def create_app() -> Flask:
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(views_admin, url_prefix="/admin/")
-
-    # Register models
-    from . import models
 
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
