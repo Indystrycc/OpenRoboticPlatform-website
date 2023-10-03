@@ -1,4 +1,4 @@
-from typing import Callable, Literal, Mapping, NotRequired, Sequence, TypedDict, Unpack
+from typing import Callable, Literal, Mapping, Sequence, TypedDict, Unpack
 
 from flask import Flask
 from flask.typing import RouteCallable
@@ -36,59 +36,44 @@ DEFAULT_DOCUMENT_POLICY: dict[str, str] = {}
 DEFAULT_FEATURE_POLICY: dict[str, str] = {}
 NONCE_LENGTH = 32
 
-class TalismanOptions(TypedDict):
-    feature_policy: NotRequired[dict[str, str] | str]
-    permissions_policy: NotRequired[dict[str, str] | str]
-    document_policy: NotRequired[dict[str, str] | str]
-    force_https: NotRequired[bool]
-    force_https_permanent: NotRequired[bool]
-    force_file_save: NotRequired[bool]
-    frame_options: NotRequired[Literal["SAMEORIGIN", "DENY", "ALLOWFROM"]]
-    frame_options_allow_from: NotRequired[str | None]
-    strict_transport_security: NotRequired[bool]
-    strict_transport_security_preload: NotRequired[bool]
-    strict_transport_security_max_age: NotRequired[int]
-    strict_transport_security_include_subdomains: NotRequired[bool]
-    content_security_policy: NotRequired[
-        Mapping[str, str | Sequence[str]]
-        | dict[str, str]
-        | dict[str, Sequence[str]]
-        | str
-    ]
-    content_security_policy_report_uri: NotRequired[str | None]
-    content_security_policy_report_only: NotRequired[bool]
-    content_security_policy_nonce_in: NotRequired[Sequence[str]]
-    referrer_policy: NotRequired[
-        Literal[
-            "no-referrer",
-            "no-referrer-when-downgrade",
-            "origin",
-            "origin-when-cross-origin",
-            "same-origin",
-            "strict-origin",
-            "strict-origin-when-cross-origin",
-            "unsafe-url",
-        ]
-    ]
-    session_cookie_secure: NotRequired[bool]
-    session_cookie_http_only: NotRequired[bool]
-    session_cookie_samesite: NotRequired[Literal["Strict", "Lax", "None"]]
-    x_content_type_options: NotRequired[bool]
-    x_xss_protection: NotRequired[bool]
+class TalismanViewOptions(TypedDict, total=False):
+    feature_policy: dict[str, str] | str
+    permissions_policy: dict[str, str] | str
+    document_policy: dict[str, str] | str
+    force_https: bool
+    frame_options: Literal["SAMEORIGIN", "DENY", "ALLOWFROM"]
+    frame_options_allow_from: str | None
+    content_security_policy: Mapping[str, str | Sequence[str]] | str
+    content_security_policy_nonce_in: Sequence[str]
 
-class TalismanViewOptions(TypedDict):
-    feature_policy: NotRequired[dict[str, str] | str]
-    permissions_policy: NotRequired[dict[str, str] | str]
-    document_policy: NotRequired[dict[str, str] | str]
-    force_https: NotRequired[bool]
-    frame_options: NotRequired[Literal["SAMEORIGIN", "DENY", "ALLOWFROM"]]
-    frame_options_allow_from: NotRequired[str | None]
-    content_security_policy: NotRequired[Mapping[str, str | Sequence[str]] | str]
-    content_security_policy_nonce_in: NotRequired[Sequence[str]]
+class TalismanAppOptions(TalismanViewOptions, total=False):
+    force_https_permanent: bool
+    force_file_save: bool
+    strict_transport_security: bool
+    strict_transport_security_preload: bool
+    strict_transport_security_max_age: int
+    strict_transport_security_include_subdomains: bool
+    content_security_policy_report_uri: str | None
+    content_security_policy_report_only: bool
+    referrer_policy: Literal[
+        "no-referrer",
+        "no-referrer-when-downgrade",
+        "origin",
+        "origin-when-cross-origin",
+        "same-origin",
+        "strict-origin",
+        "strict-origin-when-cross-origin",
+        "unsafe-url",
+    ]
+    session_cookie_secure: bool
+    session_cookie_http_only: bool
+    session_cookie_samesite: Literal["Strict", "Lax", "None"]
+    x_content_type_options: bool
+    x_xss_protection: bool
 
 class Talisman:
     def __init__(
-        self, app: Flask | None = None, **kwargs: Unpack[TalismanOptions]
+        self, app: Flask | None = None, **kwargs: Unpack[TalismanAppOptions]
     ) -> None: ...
     feature_policy: dict[str, str] | str
     permissions_policy: dict[str, str] | str
