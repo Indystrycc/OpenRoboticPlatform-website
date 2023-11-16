@@ -1,7 +1,7 @@
 import uuid
 from concurrent.futures import ProcessPoolExecutor
 from os import getenv, path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from flask import Flask, Response, send_from_directory
 from flask_login import LoginManager
@@ -27,10 +27,7 @@ from . import models
 migrate = Migrate()
 talisman = Talisman()
 csrf = SeaSurf()
-if TYPE_CHECKING:
-    login_manager: LoginManager[models.User] = LoginManager()
-else:
-    login_manager: LoginManager = LoginManager()
+login_manager: LoginManager = LoginManager()
 compression_process = ProcessPoolExecutor(1) if production else None
 
 default_csp: dict[str, str | list[str]] = {
