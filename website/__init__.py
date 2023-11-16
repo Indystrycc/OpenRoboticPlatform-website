@@ -1,10 +1,10 @@
 import uuid
 from concurrent.futures import ProcessPoolExecutor
 from os import getenv, path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from flask import Flask, Response, send_from_directory
-from flask_login import AnonymousUserMixin, LoginManager
+from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
@@ -127,7 +127,7 @@ def create_app() -> Flask:
         return response
 
     @app.context_processor
-    def inject_template_globals() -> dict[str, models.User | AnonymousUserMixin]:
+    def inject_template_globals() -> dict[str, Any]:
         from .session_utils import get_session
 
         return {"user": get_session()}
