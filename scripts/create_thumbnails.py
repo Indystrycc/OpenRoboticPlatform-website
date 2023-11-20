@@ -11,7 +11,7 @@ images_dir = project_root / "website" / "static" / "uploads" / "images"
 thumbnails_dir = images_dir / "thumbs"
 
 
-def generate_missing_thumbnails(source_file: Path):
+def generate_missing_thumbnails(source_file: Path) -> None:
     thumb_file = thumbnails_dir / source_file.name
     extensions = THUMBNAIL_EXTENSIONS.copy()
     mime = guess_type(source_file)[0]
@@ -44,7 +44,7 @@ def generate_missing_thumbnails(source_file: Path):
         print(f"not a valid image:", e)
 
 
-def check_all_thumbnails():
+def check_all_thumbnails() -> None:
     if not thumbnails_dir.is_dir():
         print("Creating thumbnails directory")
         thumbnails_dir.mkdir(parents=True, exist_ok=True)
@@ -53,7 +53,9 @@ def check_all_thumbnails():
         generate_missing_thumbnails(image)
 
 
-def make_thumbnail(img: Image.Image, size: tuple[int, int] = THUMBNAIL_DIM):
+def make_thumbnail(
+    img: Image.Image, size: tuple[int, int] = THUMBNAIL_DIM
+) -> Image.Image:
     w, h = img.size
     x = min(w // 4, h // 3)
     cropped_w, cropped_h = 4 * x, 3 * x

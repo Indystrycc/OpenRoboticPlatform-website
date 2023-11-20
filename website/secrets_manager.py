@@ -1,17 +1,32 @@
+import sys
 from os import environ
 
+_ok = False
 if "SECRETS_FILE" in environ.keys():
     import importlib.util
 
-    spec = importlib.util.spec_from_file_location("secret", environ.get("SECRETS_FILE"))
-    secret_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(secret_module)
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "secret", environ.get("SECRETS_FILE")
+        )
+        assert spec and spec.loader
+        secret_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(secret_module)
 
-    SECRET_KEY: str = secret_module.SECRET_KEY
-    RECAPTCHA_PUBLIC_KEY: str = secret_module.RECAPTCHA_PUBLIC_KEY
-    RECAPTCHA_PRIVATE_KEY: str = secret_module.RECAPTCHA_PRIVATE_KEY
-    MAILERLITE_API_KEY: str = secret_module.MAILERLITE_API_KEY
+        SECRET_KEY: str = secret_module.SECRET_KEY
+        RECAPTCHA_PUBLIC_KEY: str = secret_module.RECAPTCHA_PUBLIC_KEY
+        RECAPTCHA_PRIVATE_KEY: str = secret_module.RECAPTCHA_PRIVATE_KEY
+        MAILERLITE_API_KEY: str = secret_module.MAILERLITE_API_KEY
+        _ok = True
+    except Exception as e:
+        print(
+            f"Could not import secrets from {environ.get('SECRETS_FILE')}",
+            file=sys.stderr,
+        )
+        print(e, file=sys.stderr)
 
+if _ok:
+    pass
 elif set(
     (
         "SECRET_KEY",
@@ -20,19 +35,19 @@ elif set(
         "MAILERLITE_API_KEY",
     )
 ).issubset(environ.keys()):
-    SECRET_KEY = environ.get("SECRET_KEY")
-    RECAPTCHA_PUBLIC_KEY = environ.get("RECAPTCHA_PUBLIC_KEY")
-    RECAPTCHA_PRIVATE_KEY = environ.get("RECAPTCHA_PRIVATE_KEY")
-    MAILERLITE_API_KEY = environ.get("MAILERLITE_API_KEY")
+    SECRET_KEY = environ.get("SECRET_KEY", "")
+    RECAPTCHA_PUBLIC_KEY = environ.get("RECAPTCHA_PUBLIC_KEY", "")
+    RECAPTCHA_PRIVATE_KEY = environ.get("RECAPTCHA_PRIVATE_KEY", "")
+    MAILERLITE_API_KEY = environ.get("MAILERLITE_API_KEY", "")
 
 else:
     try:
-        from .secret import (
-            SECRET_KEY,
-            RECAPTCHA_PUBLIC_KEY,
-            RECAPTCHA_PRIVATE_KEY,
-            MAILERLITE_API_KEY,
-        )
+        from . import secret
+
+        SECRET_KEY = secret.SECRET_KEY
+        RECAPTCHA_PUBLIC_KEY = secret.RECAPTCHA_PUBLIC_KEY
+        RECAPTCHA_PRIVATE_KEY = secret.RECAPTCHA_PRIVATE_KEY
+        MAILERLITE_API_KEY = secret.MAILERLITE_API_KEY
     except ImportError:
         from sys import stderr
 

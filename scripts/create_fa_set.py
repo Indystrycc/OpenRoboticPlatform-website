@@ -29,7 +29,7 @@ ICON_LINE = re.compile(
 EMPTY_LINES = re.compile(r"\n{2,}")
 
 
-def download_file(file_base: str, file_type="js"):
+def download_file(file_base: str, file_type: str = "js") -> str:
     url_base = f"https://github.com/FortAwesome/Font-Awesome/raw/{FA_VERSION}/{file_type}/{file_base}.min.{file_type}"
     r = requests.get(url_base)
     if r.status_code != 200:
@@ -38,8 +38,8 @@ def download_file(file_base: str, file_type="js"):
     return r.text
 
 
-def process_icon_set(data: str, icons: list[str]):
-    def log_match(matchobj: re.Match):
+def process_icon_set(data: str, icons: list[str]) -> str:
+    def log_match(matchobj: re.Match[str]) -> str:
         if matchobj.group("name").strip('"') in icons:
             return matchobj.group(0)
 

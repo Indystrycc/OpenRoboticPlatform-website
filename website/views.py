@@ -17,7 +17,8 @@ from flask import (
     request,
     url_for,
 )
-from flask_login import current_user, login_required
+from flask.typing import ResponseReturnValue
+from flask_login import login_required
 from markupsafe import Markup
 from PIL import Image, UnidentifiedImageError
 from sqlalchemy import func, or_, select
@@ -30,6 +31,7 @@ from . import compression_process, db
 from .compression import compress_uploads
 from .models import Category, File, Part, Stats, User, View
 from .secrets_manager import MAILERLITE_API_KEY
+from .session_utils import get_session, get_user
 from .thumbnailer import create_thumbnails, load_check_image
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
@@ -38,17 +40,17 @@ views = Blueprint("views", __name__)
 
 
 @views.route("/")
-def home():
+def home() -> ResponseReturnValue:
     parts = db.session.scalars(
         select(Part).where(Part.rejected == False).order_by(Part.date.desc()).limit(10)
     )
     stats = db.session.get(Stats, 1)
 
-    return render_template("home.html", user=current_user, parts=parts, stats=stats)
+    return render_template("home.html", parts=parts, stats=stats)
 
 
 @views.route("/library")
-def library():
+def library() -> ResponseReturnValue:
     per_page = 20
     search_query = request.args.get("search", "")
     sort_option = request.args.get("sort", "date_desc")
@@ -98,7 +100,6 @@ def library():
     parts = db.paginate(parts_query, per_page=per_page)
     return render_template(
         "library.html",
-        user=current_user,
         parts=parts,
         sort_option=sort_option,
         categories=categories,
@@ -109,7 +110,8 @@ def library():
 
 @views.route("/account")
 @login_required
-def account():
+def account() -> ResponseReturnValue:
+    current_user = get_user()
     recent_parts = db.session.scalars(
         select(Part)
         .where(Part.user_id == current_user.id)
@@ -117,12 +119,12 @@ def account():
         .limit(5)
     )
     stats, user_parts, user_contribution = calculate_user_contribution(current_user.id)
+    total_parts = stats.total_parts if stats and stats.total_parts else 0
 
     return render_template(
         "account.html",
-        user=current_user,
         recent_parts=recent_parts,
-        total_parts=stats.total_parts,
+        total_parts=total_parts,
         user_parts=user_parts,
         user_contribution=user_contribution,
     )
@@ -130,15 +132,24 @@ def account():
 
 @views.route("/accountsettings", methods=["GET", "POST"])
 @login_required
-def accountsettings():
+def accountsettings() -> ResponseReturnValue:
     if request.method == "POST":
+        current_user = get_user()
         previous_image = None
         new_image = None
         image = request.files.get("image")
-        description = clean(request.form.get("description"))
-        link_github = clean(request.form.get("name_github"))
-        link_youtube = clean(request.form.get("name_youtube"))
-        link_instagram = clean(request.form.get("name_instagram"))
+        description = clean(
+            request.form.get("description", current_user.description or "")
+        )
+        link_github = clean(
+            request.form.get("name_github", current_user.name_github or "")
+        )
+        link_youtube = clean(
+            request.form.get("name_youtube", current_user.name_youtube or "")
+        )
+        link_instagram = clean(
+            request.form.get("name_instagram", current_user.name_instagram or "")
+        )
         current_user.description = description
         current_user.name_github = link_github
         current_user.name_youtube = link_youtube
@@ -150,7 +161,9 @@ def accountsettings():
             and mimetypes.guess_type(image.filename)[0] in ALLOWED_IMAGE_MIME
         ):
             previous_image = current_user.image
-            new_image, image_path = save_profile_image(image, current_user.username)
+            new_image, image_path = save_profile_image(
+                image, image.filename, current_user.username
+            )
             if os.path.getsize(image_path) > 5 * 1024 * 1024:
                 delete_profile_image(new_image)
                 db.session.rollback()
@@ -173,13 +186,12 @@ def accountsettings():
             'Settings saved! <a href="/account" class="link-success">Go to your account.</a>'
         )
         flash(message, "success")
-    return render_template(
-        "accountsettings.html", user=current_user, image_types=ALLOWED_IMAGE_MIME
-    )
+    return render_template("accountsettings.html", image_types=ALLOWED_IMAGE_MIME)
 
 
 @views.route("/part:<int:part_number>")
-def part(part_number):
+def part(part_number: int) -> ResponseReturnValue:
+    current_user = get_session()
     # A few substrings which can be often found in web crawlers
     BOT_UA_FRAGMENTS = ["bot", "crawler", "spider", "slurp", "spyder"]
     part = db.session.get(Part, part_number)
@@ -195,14 +207,13 @@ def part(part_number):
 
     ip_address = request.remote_addr
     time_delta = datetime.now(UTC) - timedelta(hours=3)
-    view_count_check: View | None = db.session.scalar(
+    if isinstance(current_user, User):
+        same_user_filter = or_(View.ip == ip_address, View.user_id == current_user.id)
+    else:
+        same_user_filter = View.ip == ip_address
+    view_count_check = db.session.scalar(
         select(View).where(
-            or_(
-                View.ip == ip_address,
-                View.user_id == current_user.id
-                if current_user.is_authenticated
-                else False,
-            ),
+            same_user_filter,
             View.part_id == part_number,
             View.event_date >= time_delta,
         )
@@ -213,7 +224,7 @@ def part(part_number):
         bot_ua_fragment in ua_lower for bot_ua_fragment in BOT_UA_FRAGMENTS
     ):
         part.views = int(part.views) + 1
-        if current_user.is_authenticated:
+        if isinstance(current_user, User):
             new_view = View(user_id=current_user.id, ip=ip_address, part_id=part_number)
         else:
             new_view = View(user_id=None, ip=ip_address, part_id=part_number)
@@ -227,7 +238,6 @@ def part(part_number):
     return render_template(
         "part.html",
         part=part,
-        user=current_user,
         files_list=files_list,
         author=author,
         category=category,
@@ -235,28 +245,29 @@ def part(part_number):
 
 
 @views.route("/designrules")
-def designRules():
-    return render_template("design-rules.html", user=current_user)
+def designRules() -> ResponseReturnValue:
+    return render_template("design-rules.html")
 
 
 @views.route("/showcase")
-def showcase():
-    return render_template("showcase.html", user=current_user)
+def showcase() -> ResponseReturnValue:
+    return render_template("showcase.html")
 
 
 @views.route("/addpart", methods=["GET", "POST"])
 @login_required
-def addPart():
+def addPart() -> ResponseReturnValue:
+    current_user = get_user()
     if not current_user.confirmed:
         flash("You have to confirm your email before uploading a part.", "error")
         return redirect(url_for("views.account"))
 
     if request.method == "POST":
         # Retrieve the form data
-        name = clean(request.form.get("name"))
-        description = clean(request.form.get("description"))
+        name = clean(request.form.get("name", ""))
+        description = clean(request.form.get("description", ""))
         category = request.form.get("category", type=int)
-        tags = clean(request.form.get("tags"))
+        tags = clean(request.form.get("tags", ""))
         image = request.files.get("image")
         files = request.files.getlist("files")
 
@@ -283,7 +294,7 @@ def addPart():
         try:
             db.session.flush()
         except IntegrityError as e:
-            if (
+            if e.orig and (
                 e.orig.args[0] == mysql_errors.NO_REFERENCED_ROW_2
                 or e.orig.args[0] == mysql_errors.NO_REFERENCED_ROW
             ):
@@ -299,17 +310,24 @@ def addPart():
             return redirect(url_for("views.addPart"))
 
         # Process and save the image
-        image_filename = save_image_and_validate(part, image, True)
+        image_filename = save_image_and_validate(
+            part, image, True, current_user.username
+        )
         if not image_filename:
             return redirect(url_for("views.addPart"))
         part.image = image_filename
 
         # Process and save the files
         for file in files:
-            if os.path.splitext(file.filename)[1] not in ALLOWED_PART_EXTENSIONS:
+            if (
+                not file.filename
+                or os.path.splitext(file.filename)[1] not in ALLOWED_PART_EXTENSIONS
+            ):
                 delete_part_uploads(part.id, current_user.username)
                 abort(400)
-            file_filename, file_path = save_file(file, part.id, current_user.username)
+            file_filename, file_path = save_file(
+                file, file.filename, part.id, current_user.username
+            )
             if os.path.getsize(file_path) > 10 * 1024 * 1024:
                 delete_part_uploads(part.id, current_user.username)
                 flash(f"File {file.filename} is too large.", "error")
@@ -335,7 +353,6 @@ def addPart():
     # Render the addpart.html template for GET requests
     return render_template(
         "addpart.html",
-        user=current_user,
         part_extensions=ALLOWED_PART_EXTENSIONS,
         image_types=ALLOWED_IMAGE_MIME,
         categories=categories,
@@ -344,7 +361,8 @@ def addPart():
 
 @views.route("/part:<int:part_number>/edit", methods=["GET", "POST"])
 @login_required
-def edit_part(part_number: int):
+def edit_part(part_number: int) -> ResponseReturnValue:
+    current_user = get_user()
     part = db.session.get(Part, part_number)
     if part is None:
         abort(404)
@@ -353,9 +371,9 @@ def edit_part(part_number: int):
 
     if request.method == "POST":
         upload_folder = "website/static/uploads/files"
-        name = request.form.get("name")
-        description = request.form.get("description")
-        tags = request.form.get("tags")
+        name = clean(request.form.get("name", part.name))
+        description = clean(request.form.get("description", part.description))
+        tags = clean(request.form.get("tags", part.tags))
         if not name or not description:
             flash("Name and descriptio are required.", "error")
             return redirect(url_for(".edit_part", part_number=part.id))
@@ -365,12 +383,14 @@ def edit_part(part_number: int):
         old_image = part.image
         image_filename = None
         if image:
-            image_filename = save_image_and_validate(part, image, False)
+            image_filename = save_image_and_validate(
+                part, image, False, current_user.username
+            )
             if not image_filename:
                 return redirect(url_for(".edit_part", part_number=part.id))
             part.image = image_filename
 
-        def img_cleanup():
+        def img_cleanup() -> None:
             if image_filename:
                 delete_part_image(image_filename)
 
@@ -395,12 +415,15 @@ def edit_part(part_number: int):
             if not file:
                 # No file selected
                 continue
-            if os.path.splitext(file.filename)[1] not in ALLOWED_PART_EXTENSIONS:
+            if (
+                not file.filename
+                or os.path.splitext(file.filename)[1] not in ALLOWED_PART_EXTENSIONS
+            ):
                 delete_part_uploads(part.id, current_user.username, tmp_only=True)
                 img_cleanup()
                 abort(400)
             file_filename, file_path = save_file(
-                file, part.id, current_user.username, tmp=True
+                file, file.filename, part.id, current_user.username, tmp=True
             )
             if os.path.getsize(file_path) > 10 * 1024 * 1024:
                 delete_part_uploads(part.id, current_user.username, tmp_only=True)
@@ -448,7 +471,6 @@ def edit_part(part_number: int):
 
     return render_template(
         "edit-part.html",
-        user=current_user,
         part=part,
         part_extensions=ALLOWED_PART_EXTENSIONS,
         image_types=ALLOWED_IMAGE_MIME,
@@ -456,7 +478,7 @@ def edit_part(part_number: int):
 
 
 @views.route("/user:<string:user_name>")
-def userView(user_name):
+def userView(user_name: str) -> ResponseReturnValue:
     display_user = db.session.scalar(select(User).where(User.username == user_name))
     if not display_user:
         abort(404)
@@ -467,24 +489,24 @@ def userView(user_name):
         .limit(10)
     )
     stats, user_parts, user_contribution = calculate_user_contribution(display_user.id)
+    total_parts = stats.total_parts if stats and stats.total_parts else 0
     return render_template(
         "user.html",
-        user=current_user,
         display_user=display_user,
         recent_parts=recent_parts,
-        total_parts=stats.total_parts,
+        total_parts=total_parts,
         user_contribution=user_contribution,
         user_parts=user_parts,
     )
 
 
 @views.route("/newsletterAdd", methods=["POST"])
-def newsletterAdd():
-    success, message = save_new_subscriber(clean(request.form.get("email")))
+def newsletterAdd() -> ResponseReturnValue:
+    success, message = save_new_subscriber(clean(request.form.get("email", "")))
     return jsonify({"success": success})
 
 
-def save_image(image: FileStorage, part_id, username):
+def save_image(image: FileStorage, part_id: int, username: str) -> tuple[str, str]:
     # Specify the directory where you want to save the images
     upload_folder = "website/static/uploads/images"
     thumbs_dir = os.path.join(upload_folder, "thumbs")
@@ -496,6 +518,7 @@ def save_image(image: FileStorage, part_id, username):
     # Load the image and check if it is correct (PNG or JPEG with minimal dimensions)
     img = load_check_image(image)
 
+    assert image.filename is not None
     # Generate a secure filename and save the image to the upload folder
     filename = secure_filename(image.filename)
     ext = os.path.splitext(filename)[1]
@@ -512,11 +535,17 @@ def save_image(image: FileStorage, part_id, username):
     return filename, save_path
 
 
-def save_image_and_validate(part: Part, image: FileStorage, delete_all: bool):
-    if not image or mimetypes.guess_type(image.filename)[0] not in ALLOWED_IMAGE_MIME:
+def save_image_and_validate(
+    part: Part, image: FileStorage, delete_all: bool, username: str
+) -> str | None:
+    if (
+        not image
+        or not image.filename
+        or mimetypes.guess_type(image.filename)[0] not in ALLOWED_IMAGE_MIME
+    ):
         abort(400)
     try:
-        image_filename, image_path = save_image(image, part.id, current_user.username)
+        image_filename, image_path = save_image(image, part.id, username)
     except ValueError as e:
         flash(e.args[0], "error")
         return None
@@ -528,7 +557,7 @@ def save_image_and_validate(part: Part, image: FileStorage, delete_all: bool):
         return None
     if os.path.getsize(image_path) > 5 * 1024 * 1024:
         if delete_all:
-            delete_part_uploads(part.id, current_user.username)
+            delete_part_uploads(part.id, username)
         else:
             delete_part_image(image_filename)
         flash(f"The image is too large.", "error")
@@ -537,9 +566,11 @@ def save_image_and_validate(part: Part, image: FileStorage, delete_all: bool):
     return image_filename
 
 
-def save_profile_image(image, username):
+def save_profile_image(
+    image: FileStorage, filename: str, username: str
+) -> tuple[str, str]:
     upload_folder = "website/static/uploads/profile_images"
-    filename, file_extension = os.path.splitext(image.filename)
+    filename, file_extension = os.path.splitext(filename)
     # Create the directory if it doesn't exist
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
@@ -552,14 +583,14 @@ def save_profile_image(image, username):
     return filename, save_path
 
 
-def delete_part_image(image_filename: str):
+def delete_part_image(image_filename: str) -> None:
     image_uploads_dir = Path("website/static/uploads/images")
     filename_base = os.path.splitext(image_filename)[0]
     for img in image_uploads_dir.rglob(filename_base + ".*"):
         img.unlink()
 
 
-def delete_profile_image(filename: str):
+def delete_profile_image(filename: str) -> None:
     upload_folder = "website/static/uploads/profile_images"
 
     try:
@@ -569,7 +600,9 @@ def delete_profile_image(filename: str):
         pass
 
 
-def save_file(file, part_id, username, tmp=False):
+def save_file(
+    file: FileStorage, filename: str, part_id: int, username: str, tmp: bool = False
+) -> tuple[str, str]:
     upload_folder = "website/static/uploads/files"
 
     # Create the directory if it doesn't exist
@@ -577,7 +610,7 @@ def save_file(file, part_id, username, tmp=False):
         os.makedirs(upload_folder)
 
     # Generate a secure filename and save the file to the upload folder
-    filename = secure_filename(file.filename)
+    filename = secure_filename(filename)
     filename = f"{username}-{part_id}-{filename}"
     if tmp:
         filename += "__tmp"
@@ -600,7 +633,7 @@ def save_file(file, part_id, username, tmp=False):
     return filename, save_path
 
 
-def delete_part_uploads(part_id: int, username: str, tmp_only=False):
+def delete_part_uploads(part_id: int, username: str, tmp_only: bool = False) -> None:
     image_uploads_dir = Path("website/static/uploads/images")
     file_uploads_dir = Path("website/static/uploads/files")
 
@@ -615,18 +648,22 @@ def delete_part_uploads(part_id: int, username: str, tmp_only=False):
         file.unlink()
 
 
-def calculate_user_contribution(id):
+def calculate_user_contribution(id: uuid.UUID) -> tuple[Stats | None, int, float]:
     stats = db.session.get(Stats, 1)
-    user_parts = db.session.scalar(
-        select(func.count()).select_from(Part).where(Part.user_id == id)
+    user_parts = (
+        db.session.scalar(
+            select(func.count()).select_from(Part).where(Part.user_id == id)
+        )
+        or 0
     )
+    total_parts = stats.total_parts if stats and stats.total_parts else 0
     user_contribution = round(
-        (user_parts / stats.total_parts) * 100 if stats.total_parts > 0 else 0, 2
+        (user_parts / total_parts) * 100 if total_parts > 0 else 0, 2
     )
     return stats, user_parts, user_contribution
 
 
-def save_new_subscriber(email):
+def save_new_subscriber(email: str) -> tuple[bool, requests.Response]:
     url = "https://connect.mailerlite.com/api/subscribers"
     headers = {
         "Content-Type": "application/json",

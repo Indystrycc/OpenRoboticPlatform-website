@@ -3,7 +3,7 @@ import shutil
 from pathlib import Path
 
 
-def compress_uploads(part_id: int, username: str):
+def compress_uploads(part_id: int, username: str) -> None:
     # Don't bother with images and 3MF. 3MF are already zip files (although may not be compressed)
     SUPPORTED_EXTENSIONS = (".stl", ".step", ".dxf")
     uploads_path = Path("website/static/uploads/files")

@@ -1,7 +1,7 @@
 import ipaddress
 import textwrap
 from email.headerregistry import Address
-from email.message import EmailMessage
+from email.message import EmailMessage, MIMEPart
 from os import getenv
 from smtplib import SMTP
 
@@ -14,7 +14,7 @@ FROM_ADDR = Address(
 )
 
 
-def check_addr_restrictions(address: Address):
+def check_addr_restrictions(address: Address) -> None:
     domain = address.domain.lower()
     if domain.startswith("["):
         ip = ipaddress.ip_address(
@@ -34,7 +34,7 @@ def check_addr_restrictions(address: Address):
         raise ValueError("Mail is registered under a TLD")
 
 
-def send_message(msg: EmailMessage):
+def send_message(msg: EmailMessage) -> None:
     if production:
         with SMTP("postfix") as smtp:
             smtp.send_message(msg)
@@ -42,10 +42,12 @@ def send_message(msg: EmailMessage):
         print(f'To: {msg["To"]}')
         print(f'From: {msg["From"]}')
         print(f'Subject: {msg["Subject"]}\n')
-        print(msg.get_body(("plain",)).get_content())
+        body = msg.get_body(("plain", "html"))
+        if isinstance(body, MIMEPart):
+            print(body.get_content())
 
 
-def send_confirmation_mail(username: str, email_addr: str, url: str):
+def send_confirmation_mail(username: str, email_addr: str, url: str) -> None:
     addr = Address(username, addr_spec=email_addr)
     check_addr_restrictions(addr)
     msg = EmailMessage()
@@ -95,7 +97,7 @@ def send_confirmation_mail(username: str, email_addr: str, url: str):
     send_message(msg)
 
 
-def send_password_reset_mail(username: str, email_addr: str, url: str):
+def send_password_reset_mail(username: str, email_addr: str, url: str) -> None:
     msg = EmailMessage()
     msg["Subject"] = "Password reset link"
     msg["From"] = FROM_ADDR

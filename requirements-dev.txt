@@ -2,3 +2,10 @@
 -r requirements.txt
 
 black>=23.11.0
+mypy>=1.7.0
+
+types-bleach>=6.1.0.1
+types-Flask-Migrate>=4.0.0.7
+types-mysqlclient>=2.2.0.1
+types-Pillow>=10.1.0.2
+types-requests>=2.31.0.10

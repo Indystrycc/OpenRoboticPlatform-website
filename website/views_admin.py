@@ -1,21 +1,30 @@
 from functools import wraps
+from typing import Callable, ParamSpec, TypeVar
 
 from bleach import clean
-from flask import Blueprint, abort, flash, render_template, request, url_for
-from flask_login import current_user, login_required
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask.typing import BeforeRequestCallable, ResponseReturnValue, RouteCallable
+from flask_login import login_required
 from markupsafe import Markup
 from sqlalchemy import exists, select
 from sqlalchemy.orm import joinedload
 
 from . import db
 from .models import Category, Part
+from .session_utils import get_user
 
 views_admin = Blueprint("views_admin", __name__)
 
+P = ParamSpec("P")
+R = TypeVar("R")
 
-def admin_required(f):
+
+def admin_required(
+    f: Callable[P, R],
+) -> Callable[P, R]:
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    def decorated_function(*args: P.args, **kwargs: P.kwargs) -> R:
+        current_user = get_user()
         if not current_user.is_admin:
             abort(403)
         return f(*args, **kwargs)
@@ -26,12 +35,12 @@ def admin_required(f):
 @views_admin.before_request
 @login_required
 @admin_required
-def before_request():
+def before_request() -> None:
     pass
 
 
 @views_admin.route("/panel")
-def panel():
+def panel() -> ResponseReturnValue:
     parts = db.paginate(
         select(Part).options(
             joinedload(Part.author),
@@ -40,25 +49,24 @@ def panel():
         ),
         per_page=20,
     )
-    return render_template("adminpanel.html", user=current_user, parts=parts)
+    return render_template("adminpanel.html", parts=parts)
 
 
 @views_admin.route("/editpart:<int:part_number>", methods=["GET", "POST"])
-def editPart(part_number: int):
+def editPart(part_number: int) -> ResponseReturnValue:
     part = db.session.get(Part, part_number)
     if part is None:
         abort(404)
 
     if request.method == "POST":
-        name = clean(request.form.get("name"))
-        description = clean(request.form.get("description"))
-        category = clean(request.form.get("category"))
-        tags = clean(request.form.get("tags"))
+        name = clean(request.form.get("name", part.name))
+        description = clean(request.form.get("description", part.description))
+        tags = clean(request.form.get("tags", part.tags))
         verified = request.form.get("verified")
         public = request.form.get("public")
         rejected = request.form.get("rejected")
         featured = request.form.get("featured")
-        category = request.form.get("category", type=int)
+        category = request.form.get("category", part.category, type=int)
 
         # Update the part with the new values using the provided part_id and updated_values
         part.name = name
@@ -88,17 +96,18 @@ def editPart(part_number: int):
         .unique()
         .all()
     )
-    return render_template(
-        "admineditpart.html", user=current_user, part=part, categories=categories
-    )
+    return render_template("admineditpart.html", part=part, categories=categories)
 
 
 @views_admin.route("/categories", methods=["GET", "POST"])
-def categories():
+def categories() -> ResponseReturnValue:
     if request.method == "POST":
         category_id = request.form.get("categoryId", type=int)
         category_name = request.form.get("categoryName")
         parent_id = request.form.get("parentCategory", type=int)
+        if category_id is None or category_name is None or parent_id is None:
+            flash("Something is missing", "error")
+            abort(redirect(url_for(".categories")))
         if parent_id == -1:
             parent_id = None
 
@@ -106,7 +115,10 @@ def categories():
             category = Category(name=category_name, parent_id=parent_id)
             db.session.add(category)
         else:
-            category = db.session.get(Category, category_id)
+            _category = db.session.get(Category, category_id)
+            if not _category:
+                abort(404)
+            category = _category
             has_children = db.session.scalar(
                 exists(Category.id).where(Category.parent_id == category_id).select()
             )
@@ -131,6 +143,4 @@ def categories():
         .unique()
         .all()
     )
-    return render_template(
-        "admin-categories.html", user=current_user, categories=categories
-    )
+    return render_template("admin-categories.html", categories=categories)

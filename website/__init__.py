@@ -1,6 +1,7 @@
 import uuid
 from concurrent.futures import ProcessPoolExecutor
 from os import getenv, path
+from typing import Any
 
 from flask import Flask, Response, send_from_directory
 from flask_login import LoginManager
@@ -8,7 +9,6 @@ from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
-from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -22,12 +22,15 @@ class BaseModel(DeclarativeBase, MappedAsDataclass):
 production = getenv("FLASK_ENV") == "production"
 
 db = SQLAlchemy(model_class=BaseModel)
+from . import models
+
 migrate = Migrate()
 talisman = Talisman()
 csrf = SeaSurf()
+login_manager: LoginManager = LoginManager()
 compression_process = ProcessPoolExecutor(1) if production else None
 
-default_csp = {
+default_csp: dict[str, str | list[str]] = {
     "default-src": "'none'",
     "base-uri": "'none'",
     "form-action": "'self'",
@@ -53,7 +56,7 @@ csp_captcha = dict(
 )
 
 
-def create_app():
+def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = SECRET_KEY
     app.config["RECAPTCHA_PUBLIC_KEY"] = RECAPTCHA_PUBLIC_KEY
@@ -63,7 +66,8 @@ def create_app():
         app.config["SERVER_NAME"] = getenv("DOMAIN", "orp.testing")
 
     if getenv("TRUSTED_PROXIES", "0") == "1":
-        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+        # This assignment is correct. See https://flask.palletsprojects.com/en/2.3.x/deploying/proxy_fix/
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)  # type: ignore[method-assign]
 
     app.config[
         "SQLALCHEMY_DATABASE_URI"
@@ -76,15 +80,15 @@ def create_app():
         content_security_policy_nonce_in=["script-src"],
         force_https=production,
         permissions_policy={
-            "accelerometer": (),
-            "camera": (),
-            "browsing-topics": (),  # prevent Chrome from tracking visitors on this website
-            "geolocation": (),
-            "gyroscope": (),
-            "magnetometer": (),
-            "microphone": (),
-            "payment": (),
-            "usb": (),
+            "accelerometer": "()",
+            "camera": "()",
+            "browsing-topics": "()",  # prevent Chrome from tracking visitors on this website
+            "geolocation": "()",
+            "gyroscope": "()",
+            "magnetometer": "()",
+            "microphone": "()",
+            "payment": "()",
+            "usb": "()",
         },
         session_cookie_secure=production,
         strict_transport_security=False,  # nginx already does it
@@ -102,19 +106,15 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(views_admin, url_prefix="/admin/")
 
-    # Register models
-    from . import models
-
-    login_manager = LoginManager()
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
 
     @login_manager.user_loader
-    def load_user(id):
+    def load_user(id: str) -> models.User | None:
         return db.session.get(models.User, uuid.UUID(id))
 
     @app.after_request
-    def set_important_headers(response: Response):
+    def set_important_headers(response: Response) -> Response:
         # enable process isolation and prevent XS-Leaks
         response.headers.set("Cross-Origin-Opener-Policy", "same-origin")
         # block no-cors cross-origin requests to our site, change it (on /static) if we want to allow cross-origin embedding of our resources
@@ -123,8 +123,14 @@ def create_app():
         response.headers.set("Cross-Origin-Embedder-Policy", "require-corp")
         return response
 
+    @app.context_processor
+    def inject_template_globals() -> dict[str, Any]:
+        from .session_utils import get_session
+
+        return {"user": get_session()}
+
     @app.route("/favicon.ico")
-    def favicon():
+    def favicon() -> Response:
         return send_from_directory(
             path.join(app.root_path, "static/assets/favicon"),
             "favicon.ico",
