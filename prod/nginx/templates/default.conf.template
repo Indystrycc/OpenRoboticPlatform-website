@@ -81,7 +81,7 @@ server {
     add_header Content-Security-Policy $csp always;
     add_header Cross-Origin-Opener-Policy $coop always;
     add_header Cross-Origin-Resource-Policy $corp always;
-    add_header Cross-Origin-Embedder-Policy $coep always;
+    # add_header Cross-Origin-Embedder-Policy $coep always;
     add_header Permissions-Policy $pp always;
 
     location / {
