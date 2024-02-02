@@ -1,4 +1,4 @@
-flask>=3.0.0
+flask>=3.0.1
 Flask-Login>=0.6.3
 Flask-Migrate>=4.0.5
 # Flask-SeaSurf hasn't been updated on PyPi in over a year, but the main branch contains important changes. I don't want to always use the latest changes, so it's pinned to the current latest commit.
@@ -6,12 +6,12 @@ Flask-SeaSurf @ https://github.com/maxcountryman/flask-seasurf/archive/f383b482c
 Flask-SQLAlchemy>=3.1.1
 flask-talisman>=1.1.0
 bleach>=6.1.0
-Pillow>=10.1.0
+Pillow>=10.2.0
 requests>=2.31.0
 
 # DB driver required by SQLAlchemy
-mysqlclient>=2.2.0
+mysqlclient>=2.2.1
 
 # dependencies of Flask-* dependencies, but we're using them directly, so make sure that they are installed
-SQLAlchemy>=2.0.23
+SQLAlchemy>=2.0.25
 Werkzeug>=3.0.1
