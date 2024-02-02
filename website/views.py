@@ -27,12 +27,20 @@ from sqlalchemy.orm import joinedload
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
-from . import compression_process, db
+from . import (
+    compression_process,
+    csp_kickstarter_ext,
+    db,
+    default_csp,
+    disable_COEP,
+    talisman,
+)
 from .compression import compress_uploads
 from .models import Category, File, Part, Stats, User, View
 from .secrets_manager import MAILERLITE_API_KEY
 from .session_utils import get_session, get_user
 from .thumbnailer import create_thumbnails, load_check_image
+from .utils import extend_talisman_csp
 
 ALLOWED_IMAGE_MIME = ["image/png", "image/jpeg"]
 ALLOWED_PART_EXTENSIONS = [".3mf", ".stl", ".step", ".dxf", ".scad"]
@@ -40,6 +48,8 @@ views = Blueprint("views", __name__)
 
 
 @views.route("/")
+@talisman(content_security_policy=extend_talisman_csp(default_csp, csp_kickstarter_ext))
+@disable_COEP
 def home() -> ResponseReturnValue:
     parts = db.session.scalars(
         select(Part).where(Part.rejected == False).order_by(Part.date.desc()).limit(10)

@@ -1,9 +1,10 @@
 import uuid
 from concurrent.futures import ProcessPoolExecutor
+from functools import wraps
 from os import getenv, path
-from typing import Any
+from typing import Any, Callable, ParamSpec, TypeVar
 
-from flask import Flask, Response, send_from_directory
+from flask import Flask, Response, g, send_from_directory
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
@@ -13,6 +14,7 @@ from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
+from .utils import extend_talisman_csp
 
 
 class BaseModel(DeclarativeBase, MappedAsDataclass):
@@ -44,9 +46,9 @@ default_csp: dict[str, str | list[str]] = {
         "data:",  # Bootstrap has some SVGs as data: URL in the stylesheet
     ],
 }
-csp_captcha = dict(
+csp_captcha = extend_talisman_csp(
     default_csp,
-    **{
+    {
         "script-src": "'strict-dynamic'",
         "frame-src": [
             "https://www.google.com/recaptcha/",
@@ -54,6 +56,19 @@ csp_captcha = dict(
         ],
     },
 )
+csp_kickstarter_ext = {"frame-src": "https://www.kickstarter.com"}
+
+T = TypeVar("T")
+P = ParamSpec("P")
+
+
+def disable_COEP(f: Callable[P, T]) -> Callable[P, T]:
+    @wraps(f)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        g.disable_COEP = True
+        return f(*args, **kwargs)
+
+    return wrapper
 
 
 def create_app() -> Flask:
@@ -69,9 +84,9 @@ def create_app() -> Flask:
         # This assignment is correct. See https://flask.palletsprojects.com/en/2.3.x/deploying/proxy_fix/
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)  # type: ignore[method-assign]
 
-    app.config[
-        "SQLALCHEMY_DATABASE_URI"
-    ] = f'mysql://root:rootroot@{getenv("DB_HOST", "127.0.0.1")}:3306/orp_db'
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        f'mysql://root:rootroot@{getenv("DB_HOST", "127.0.0.1")}:3306/orp_db'
+    )
     db.init_app(app)
     migrate.init_app(app, db)
     talisman.init_app(
@@ -119,8 +134,10 @@ def create_app() -> Flask:
         response.headers.set("Cross-Origin-Opener-Policy", "same-origin")
         # block no-cors cross-origin requests to our site, change it (on /static) if we want to allow cross-origin embedding of our resources
         response.headers.set("Cross-Origin-Resource-Policy", "same-origin")
-        # only allow loading resources with CORP or (if marked as crossorigin) CORS
-        response.headers.set("Cross-Origin-Embedder-Policy", "require-corp")
+        # Allow disabling COEP, because Kickstarter and YouTube embeds/iframes do not have CORP header (why???) and credentialless iframes are not a thing
+        if not ("disable_COEP" in g and g.disable_COEP):
+            # only allow loading resources with CORP or (if marked as crossorigin) CORS
+            response.headers.set("Cross-Origin-Embedder-Policy", "require-corp")
         return response
 
     @app.context_processor
