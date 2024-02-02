@@ -7,9 +7,9 @@ DENY: Literal["DENY"] = "DENY"
 SAMEORIGIN: Literal["SAMEORIGIN"] = "SAMEORIGIN"
 ALLOW_FROM: Literal["ALLOW-FROM"] = "ALLOW-FROM"
 ONE_YEAR_IN_SECS: Literal[31556926] = 31556926
-DEFAULT_REFERRER_POLICY: Literal[
+DEFAULT_REFERRER_POLICY: Literal["strict-origin-when-cross-origin"] = (
     "strict-origin-when-cross-origin"
-] = "strict-origin-when-cross-origin"
+)
 DEFAULT_CSP_POLICY = {
     "default-src": "'self'",
     "object-src": "'none'",
@@ -120,8 +120,9 @@ class Talisman:
         strict_transport_security_preload: bool = False,
         strict_transport_security_max_age: int = ONE_YEAR_IN_SECS,
         strict_transport_security_include_subdomains: bool = True,
-        content_security_policy: Mapping[str, str | Sequence[str]]
-        | str = DEFAULT_CSP_POLICY,
+        content_security_policy: (
+            Mapping[str, str | Sequence[str]] | str
+        ) = DEFAULT_CSP_POLICY,
         content_security_policy_report_uri: str | None = None,
         content_security_policy_report_only: bool = False,
         content_security_policy_nonce_in: Sequence[str] | None = [],
