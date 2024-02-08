@@ -99,7 +99,9 @@ def sign_up() -> ResponseReturnValue:
                         ".confirm_email",
                         _scheme="https",
                         _external=True,
-                        token_enc=base64.urlsafe_b64encode(activation_token),
+                        token_enc=base64.urlsafe_b64encode(activation_token).decode(
+                            "ascii"
+                        ),
                     )
                     saved_token = EmailToken(
                         token=activation_token,
@@ -196,7 +198,7 @@ def resend_confirmation_email() -> ResponseReturnValue:
         ".confirm_email",
         _scheme="https",
         _external=True,
-        token_enc=base64.urlsafe_b64encode(activation_token),
+        token_enc=base64.urlsafe_b64encode(activation_token).decode("ascii"),
     )
     if saved_token:
         saved_token.token = activation_token
@@ -257,7 +259,9 @@ def forgot_password() -> ResponseReturnValue:
                         ".reset_password_token",
                         _scheme="https",
                         _external=True,
-                        token_enc=base64.urlsafe_b64encode(activation_token),
+                        token_enc=base64.urlsafe_b64encode(activation_token).decode(
+                            "ascii"
+                        ),
                     )
                     saved_token = EmailToken(
                         token=activation_token,
