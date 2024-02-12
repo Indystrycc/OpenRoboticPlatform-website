@@ -135,9 +135,12 @@ def create_app() -> Flask:
         # block no-cors cross-origin requests to our site, change it (on /static) if we want to allow cross-origin embedding of our resources
         response.headers.set("Cross-Origin-Resource-Policy", "same-origin")
         # Allow disabling COEP, because Kickstarter and YouTube embeds/iframes do not have CORP header (why???) and credentialless iframes are not a thing
-        if not ("disable_COEP" in g and g.disable_COEP):
+        if not g.get("disable_COEP", False):
             # only allow loading resources with CORP or (if marked as crossorigin) CORS
             response.headers.set("Cross-Origin-Embedder-Policy", "require-corp")
+        elif production:
+            # Make sure that nginx does not implicitly add the COEP header to this response
+            response.headers.set("__No-Implicit-COEP", "1")
         return response
 
     @app.context_processor
