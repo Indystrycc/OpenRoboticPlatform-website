@@ -51,8 +51,12 @@ map $upstream_http_cross_origin_opener_policy $coop {
 map $upstream_http_cross_origin_resource_policy $corp {
     '' "same-origin";
 }
-map $upstream_http_cross_origin_embedder_policy $coep {
+map $upstream_http_cross_origin_embedder_policy $coep_val {
     '' "require-corp";
+}
+map $upstream_http___no_implicit_coep $coep {
+    default $coep_val;
+    1       "";
 }
 map $upstream_http_permissions_policy $pp {
     '' "accelerometer=(), camera=(), browsing-topics=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()";
@@ -81,8 +85,9 @@ server {
     add_header Content-Security-Policy $csp always;
     add_header Cross-Origin-Opener-Policy $coop always;
     add_header Cross-Origin-Resource-Policy $corp always;
-    # add_header Cross-Origin-Embedder-Policy $coep always;
+    add_header Cross-Origin-Embedder-Policy $coep always;
     add_header Permissions-Policy $pp always;
+    proxy_hide_header  __No-Implicit-COEP;
 
     location / {
         proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
