@@ -4,7 +4,7 @@ from functools import wraps
 from os import getenv, path
 from typing import Any, Callable, ParamSpec, TypeVar
 
-from flask import Flask, Response, g, send_from_directory
+from flask import Flask, Response, g, request, send_from_directory
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
@@ -137,6 +137,10 @@ def create_app() -> Flask:
     @login_manager.user_loader
     def load_user(id: str) -> models.User | None:
         return db.session.get(models.User, uuid.UUID(id))
+
+    @app.before_request
+    def initialize_request_vars():
+        g.DNT = request.headers.get("DNT", "0") == "1"
 
     @app.after_request
     def set_important_headers(response: Response) -> Response:
