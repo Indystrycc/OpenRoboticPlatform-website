@@ -139,7 +139,7 @@ def create_app() -> Flask:
         return db.session.get(models.User, uuid.UUID(id))
 
     @app.before_request
-    def initialize_request_vars():
+    def initialize_request_vars() -> None:
         g.DNT = request.headers.get("DNT", "0") == "1"
 
     @app.after_request
