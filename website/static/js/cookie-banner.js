@@ -13,7 +13,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const btnOptOut = document.getElementById("btnOptOut");
 
     function closeBanner() {
-        document.cookie = BANNER_CLOSED_COOKIE + "=1";
+        // https://github.com/matomo-org/matomo/blob/5.0.2/js/piwik.js#L7326-L7334
+        document.cookie = `${BANNER_CLOSED_COOKIE}=1; Max-Age=${30 * 365 * 24 * 60 * 60}; SameSite=Lax; Secure`;
         banner.classList.add("d-none");
     }
 
