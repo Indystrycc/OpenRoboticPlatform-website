@@ -4,7 +4,8 @@ from functools import wraps
 from os import getenv, path
 from typing import Any, Callable, ParamSpec, TypeVar
 
-from flask import Flask, Response, g, request, send_from_directory
+from flask import Flask, Response, g, render_template, request, send_from_directory
+from flask.typing import ResponseReturnValue
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
@@ -79,6 +80,10 @@ def disable_COEP(f: Callable[P, T]) -> Callable[P, T]:
     return wrapper
 
 
+def page_not_found(_e: Exception) -> ResponseReturnValue:
+    return render_template("404.html"), 404
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = SECRET_KEY
@@ -130,6 +135,8 @@ def create_app() -> Flask:
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(views_admin, url_prefix="/admin/")
+
+    app.register_error_handler(404, page_not_found)
 
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)

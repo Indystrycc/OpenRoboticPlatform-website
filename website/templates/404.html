@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Page not found{% endblock %}
+{% block navbar_add_class %}masthead-no-img{% endblock %}
+{% block header %}
+<header class="masthead masthead-no-img">
+    <div class="masthead-heading text-uppercase">Not found</div>
+</header>
+{% endblock %}
+{% block head_additional %}
+<script nonce="{{ csp_nonce() }}">
+    var _paq = window._paq = window._paq || [];
+    _paq.push(['setDocumentTitle', '404/URL = ' + encodeURIComponent(document.location.pathname+document.location.search) + '/From = ' + encodeURIComponent(document.referrer)]);
+</script>
+{% endblock %}
+{% block content %}
+<section class="bg-secondary-subtle">
+    <div class="container py-5">
+        <p>The requested page does not exist. Please check the address or go to the <a href="{{ url_for('views.library') }}">library</a> to search the available parts.</p>
+    </div>
+</section>
+{% endblock %}
