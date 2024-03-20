@@ -56,7 +56,7 @@ csp_captcha = extend_talisman_csp(
         ],
     },
 )
-csp_kickstarter_ext = {"frame-src": "https://www.kickstarter.com"}
+csp_youtube_ext = {"frame-src": "https://www.youtube.com"}
 
 T = TypeVar("T")
 P = ParamSpec("P")
