@@ -29,7 +29,7 @@ from werkzeug.utils import secure_filename
 
 from . import (
     compression_process,
-    csp_kickstarter_ext,
+    csp_youtube_ext,
     db,
     default_csp,
     disable_COEP,
@@ -48,7 +48,7 @@ views = Blueprint("views", __name__)
 
 
 @views.route("/")
-@talisman(content_security_policy=extend_talisman_csp(default_csp, csp_kickstarter_ext))
+@talisman(content_security_policy=extend_talisman_csp(default_csp, csp_youtube_ext))
 @disable_COEP
 def home() -> ResponseReturnValue:
     parts = db.session.scalars(
