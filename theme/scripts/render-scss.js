@@ -4,7 +4,7 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import postcss from "postcss";
 import * as sass from "sass";
-import packageJSON from "../package.json" assert { type: "json" };
+import packageJSON from "../package.json" with { type: "json" };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
