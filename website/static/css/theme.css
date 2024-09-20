@@ -12319,14 +12319,13 @@ header.masthead .masthead-heading {
   font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-.iframeVideo {
-	height: 0px;
-	padding-top: 25px;
-	padding-bottom: 56.2%;
-	position: relative;
+.yt_video_container {
+  display: flex;
+  justify-content: center;
 }
-.iframeVideo iframe {
-	width: 100%;
-	height: 100%;
-	position: absolute;
+
+
+iframe {
+  aspect-ratio: 16 / 9;
+  width: 100% !important;
 }
