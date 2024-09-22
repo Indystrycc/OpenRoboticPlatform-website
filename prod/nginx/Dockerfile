@@ -16,6 +16,7 @@ COPY prod/nginx /etc/nginx
 # Prepare static files
 COPY --chmod=644 website/static /data/static
 COPY --from=theme --chmod=644 /theme/dist/styles.css /data/static/css/theme.css
+COPY --from=theme --chmod=644 /theme/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js /data/static/js/bootstrap.bundle.min.js
 RUN find /data/static -type f -not -empty -exec sh -c "gzip -c -9 {} > {}.gz" \; && \
     find /data/static -type d -exec chmod 755 "{}" \;
 
