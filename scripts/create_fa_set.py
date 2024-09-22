@@ -5,7 +5,7 @@ from pathlib import Path
 
 import requests
 
-FA_VERSION = "6.4.2"
+FA_VERSION = "6.6.0"
 BRAND_ICONS = ["github", "instagram", "youtube"]
 SOLID_ICONS = [
     "bars",
