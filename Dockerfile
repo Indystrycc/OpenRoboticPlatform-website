@@ -8,7 +8,7 @@ RUN --mount=type=cache,target=/root/.npm npm install
 
 RUN npm run build
 
-FROM python:3.11-slim as build
+FROM python:3.12-slim as build
 
 # install mysqlclient requirements
 RUN \
@@ -35,7 +35,7 @@ RUN \
 	pip install -r requirements-prod.txt
 
 
-FROM python:3.11-slim as deploy
+FROM python:3.12-slim as deploy
 
 # install mysqlclient without build-essential
 RUN \

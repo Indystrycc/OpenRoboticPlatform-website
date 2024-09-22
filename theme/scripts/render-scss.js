@@ -25,7 +25,8 @@ export async function renderSCSS() {
     const results = sass.compileString(entryPoint, {
         loadPaths: [
             path.resolve(__dirname, "../node_modules")
-        ]
+        ],
+        quietDeps: true
     });
 
     const destPathDirname = path.dirname(destPath);
