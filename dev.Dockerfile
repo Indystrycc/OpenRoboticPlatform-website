@@ -61,6 +61,7 @@ COPY website website/
 
 # copy the theme and overwrite
 COPY --from=theme /theme/dist/styles.css website/static/css/theme.css
+COPY --from=theme /theme/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js website/static/js/bootstrap.bundle.min.js
 
 EXPOSE 5004
 CMD [ "/bin/sh", "-c", "flask db upgrade && flask run --host=0.0.0.0 --port=5004 --debug" ]

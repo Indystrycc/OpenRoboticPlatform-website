@@ -56,7 +56,9 @@ csp_captcha = extend_talisman_csp(
         ],
     },
 )
-csp_youtube_ext = {"frame-src": "https://www.youtube.com"}
+csp_youtube_ext = {
+    "frame-src": ["https://www.youtube.com", "https://www.youtube-nocookie.com"]
+}
 
 T = TypeVar("T")
 P = ParamSpec("P")

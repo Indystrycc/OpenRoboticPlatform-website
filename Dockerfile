@@ -8,7 +8,7 @@ RUN --mount=type=cache,target=/root/.npm npm install
 
 RUN npm run build
 
-FROM python:3.11-slim as build
+FROM python:3.12-slim as build
 
 # install mysqlclient requirements
 RUN \
@@ -35,7 +35,7 @@ RUN \
 	pip install -r requirements-prod.txt
 
 
-FROM python:3.11-slim as deploy
+FROM python:3.12-slim as deploy
 
 # install mysqlclient without build-essential
 RUN \
@@ -62,5 +62,6 @@ COPY website website/
 
 # copy the theme and overwrite
 COPY --from=theme /theme/dist/styles.css website/static/css/theme.css
+COPY --from=theme /theme/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js website/static/js/bootstrap.bundle.min.js
 
 CMD [ "/bin/sh", "-c", "flask db upgrade && gunicorn" ]
