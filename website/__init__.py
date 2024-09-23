@@ -4,7 +4,8 @@ from functools import wraps
 from os import getenv, path
 from typing import Any, Callable, ParamSpec, TypeVar
 
-from flask import Flask, Response, g, send_from_directory
+from flask import Flask, Response, g, render_template, request, send_from_directory
+from flask.typing import ResponseReturnValue
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_seasurf import SeaSurf
@@ -22,6 +23,7 @@ class BaseModel(DeclarativeBase, MappedAsDataclass):
 
 
 production = getenv("FLASK_ENV") == "production"
+DOMAIN = getenv("DOMAIN", "orp.testing")
 
 db = SQLAlchemy(model_class=BaseModel)
 from . import models
@@ -38,7 +40,7 @@ default_csp: dict[str, str | list[str]] = {
     "form-action": "'self'",
     "style-src": ["'self'", "https://fonts.googleapis.com"],
     "font-src": "https://fonts.gstatic.com",
-    "script-src": "",  # allow only nonce-based scripts (csp_nonce() adds values here)
+    "script-src": "'strict-dynamic'",  # allow only nonce-based scripts (csp_nonce() adds values here) and other injected by those
     "connect-src": "'self'",
     "manifest-src": "'self'",
     "img-src": [
@@ -46,10 +48,17 @@ default_csp: dict[str, str | list[str]] = {
         "data:",  # Bootstrap has some SVGs as data: URL in the stylesheet
     ],
 }
+if production:
+    default_csp = extend_talisman_csp(
+        default_csp,
+        {
+            "connect-src": f"https://analytics.{DOMAIN}",
+            "img-src": f"https://analytics.{DOMAIN}",
+        },
+    )
 csp_captcha = extend_talisman_csp(
     default_csp,
     {
-        "script-src": "'strict-dynamic'",
         "frame-src": [
             "https://www.google.com/recaptcha/",
             "https://recaptcha.google.com/recaptcha/",
@@ -73,6 +82,10 @@ def disable_COEP(f: Callable[P, T]) -> Callable[P, T]:
     return wrapper
 
 
+def page_not_found(_e: Exception) -> ResponseReturnValue:
+    return render_template("404.html"), 404
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = SECRET_KEY
@@ -80,7 +93,9 @@ def create_app() -> Flask:
     app.config["RECAPTCHA_PRIVATE_KEY"] = RECAPTCHA_PRIVATE_KEY
     app.config["MAILERLITE_API_KEY"] = MAILERLITE_API_KEY
     if production:
-        app.config["SERVER_NAME"] = getenv("DOMAIN", "orp.testing")
+        app.config["SERVER_NAME"] = DOMAIN
+        app.jinja_env.globals["DOMAIN"] = DOMAIN
+        app.jinja_env.globals["ENV_production"] = True
 
     if getenv("TRUSTED_PROXIES", "0") == "1":
         # This assignment is correct. See https://flask.palletsprojects.com/en/2.3.x/deploying/proxy_fix/
@@ -123,12 +138,18 @@ def create_app() -> Flask:
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(views_admin, url_prefix="/admin/")
 
+    app.register_error_handler(404, page_not_found)
+
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(id: str) -> models.User | None:
         return db.session.get(models.User, uuid.UUID(id))
+
+    @app.before_request
+    def initialize_request_vars() -> None:
+        g.DNT = request.headers.get("DNT", "0") == "1"
 
     @app.after_request
     def set_important_headers(response: Response) -> Response:

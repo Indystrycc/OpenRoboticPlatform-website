@@ -2,8 +2,17 @@ from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 
 from bleach import clean
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
-from flask.typing import BeforeRequestCallable, ResponseReturnValue, RouteCallable
+from flask import (
+    Blueprint,
+    abort,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask.typing import ResponseReturnValue
 from flask_login import login_required
 from markupsafe import Markup
 from sqlalchemy import exists, select
@@ -36,7 +45,8 @@ def admin_required(
 @login_required
 @admin_required
 def before_request() -> None:
-    pass
+    # It doesn't really make sense to monitor the usage of admin panel
+    g.no_analytics = True
 
 
 @views_admin.route("/panel")

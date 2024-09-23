@@ -75,7 +75,7 @@
                         {% for file in files_list %}
                             <div class="d-flex justify-content-between align-items-center mb-1 fs-6">
                                 <p class="mb-0">{{ file.file_name }}</p>
-                                <a href="{{ url_for('static', filename='uploads/files/' + file.file_name) }}" class="btn btn-warning btn-sm">Download</a>
+                                <a href="{{ url_for('static', filename='uploads/files/' + file.file_name) }}" class="btn btn-warning btn-sm matomo_download">Download</a>
                             </div>
                             <hr>
                         {% endfor %}
