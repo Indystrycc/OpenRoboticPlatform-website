@@ -562,6 +562,9 @@ def save_image_and_validate(
     except UnidentifiedImageError:
         flash("The image is not a proper JPEG or PNG file.", "error")
         return None
+    except OSError as e:
+        flash("Error processing the image. Please try a different image format. Usually it happens when you try to upload an image with transparency.", "error")
+        return None
     except Image.DecompressionBombError:
         flash("The image has more then 64 MP. Please use a smaller image.", "error")
         return None
