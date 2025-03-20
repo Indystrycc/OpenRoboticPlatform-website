@@ -27,6 +27,24 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet" />
         {% block head_additional %}{% endblock %}
+        {% if ENV_production and not g.DNT and not g.get('no_analytics', False) %}
+        <!-- Matomo -->
+        <script nonce="{{ csp_nonce() }}">
+            var _paq = window._paq = window._paq || [];
+            /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+            _paq.push(['setSecureCookie', true]);
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+                var u="https://analytics.{{ DOMAIN }}/";
+                _paq.push(['setTrackerUrl', u+'matomo.php']);
+                _paq.push(['setSiteId', '1']);
+                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+            })();
+        </script>
+        <!-- End Matomo Code -->
+        {% endif %}
     </head>
     <body id="page-top">
         <!-- Navigation-->
@@ -101,6 +119,16 @@
         </div>
     </div>
 </footer>
+{% if ENV_production and not g.DNT and not request.cookies.get('cookie_closed', False) %}
+<div id="cookieBanner" class="bg-body p-2 rounded-2 position-fixed bottom-0 end-0 z-3 border border-primary m-1 w-sm-75 w-md-50 w-lg-auto d-none">
+    <div>This website uses cookies to provide essential functionality and for analytical purposes.</div>
+    <div class="d-flex justify-content-between flex-column-reverse flex-sm-row mt-1">
+        <button type="button" id="btnOptOut" class="btn btn-outline-primary mt-1 mt-sm-0">Reject optional</button>
+        <button type="button" id="btnOptIn" class="btn btn-primary">Accept all</button>
+    </div>
+</div>
+<script type="module" src="{{ url_for('static', filename='js/cookie-banner.js') }}" nonce="{{ csp_nonce() }}"></script>
+{% endif %}
 
         <!-- Bootstrap core JS-->
         <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}" nonce="{{ csp_nonce() }}"></script>

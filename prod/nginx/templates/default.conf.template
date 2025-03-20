@@ -123,3 +123,95 @@ server {
         expires $expires;
     }
 }
+
+server {
+    # https://github.com/matomo-org/docker/blob/master/.examples/nginx/matomo.conf
+    listen 443 quic;
+    listen 443 ssl;
+    listen [::]:443 quic;
+    listen [::]:443 ssl;
+
+    server_name analytics.${DOMAIN};
+
+    http2 on;
+
+    include conf.d/ssl_common.conf;
+
+    # required for browsers to direct them into quic port
+    add_header Alt-Svc 'h3=":443"; ma=86400';
+
+    add_header X-Content-Type-Options $nosniff always;
+    add_header Referrer-Policy same-origin always;
+    add_header Cross-Origin-Resource-Policy same-site always;
+
+    root /var/www/html;
+    index index.php;
+    try_files $uri $uri/ =404;
+
+    ## only allow accessing the following php files
+    location ~ ^/(index|matomo|piwik|js/index|plugins/HeatmapSessionRecording/configs).php {
+        # regex to split $uri to $fastcgi_script_name and $fastcgi_path
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+
+        # Check that the PHP script exists before passing it
+        try_files $fastcgi_script_name =404;
+
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param HTTP_PROXY ""; # prohibit httpoxy: https://httpoxy.org/
+
+        fastcgi_param HTTP_X_FORWARDED_FOR $proxy_add_x_forwarded_for;
+        fastcgi_param HTTP_X_FORWARDED_PROTO $scheme;
+        fastcgi_param HTTP_X_FORWARDED_HOST $host;
+        fastcgi_param HTTP_X_FORWARDED_PREFIX /;
+
+        fastcgi_pass unix:/run/matomo/matomo.sock;
+    }
+
+    ## deny access to all other .php files
+    location ~* ^.+\.php$ {
+        deny all;
+        return 403;
+    }
+
+    ## disable all access to the following directories
+    location ~ /(config|tmp|core|lang) {
+        deny all;
+        return 403; # replace with 404 to not show these directories exist
+    }
+    location ~ /\.ht {
+        deny all;
+        return 403;
+    }
+
+    location ~ js/container_.*_preview\.js$ {
+        expires off;
+        add_header Cache-Control 'private, no-cache, no-store';
+        add_header X-Content-Type-Options $nosniff always;
+        add_header Referrer-Policy same-origin always;
+        add_header Cross-Origin-Resource-Policy same-site always;
+    }
+
+    location ~ \.(gif|ico|jpg|png|svg|js|css|htm|html|mp3|mp4|wav|ogg|avi|ttf|eot|woff|woff2|json)$ {
+        allow all;
+        ## Cache images,CSS,JS and webfonts for an hour
+        ## Increasing the duration may improve the load-time, but may cause old files to show after an Matomo upgrade
+        expires 1h;
+        add_header Pragma public;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options $nosniff always;
+        add_header Referrer-Policy same-origin always;
+        add_header Cross-Origin-Resource-Policy same-site always;
+    }
+
+    location ~ /(libs|vendor|plugins|misc/user) {
+        deny all;
+        return 403;
+    }
+
+    ## properly display textfiles in root directory
+    location ~/(.*\.md|LEGALNOTICE|LICENSE) {
+        default_type text/plain;
+    }
+}
