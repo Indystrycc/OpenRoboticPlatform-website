@@ -45,6 +45,7 @@ def create_thumbnails(
         dir.mkdir(parents=True, exist_ok=True)
 
     basename, _ = os.path.splitext(filename)
+    extensions = extensions.copy()  # Make sure we dont mutate the (default) argument
     match img.format:
         case "PNG":
             extensions.append(".png")
