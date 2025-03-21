@@ -7,14 +7,16 @@ x-database: &db-base
   environment:
     - MARIADB_ROOT_PASSWORD=rootroot
     - MARIADB_DATABASE=orp_db
+    - MARIADB_AUTO_UPGRADE=1
   volumes:
     # separating prod and dev dbs would be a good idea, but I don't think anyone will try both on the same host
     - dbdata:/var/lib/mysql
   healthcheck:
-    test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password="rootroot" --silent']
-    interval: 3s
-    retries: 5
-    start_period: 5s
+    test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+    start_period: 10s
+    interval: 10s
+    timeout: 5s
+    retries: 3
   networks:
     dbnet:
       aliases:
