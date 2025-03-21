@@ -26,7 +26,11 @@ export async function renderSCSS() {
         loadPaths: [
             path.resolve(__dirname, "../node_modules")
         ],
-        quietDeps: true
+        quietDeps: true,
+        // @import is deprecated since sass 1.80.0
+        // https://sass-lang.com/blog/import-is-deprecated/
+        // https://github.com/twbs/bootstrap/issues/40962
+        silenceDeprecations: ["import"]
     });
 
     const destPathDirname = path.dirname(destPath);

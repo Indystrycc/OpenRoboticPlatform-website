@@ -72,7 +72,7 @@ def make_thumbnail(
     else:
         thumb = img
 
-    thumb.thumbnail(size, Image.LANCZOS)
+    thumb.thumbnail(size, Image.Resampling.LANCZOS)
     return thumb
 
 

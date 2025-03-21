@@ -28,7 +28,7 @@ def prepare_thumbnail(img: Image.Image, size: ImgSize) -> Image.Image:
             (offset_x, offset_y, offset_x + cropped_w, offset_y + cropped_h)
         )
 
-    thumb.thumbnail(size, Image.LANCZOS)
+    thumb.thumbnail(size, Image.Resampling.LANCZOS)
     return thumb
 
 
