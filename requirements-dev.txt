@@ -1,11 +1,10 @@
 # Install the base requirements too
 -r requirements.txt
 
-black>=24.8.0
-mypy>=1.11.2
+black>=25.1.0
+mypy>=1.15.0
 
-types-bleach>=6.1.0.20240311
-types-Flask-Migrate>=4.0.0.20240311
-types-mysqlclient>=2.2.0.20240911
-types-Pillow>=10.2.0.20240822
-types-requests>=2.32.0.20240914
+types-bleach>=6.2.0.20241123
+types-Flask-Migrate>=4.1.0.20250112
+types-mysqlclient>=2.2.0.20250318
+types-requests>=2.32.0.20250306
