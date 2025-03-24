@@ -70,7 +70,10 @@ class Part(Model):
         "File", back_populates="part", default_factory=list
     )
     comments: Mapped[list["Comment"]] = relationship(
-        "Comment", back_populates="part", cascade="all, delete-orphan", default_factory=list
+        "Comment",
+        back_populates="part",
+        cascade="all, delete-orphan",
+        default_factory=list,
     )
 
     @property
@@ -159,17 +162,21 @@ class Comment(Model):
         UUID(as_uuid=True), ForeignKey("user.id", ondelete="CASCADE")
     )
     part_id: Mapped[int] = mapped_column(ForeignKey("part.id", ondelete="CASCADE"))
-    parent_id: Mapped[Optional[int]] = mapped_column(ForeignKey("comment.id", ondelete="CASCADE"))
+    parent_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("comment.id", ondelete="CASCADE")
+    )
 
     author: Mapped[User] = relationship("User", init=False)
     part: Mapped[Part] = relationship("Part", init=False)
-    parent: Mapped[Optional["Comment"]] = relationship("Comment", remote_side=[id], init=False)
+    parent: Mapped[Optional["Comment"]] = relationship(
+        "Comment", remote_side=[id], init=False
+    )
     replies: Mapped[list["Comment"]] = relationship(
-        "Comment", 
-        back_populates="parent", 
+        "Comment",
+        back_populates="parent",
         cascade="all, delete-orphan",
         default_factory=list,
-        init=False
+        init=False,
     )
 
 
