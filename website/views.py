@@ -36,7 +36,7 @@ from . import (
     talisman,
 )
 from .compression import compress_uploads
-from .models import Category, File, Part, Stats, User, View
+from .models import Category, File, Part, Stats, User, View, Comment
 from .secrets_manager import MAILERLITE_API_KEY
 from .session_utils import get_session, get_user
 from .thumbnailer import create_thumbnails, load_check_image
@@ -199,9 +199,28 @@ def accountsettings() -> ResponseReturnValue:
     return render_template("accountsettings.html", image_types=ALLOWED_IMAGE_MIME)
 
 
-@views.route("/part:<int:part_number>")
+@views.route("/part:<int:part_number>", methods=["GET", "POST"])
 def part(part_number: int) -> ResponseReturnValue:
     current_user = get_session()
+    
+    # Handle comment submission
+    if request.method == "POST" and isinstance(current_user, User):
+        content = clean(request.form.get("content", ""))
+        parent_id = request.form.get("parent_id", type=int)
+        
+        if content:
+            comment = Comment(
+                content=content,
+                user_id=current_user.id,
+                part_id=part_number,
+                parent_id=parent_id
+            )
+            db.session.add(comment)
+            db.session.commit()
+            flash("Comment added successfully!", "success")
+        else:
+            flash("Comment cannot be empty", "error")
+
     # A few substrings which can be often found in web crawlers
     BOT_UA_FRAGMENTS = ["bot", "crawler", "spider", "slurp", "spyder"]
     part = db.session.get(Part, part_number)
@@ -245,12 +264,28 @@ def part(part_number: int) -> ResponseReturnValue:
     if part.last_modified is not None:
         part.last_modified = part.last_modified.replace(tzinfo=UTC)
 
+    # Get top-level comments
+    comments = (
+        db.session.scalars(
+            select(Comment)
+            .where(Comment.part_id == part_number, Comment.parent_id == None)
+            .order_by(Comment.date.desc())
+            .options(
+                joinedload(Comment.author),
+                joinedload(Comment.replies).joinedload(Comment.author)
+            )
+        )
+        .unique()
+        .all()
+    )
+
     return render_template(
         "part.html",
         part=part,
         files_list=files_list,
         author=author,
         category=category,
+        comments=comments,
     )
 
 

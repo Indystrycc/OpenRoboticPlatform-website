@@ -69,6 +69,9 @@ class Part(Model):
     files: Mapped[list["File"]] = relationship(
         "File", back_populates="part", default_factory=list
     )
+    comments: Mapped[list["Comment"]] = relationship(
+        "Comment", back_populates="part", cascade="all, delete-orphan", default_factory=list
+    )
 
     @property
     def thumbnail(self) -> "ThumbnailDetails":
@@ -146,6 +149,28 @@ class EmailToken(Model):
     created_on: Mapped[datetime] = mapped_column(default=func.now(), init=False)
 
     user: Mapped[User] = relationship(init=False)
+
+
+class Comment(Model):
+    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    content: Mapped[str] = mapped_column(String(1000))
+    date: Mapped[datetime] = mapped_column(default=func.now(), init=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("user.id", ondelete="CASCADE")
+    )
+    part_id: Mapped[int] = mapped_column(ForeignKey("part.id", ondelete="CASCADE"))
+    parent_id: Mapped[Optional[int]] = mapped_column(ForeignKey("comment.id", ondelete="CASCADE"))
+
+    author: Mapped[User] = relationship("User", init=False)
+    part: Mapped[Part] = relationship("Part", init=False)
+    parent: Mapped[Optional["Comment"]] = relationship("Comment", remote_side=[id], init=False)
+    replies: Mapped[list["Comment"]] = relationship(
+        "Comment", 
+        back_populates="parent", 
+        cascade="all, delete-orphan",
+        default_factory=list,
+        init=False
+    )
 
 
 @dataclass
