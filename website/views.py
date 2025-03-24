@@ -202,18 +202,18 @@ def accountsettings() -> ResponseReturnValue:
 @views.route("/part:<int:part_number>", methods=["GET", "POST"])
 def part(part_number: int) -> ResponseReturnValue:
     current_user = get_session()
-    
+
     # Handle comment submission
     if request.method == "POST" and isinstance(current_user, User):
         content = clean(request.form.get("content", ""))
         parent_id = request.form.get("parent_id", type=int)
-        
+
         if content:
             comment = Comment(
                 content=content,
                 user_id=current_user.id,
                 part_id=part_number,
-                parent_id=parent_id
+                parent_id=parent_id,
             )
             db.session.add(comment)
             db.session.commit()
@@ -272,7 +272,7 @@ def part(part_number: int) -> ResponseReturnValue:
             .order_by(Comment.date.desc())
             .options(
                 joinedload(Comment.author),
-                joinedload(Comment.replies).joinedload(Comment.author)
+                joinedload(Comment.replies).joinedload(Comment.author),
             )
         )
         .unique()
