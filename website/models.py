@@ -2,13 +2,15 @@ import enum
 import os
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, Optional
 
 from flask_login import UserMixin
 from sqlalchemy import BINARY, UUID, Enum, ForeignKey, String
+from sqlalchemy.engine import Dialect
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from sqlalchemy.types import DateTime, TypeDecorator
 
 from . import BaseModel, db
 
@@ -20,6 +22,31 @@ if TYPE_CHECKING:
 
 else:
     Model = db.Model
+
+
+class TZDateTime(TypeDecorator[datetime]):
+    """datetime with timezone (UTC) that is stored in DB as datetime in UTC without TZ info"""
+
+    impl = DateTime
+    cache_ok = True
+
+    def process_bind_param(
+        self, value: Any | None, dialect: Dialect
+    ) -> datetime | None:
+        if value is not None:
+            assert isinstance(value, datetime)
+            if not value.tzinfo or value.tzinfo.utcoffset(value) is None:
+                raise TypeError("tzinfo is required")
+            value = value.astimezone(UTC).replace(tzinfo=None)
+        return value
+
+    def process_result_value(
+        self, value: Any | None, dialect: Dialect
+    ) -> datetime | None:
+        if value is not None:
+            assert isinstance(value, datetime)
+            value = value.replace(tzinfo=UTC)
+        return value
 
 
 class User(UserMixin, Model):
@@ -36,7 +63,7 @@ class User(UserMixin, Model):
     name_youtube: Mapped[Optional[str]] = mapped_column(String(100), default=None)
     name_instagram: Mapped[Optional[str]] = mapped_column(String(100), default=None)
     is_admin: Mapped[bool] = mapped_column(default=False)
-    date: Mapped[datetime] = mapped_column(default=func.now(), init=False)
+    date: Mapped[datetime] = mapped_column(TZDateTime, default=func.now(), init=False)
 
     parts: Mapped[list["Part"]] = relationship(
         "Part", back_populates="author", default_factory=list
@@ -52,7 +79,7 @@ class Part(Model):
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("user.id")
     )
-    date: Mapped[datetime] = mapped_column(default=func.now(), init=False)
+    date: Mapped[datetime] = mapped_column(TZDateTime, default=func.now(), init=False)
     verified: Mapped[bool] = mapped_column(default=False)
     featured: Mapped[bool] = mapped_column(default=False)
     public: Mapped[bool] = mapped_column(default=False)
@@ -60,7 +87,9 @@ class Part(Model):
     downloads: Mapped[int] = mapped_column(default=0, init=False)
     tags: Mapped[str] = mapped_column(String(200), default_factory=str)
     views: Mapped[int] = mapped_column(default=0, init=False)
-    last_modified: Mapped[Optional[datetime]] = mapped_column(default=None, init=False)
+    last_modified: Mapped[Optional[datetime]] = mapped_column(
+        TZDateTime, default=None, init=False
+    )
 
     cat: Mapped["Category"] = relationship(
         "Category", back_populates="parts", init=False
@@ -122,7 +151,9 @@ class View(Model):
         ForeignKey("user.id", ondelete="SET NULL"),
         default=None,
     )
-    event_date: Mapped[datetime] = mapped_column(default=func.now(), init=False)
+    event_date: Mapped[datetime] = mapped_column(
+        TZDateTime, default=func.now(), init=False
+    )
 
 
 class Stats(Model):
@@ -135,7 +166,7 @@ class Stats(Model):
     total_rejected_parts: Mapped[Optional[int]]
     total_files: Mapped[Optional[int]]
     total_views: Mapped[Optional[int]]
-    date: Mapped[datetime] = mapped_column(default=func.now())
+    date: Mapped[datetime] = mapped_column(TZDateTime, default=func.now())
 
 
 class TokenType(enum.Enum):
@@ -149,7 +180,9 @@ class EmailToken(Model):
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("user.id", ondelete="CASCADE")
     )
-    created_on: Mapped[datetime] = mapped_column(default=func.now(), init=False)
+    created_on: Mapped[datetime] = mapped_column(
+        TZDateTime, default=func.now(), init=False
+    )
 
     user: Mapped[User] = relationship(init=False)
 
@@ -157,7 +190,7 @@ class EmailToken(Model):
 class Comment(Model):
     id: Mapped[int] = mapped_column(primary_key=True, init=False)
     content: Mapped[str] = mapped_column(String(1000))
-    date: Mapped[datetime] = mapped_column(default=func.now(), init=False)
+    date: Mapped[datetime] = mapped_column(TZDateTime, default=func.now(), init=False)
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("user.id", ondelete="CASCADE")
     )

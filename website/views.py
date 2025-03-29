@@ -36,7 +36,7 @@ from . import (
     talisman,
 )
 from .compression import compress_uploads
-from .models import Category, File, Part, Stats, User, View, Comment
+from .models import Category, Comment, File, Part, Stats, User, View
 from .secrets_manager import MAILERLITE_API_KEY
 from .session_utils import get_session, get_user
 from .thumbnailer import create_thumbnails, load_check_image
@@ -259,10 +259,6 @@ def part(part_number: int) -> ResponseReturnValue:
             new_view = View(user_id=None, ip=ip_address, part_id=part_number)
         db.session.add(new_view)
         db.session.commit()
-
-    # DB does not store timezone, but it's always UTC
-    if part.last_modified is not None:
-        part.last_modified = part.last_modified.replace(tzinfo=UTC)
 
     # Get top-level comments
     comments = (

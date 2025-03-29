@@ -178,9 +178,7 @@ def resend_confirmation_email() -> ResponseReturnValue:
     )
     # Allow resending email every 5 minutes
     allowed_after = (
-        (saved_token.created_on.replace(tzinfo=UTC) + timedelta(minutes=5))
-        if saved_token
-        else None
+        (saved_token.created_on + timedelta(minutes=5)) if saved_token else None
     )
     now = datetime.now(UTC)
     if allowed_after and now <= allowed_after:
