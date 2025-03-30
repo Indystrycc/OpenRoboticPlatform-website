@@ -128,12 +128,11 @@
                     <div class="card-body">
                         <div class="row">
                             <h5>Comments</h5>
-                        </div>  
+                        </div>
                         {% if current_user.is_authenticated %}
-                        <form method="POST" action="{{ url_for('views.part', part_number=part.id) }}" class="needs-validation">
+                        <form method="POST" action="{{ url_for('views.part', part_number=part.id) }}" class="needs-validation" novalidate>
                             <div class="mb-3">
-                                <textarea name="content" class="form-control" rows="3" placeholder="Write a comment..." maxlength="1000" required></textarea>
-                                <div class="form-text">Maximum 1000 characters</div>
+                                <textarea name="content" class="form-control" rows="3" placeholder="Write a comment..." required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">Add Comment</button>
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
@@ -156,10 +155,9 @@
                                         </div>
                                         {% if current_user.is_authenticated %}
                                         <button class="btn btn-sm btn-link reply-btn ps-0" data-comment-id="{{ comment.id }}">Reply</button>
-                                        <form method="POST" action="{{ url_for('views.part', part_number=part.id) }}" class="reply-form mt-2 d-none needs-validation">
+                                        <form method="POST" action="{{ url_for('views.part', part_number=part.id) }}" class="reply-form mt-2 d-none needs-validation" novalidate>
                                             <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                                            <textarea name="content" class="form-control form-control-sm" rows="2" maxlength="1000" required></textarea>
-                                            <div class="form-text">Maximum 1000 characters</div>
+                                            <textarea name="content" class="form-control form-control-sm" rows="2" required></textarea>
                                             <button type="submit" class="btn btn-sm btn-primary mt-1">Reply</button>
                                             <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                         </form>
