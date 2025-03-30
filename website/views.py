@@ -208,7 +208,9 @@ def part(part_number: int) -> ResponseReturnValue:
         content = clean(request.form.get("content", ""))
         parent_id = request.form.get("parent_id", type=int)
 
-        if content:
+        if len(content) > 1000:
+            flash("Comment is too long (maximum 1000 characters)", "error")
+        elif content:
             comment = Comment(
                 content=content,
                 user_id=current_user.id,
