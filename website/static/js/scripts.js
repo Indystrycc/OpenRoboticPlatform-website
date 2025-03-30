@@ -68,6 +68,14 @@ window.addEventListener('DOMContentLoaded', event => {
             console.log(e)
         }
     });
+    
+    // Add reply button functionality
+    document.querySelectorAll('.reply-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const form = btn.nextElementSibling;
+            form.classList.toggle('d-none');
+        });
+    });
 });
 
 function addBootstrapAlert(type, message) {

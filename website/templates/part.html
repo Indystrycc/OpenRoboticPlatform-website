@@ -196,12 +196,4 @@
 
 <script src="{{ url_for('static', filename='js/time-formatter.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
-<script nonce="{{ csp_nonce() }}">
-document.querySelectorAll('.reply-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const form = btn.nextElementSibling;
-        form.classList.toggle('d-none');
-    });
-});
-</script>
 {% endblock %}
