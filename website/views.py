@@ -56,7 +56,21 @@ def home() -> ResponseReturnValue:
     )
     stats = db.session.get(Stats, 1)
 
-    return render_template("home.html", parts=parts, stats=stats)
+    # Modified to fetch all comments including responses
+    newest_comments = (
+        db.session.scalars(
+            select(Comment)
+            .options(joinedload(Comment.author), joinedload(Comment.part))
+            .order_by(Comment.date.desc())
+            .limit(5)
+        )
+        .unique()
+        .all()
+    )
+
+    return render_template(
+        "home.html", parts=parts, stats=stats, newest_comments=newest_comments
+    )
 
 
 @views.route("/library")
