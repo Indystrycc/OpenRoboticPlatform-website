@@ -73,7 +73,40 @@
         </div>
     </div>
 </section>
-<!-- Kickstarter Section -->
+
+<!-- Newest Parts Section -->
+<section class="page-section" id="newest-parts">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Newest Parts</h2>
+            <h3 class="section-subheading text-body-secondary">Check out the newest parts uploaded by users</h3>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
+            {% for part in parts %}
+            <div class="col">
+                <a href ="/part:{{part.id}}" class="text-decoration-none">
+                <div class="card">
+                    <div class="card-img-container">
+                        <picture>
+                            {% for thumbnail, mime in part.thumbnail.optimized %}
+                            <source srcset="{{ url_for('static', filename='uploads/images/thumbs/' + thumbnail) }}" type="{{ mime }}">
+                            {% endfor %}
+                            <img  class="card-img-top" src="{{ url_for('static', filename='uploads/images/thumbs/' + part.thumbnail.fallback) }}" alt="Part Image" loading="lazy">
+                        </picture>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ part.name }}</h5>
+                        <!-- <a href="#" class="btn btn-primary w-100">View Details</a> -->
+                    </div>
+                </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Video Section -->
 <section class="page-section" id="youtube">
     <div class="container">
         <div class="text-center">
@@ -141,37 +174,6 @@
     </div>
 </section>
 
-<!-- Newest Parts Section -->
-<section class="page-section" id="newest-parts">
-    <div class="container">
-        <div class="text-center">
-            <h2 class="section-heading text-uppercase">Newest Parts</h2>
-            <h3 class="section-subheading text-body-secondary">Check out the newest parts uploaded by users</h3>
-        </div>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
-            {% for part in parts %}
-            <div class="col">
-                <a href ="/part:{{part.id}}" class="text-decoration-none">
-                <div class="card">
-                    <div class="card-img-container">
-                        <picture>
-                            {% for thumbnail, mime in part.thumbnail.optimized %}
-                            <source srcset="{{ url_for('static', filename='uploads/images/thumbs/' + thumbnail) }}" type="{{ mime }}">
-                            {% endfor %}
-                            <img  class="card-img-top" src="{{ url_for('static', filename='uploads/images/thumbs/' + part.thumbnail.fallback) }}" alt="Part Image" loading="lazy">
-                        </picture>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ part.name }}</h5>
-                        <!-- <a href="#" class="btn btn-primary w-100">View Details</a> -->
-                    </div>
-                </div>
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
 
 <!-- Newest Comments Section -->
 <section class="page-section" id="newest-comments">
