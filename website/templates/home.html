@@ -203,7 +203,7 @@
                                     <time datetime="{{ comment.date.isoformat(timespec='seconds') }}">{{ comment.date }}</time>
                                 </small>
                             </div>
-                            <p class="mb-2 text-dark">{{ comment.content }}</p>
+                            <p class="mb-2 text-dark text-break">{{ comment.content }}</p>
                             <small class="text-muted">
                                 On part: <a href="/part:{{ comment.part.id }}" class="text-decoration-none">{{ comment.part.name }}</a>
                             </small>
