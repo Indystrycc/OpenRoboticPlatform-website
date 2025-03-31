@@ -192,7 +192,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div class="d-flex align-items-center gap-2">
                                     <strong>
-                                        <a href="{{ url_for('views.userView', user_name=comment.author.username) }}" 
+                                        <a href="{{ url_for('views.userView', user_name=comment.author.username) }}"
                                            class="text-decoration-none text-primary">{{ comment.author.username }}</a>
                                     </strong>
                                     {% if comment.parent_id %}
