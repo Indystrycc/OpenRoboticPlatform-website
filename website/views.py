@@ -36,7 +36,7 @@ from . import (
     talisman,
 )
 from .compression import compress_uploads
-from .models import Category, File, Part, Stats, User, View
+from .models import Category, Comment, File, Part, Stats, User, View
 from .secrets_manager import MAILERLITE_API_KEY
 from .session_utils import get_session, get_user
 from .thumbnailer import create_thumbnails, load_check_image
@@ -56,7 +56,21 @@ def home() -> ResponseReturnValue:
     )
     stats = db.session.get(Stats, 1)
 
-    return render_template("home.html", parts=parts, stats=stats)
+    # Modified to fetch all comments including responses
+    newest_comments = (
+        db.session.scalars(
+            select(Comment)
+            .options(joinedload(Comment.author), joinedload(Comment.part))
+            .order_by(Comment.date.desc())
+            .limit(5)
+        )
+        .unique()
+        .all()
+    )
+
+    return render_template(
+        "home.html", parts=parts, stats=stats, newest_comments=newest_comments
+    )
 
 
 @views.route("/library")
@@ -199,9 +213,30 @@ def accountsettings() -> ResponseReturnValue:
     return render_template("accountsettings.html", image_types=ALLOWED_IMAGE_MIME)
 
 
-@views.route("/part:<int:part_number>")
+@views.route("/part:<int:part_number>", methods=["GET", "POST"])
 def part(part_number: int) -> ResponseReturnValue:
     current_user = get_session()
+
+    # Handle comment submission
+    if request.method == "POST" and isinstance(current_user, User):
+        content = clean(request.form.get("content", ""))
+        parent_id = request.form.get("parent_id", type=int)
+
+        if len(content) > 1000:
+            flash("Comment is too long (maximum 1000 characters)", "error")
+        elif content:
+            comment = Comment(
+                content=content,
+                user_id=current_user.id,
+                part_id=part_number,
+                parent_id=parent_id,
+            )
+            db.session.add(comment)
+            db.session.commit()
+            flash("Comment added successfully!", "success")
+        else:
+            flash("Comment cannot be empty", "error")
+
     # A few substrings which can be often found in web crawlers
     BOT_UA_FRAGMENTS = ["bot", "crawler", "spider", "slurp", "spyder"]
     part = db.session.get(Part, part_number)
@@ -241,9 +276,20 @@ def part(part_number: int) -> ResponseReturnValue:
         db.session.add(new_view)
         db.session.commit()
 
-    # DB does not store timezone, but it's always UTC
-    if part.last_modified is not None:
-        part.last_modified = part.last_modified.replace(tzinfo=UTC)
+    # Get top-level comments
+    comments = (
+        db.session.scalars(
+            select(Comment)
+            .where(Comment.part_id == part_number, Comment.parent_id == None)
+            .order_by(Comment.date.desc())
+            .options(
+                joinedload(Comment.author),
+                joinedload(Comment.replies).joinedload(Comment.author),
+            )
+        )
+        .unique()
+        .all()
+    )
 
     return render_template(
         "part.html",
@@ -251,6 +297,7 @@ def part(part_number: int) -> ResponseReturnValue:
         files_list=files_list,
         author=author,
         category=category,
+        comments=comments,
     )
 
 

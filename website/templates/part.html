@@ -123,9 +123,77 @@
                         </div>
                     </div>
                 </div>
+                <!-- Add comments section -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <h5>Comments</h5>
+                        </div>
+                        {% if current_user.is_authenticated %}
+                        <form method="POST" action="{{ url_for('views.part', part_number=part.id) }}" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <textarea name="content" class="form-control" rows="3" placeholder="Write a comment..." aria-label="Comment" maxlength="1000" required></textarea>
+                                <div class="invalid-feedback">Enter comment (max 1000 characters)</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Comment</button>
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                        </form>
+                        {% else %}
+                        <p>Please <a href="{{ url_for('auth.login') }}">login</a> to comment.</p>
+                        {% endif %}
+
+                        <div class="comments mt-4">
+                            {% for comment in comments %}
+                            <div class="comment mb-4">
+                                <div class="d-flex">
+                                    <div class="flex-grow-1">
+                                        <div class="bg-light p-3 rounded">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <strong><a href="{{ url_for('views.userView', user_name=comment.author.username) }}" class="text-decoration-none">{{ comment.author.username }}</a></strong>
+                                                <small class="text-muted"><time datetime="{{ comment.date.isoformat(timespec='seconds') }}">{{ comment.date }}</time></small>
+                                            </div>
+                                            <p class="mb-1 text-break">{{ comment.content }}</p>
+                                        </div>
+                                        {% if current_user.is_authenticated %}
+                                        <button class="btn btn-sm btn-link reply-btn ps-0" data-comment-id="{{ comment.id }}">Reply</button>
+                                        <form method="POST" action="{{ url_for('views.part', part_number=part.id) }}" class="reply-form mt-2 d-none needs-validation" novalidate>
+                                            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                            <textarea name="content" class="form-control form-control-sm" rows="2" aria-label="Comment (reply)" maxlength="1000" required></textarea>
+                                            <div class="invalid-feedback">Enter comment (max 1000 characters)</div>
+                                            <button type="submit" class="btn btn-sm btn-primary mt-1">Reply</button>
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                        </form>
+                                        {% endif %}
+
+                                        {% if comment.replies %}
+                                        <div class="replies mt-3">
+                                            {% for reply in comment.replies %}
+                                            <div class="reply mb-3 ps-4 border-start">
+                                                <div class="bg-light p-3 rounded">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <strong><a href="{{ url_for('views.userView', user_name=reply.author.username) }}" class="text-decoration-none">{{ reply.author.username }}</a></strong>
+                                                        <small class="text-muted"><time datetime="{{ reply.date.isoformat(timespec='seconds') }}">{{ reply.date }}</time></small>
+                                                    </div>
+                                                    <p class="mb-0 text-break">{{ reply.content }}</p>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <p class="text-muted">No comments yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
 <script src="{{ url_for('static', filename='js/time-formatter.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-form-validation.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}

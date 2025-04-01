@@ -73,7 +73,40 @@
         </div>
     </div>
 </section>
-<!-- Kickstarter Section -->
+
+<!-- Newest Parts Section -->
+<section class="page-section" id="newest-parts">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Newest Parts</h2>
+            <h3 class="section-subheading text-body-secondary">Check out the newest parts uploaded by users</h3>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
+            {% for part in parts %}
+            <div class="col">
+                <a href ="/part:{{part.id}}" class="text-decoration-none">
+                <div class="card">
+                    <div class="card-img-container">
+                        <picture>
+                            {% for thumbnail, mime in part.thumbnail.optimized %}
+                            <source srcset="{{ url_for('static', filename='uploads/images/thumbs/' + thumbnail) }}" type="{{ mime }}">
+                            {% endfor %}
+                            <img  class="card-img-top" src="{{ url_for('static', filename='uploads/images/thumbs/' + part.thumbnail.fallback) }}" alt="Part Image" loading="lazy">
+                        </picture>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ part.name }}</h5>
+                        <!-- <a href="#" class="btn btn-primary w-100">View Details</a> -->
+                    </div>
+                </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Video Section -->
 <section class="page-section" id="youtube">
     <div class="container">
         <div class="text-center">
@@ -141,36 +174,47 @@
     </div>
 </section>
 
-<!-- Newest Parts Section -->
-<section class="page-section" id="newest-parts">
+
+<!-- Newest Comments Section -->
+<section class="page-section" id="newest-comments">
     <div class="container">
-        <div class="text-center">
-            <h2 class="section-heading text-uppercase">Newest Parts</h2>
-            <h3 class="section-subheading text-body-secondary">Check out the newest parts uploaded by users</h3>
+        <div class="text-center mb-5">
+            <h2 class="section-heading text-uppercase">Newest Comments</h2>
+            <h3 class="section-subheading text-body-secondary">Latest discussions from our community</h3>
         </div>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
-            {% for part in parts %}
-            <div class="col">
-                <a href ="/part:{{part.id}}" class="text-decoration-none">
-                <div class="card">
-                    <div class="card-img-container">
-                        <picture>
-                            {% for thumbnail, mime in part.thumbnail.optimized %}
-                            <source srcset="{{ url_for('static', filename='uploads/images/thumbs/' + thumbnail) }}" type="{{ mime }}">
-                            {% endfor %}
-                            <img  class="card-img-top" src="{{ url_for('static', filename='uploads/images/thumbs/' + part.thumbnail.fallback) }}" alt="Part Image" loading="lazy">
-                        </picture>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ part.name }}</h5>
-                        <!-- <a href="#" class="btn btn-primary w-100">View Details</a> -->
+        <div class="row">
+            {% for comment in newest_comments %}
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body d-flex align-items-start gap-3">
+                        <!-- Comment Content -->
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <strong>
+                                        <a href="{{ url_for('views.userView', user_name=comment.author.username) }}"
+                                           class="text-decoration-none text-primary">{{ comment.author.username }}</a>
+                                    </strong>
+                                    {% if comment.parent_id %}
+                                    <small class="text-muted">replied</small>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted text-nowrap">
+                                    <time datetime="{{ comment.date.isoformat(timespec='seconds') }}">{{ comment.date }}</time>
+                                </small>
+                            </div>
+                            <p class="mb-2 text-dark text-break">{{ comment.content }}</p>
+                            <small class="text-muted">
+                                On part: <a href="/part:{{ comment.part.id }}" class="text-decoration-none">{{ comment.part.name }}</a>
+                            </small>
+                        </div>
                     </div>
                 </div>
-                </a>
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
+<script src="{{ url_for('static', filename='js/time-formatter.js') }}" type="module" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}
