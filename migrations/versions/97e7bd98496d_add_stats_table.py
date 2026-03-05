@@ -9,7 +9,6 @@ Create Date: 2023-07-29 10:49:10.560728
 from alembic import op
 import sqlalchemy as sa
 
-
 # revision identifiers, used by Alembic.
 revision = "97e7bd98496d"
 down_revision = "79309a9026b9"
@@ -33,8 +32,7 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
     )
 
-    op.execute(
-        """
+    op.execute("""
         CREATE EVENT updateStats
         ON SCHEDULE EVERY 5 MINUTE
         DO
@@ -75,11 +73,9 @@ def upgrade():
             total_files = VALUES(total_files),
             total_views = VALUES(total_views),
             date = NOW()
-    """
-    )
+    """)
 
-    op.execute(
-        """
+    op.execute("""
         CREATE EVENT saveStats
         ON SCHEDULE EVERY 1 DAY
         STARTS CONCAT(CURRENT_DATE(), ' 23:59:00')
@@ -109,8 +105,7 @@ def upgrade():
             stats
         WHERE
             id = 1;
-        """
-    )
+        """)
 
 
 def downgrade():

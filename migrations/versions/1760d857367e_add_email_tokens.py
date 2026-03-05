@@ -36,25 +36,21 @@ def upgrade():
             "view_ibfk_2", "user", ["user_id"], ["id"], ondelete="SET NULL"
         )
     # Delete old unused tokens after 5 days
-    op.execute(
-        """
+    op.execute("""
         CREATE EVENT removeOldTokens
         ON SCHEDULE EVERY 1 DAY
         DO
         DELETE FROM email_token
         WHERE TIMESTAMPDIFF(DAY, email_token.created_on, NOW()) >= 5;
-        """
-    )
+        """)
     # Delete accounts without a confirmed email after a month
-    op.execute(
-        """
+    op.execute("""
         CREATE EVENT removeUnconfirmedAccounts
         ON SCHEDULE EVERY 1 DAY
         DO
         DELETE FROM user
         WHERE user.confirmed = FALSE AND TIMESTAMPDIFF(MONTH, user.date, NOW()) >= 1;
-        """
-    )
+        """)
 
 
 def downgrade():

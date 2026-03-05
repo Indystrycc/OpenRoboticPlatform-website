@@ -1,7 +1,7 @@
 # Install the base requirements too
 -r requirements.txt
 
-black>=25.1.0
+black>=26.3.0
 mypy>=1.19.1
 
 types-bleach>=6.3.0.20251115

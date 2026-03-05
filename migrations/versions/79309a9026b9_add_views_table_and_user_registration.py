@@ -40,16 +40,14 @@ def upgrade():
     with op.batch_alter_table("user", schema=None) as batch_op:
         batch_op.add_column(sa.Column("date", sa.DateTime(), nullable=True))
 
-    op.execute(
-        """
+    op.execute("""
         SET GLOBAL event_scheduler = ON;
         CREATE EVENT clearOldViews
         ON SCHEDULE EVERY 1 DAY
         DO
         UPDATE view SET ip=NULL, user_id=NULL
         WHERE TIMESTAMPDIFF(HOUR, view.event_date, NOW()) > 3;
-        """
-    )
+        """)
 
 
 def downgrade():
@@ -60,9 +58,7 @@ def downgrade():
         batch_op.drop_column("views")
 
     op.drop_table("view")
-    op.execute(
-        """
+    op.execute("""
         DROP EVENT clearOldViews;
         SET GLOBAL event_scheduler = OFF;
-        """
-    )
+        """)
