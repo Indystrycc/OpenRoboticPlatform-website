@@ -1,16 +1,16 @@
-Flask>=3.1.0
+Flask>=3.1.3
 Flask-Login>=0.6.3
 Flask-Migrate>=4.1.0
 Flask-SeaSurf>=2.0.0
 Flask-SQLAlchemy>=3.1.1
 flask-talisman>=1.1.0
-bleach>=6.2.0
-Pillow>=11.1.0
-requests>=2.32.3
+bleach>=6.3.0
+Pillow>=12.1.1
+requests>=2.32.5
 
 # DB driver required by SQLAlchemy
-mysqlclient>=2.2.7
+mysqlclient>=2.2.8
 
 # dependencies of Flask-* dependencies, but we're using them directly, so make sure that they are installed
-SQLAlchemy>=2.0.39
-Werkzeug>=3.1.3
+SQLAlchemy>=2.0.48
+Werkzeug>=3.1.6
