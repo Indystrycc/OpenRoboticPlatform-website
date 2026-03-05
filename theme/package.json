@@ -32,11 +32,11 @@
         "url": "https://github.com/StartBootstrap/startbootstrap-agency.git"
     },
     "dependencies": {
-        "bootstrap": "5.3.3"
+        "bootstrap": "5.3.7"
     },
     "devDependencies": {
-        "autoprefixer": "^10.4.21",
-        "postcss": "8.5.3",
-        "sass": "1.86.0"
+        "autoprefixer": "^10.4.27",
+        "postcss": "8.5.8",
+        "sass": "1.97.3"
     }
 }
