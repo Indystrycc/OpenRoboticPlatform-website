@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:current-slim as theme
+FROM node:current-slim AS theme
 
 WORKDIR /theme
 COPY /theme .
