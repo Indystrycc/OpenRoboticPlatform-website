@@ -67,7 +67,6 @@ services:
       - prod/config.env
     environment:
       <<: *website-base-env
-      TRUSTED_PROXIES: "1"
       FLASK_ENV: "production"
     volumes:
       - uploads:/app/website/static/uploads
