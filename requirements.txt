@@ -12,5 +12,5 @@ requests>=2.32.5
 mysqlclient>=2.2.8
 
 # dependencies of Flask-* dependencies, but we're using them directly, so make sure that they are installed
-SQLAlchemy>=2.0.48
+SQLAlchemy~=2.0.48
 Werkzeug>=3.1.6
