@@ -11,7 +11,6 @@ from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
 from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
-from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .secrets_manager import *
 from .utils import extend_talisman_csp
@@ -81,10 +80,6 @@ def create_app() -> Flask:
     app.config["MAILERLITE_API_KEY"] = MAILERLITE_API_KEY
     if production:
         app.config["SERVER_NAME"] = getenv("DOMAIN", "orp.testing")
-
-    if getenv("TRUSTED_PROXIES", "0") == "1":
-        # This assignment is correct. See https://flask.palletsprojects.com/en/2.3.x/deploying/proxy_fix/
-        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)  # type: ignore[method-assign]
 
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         f'mysql://root:rootroot@{getenv("DB_HOST", "127.0.0.1")}:3306/orp_db'

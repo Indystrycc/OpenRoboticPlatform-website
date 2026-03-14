@@ -60,6 +60,10 @@ map $upstream_http_permissions_policy $pp {
     '' "accelerometer=(), camera=(), browsing-topics=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()";
 }
 
+upstream app_backend {
+    server unix:/run/gunicorn/gunicorn.sock;
+}
+
 server {
     listen 443 quic reuseport;
     listen 443 ssl;
@@ -85,33 +89,30 @@ server {
     add_header Cross-Origin-Resource-Policy $corp always;
     add_header Cross-Origin-Embedder-Policy $coep always;
     add_header Permissions-Policy $pp always;
-    proxy_hide_header  __No-Implicit-COEP;
+    uwsgi_hide_header __No-Implicit-COEP;
 
     location / {
-        proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Prefix /;
+        uwsgi_pass app_backend;
+        include uwsgi_params;
 
         location /addpart {
             # In theory users can upload up to 10 * 20 MiB + image (5 MiB) + the request itself (a few kB), so 206 MiB should be enough
             # in case of chaning this value modify location part edit too
             client_max_body_size 206M;
-            # proxy_pass is not inherited
-            proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
+            # uwsgi_pass is not inherited
+            uwsgi_pass app_backend;
         }
 
         location ~ ^/part:\d+/edit$ {
             # 206M as in /addpart
             client_max_body_size 206M;
-            # proxy_pass is not inherited
-            proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
+            # uwsgi_pass is not inherited
+            uwsgi_pass app_backend;
         }
 
         location /accountsettings {
             client_max_body_size 6M;
-            proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
+            uwsgi_pass app_backend;
         }
     }
 
