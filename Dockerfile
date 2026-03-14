@@ -64,4 +64,5 @@ COPY website website/
 COPY --from=theme /theme/dist/styles.css website/static/css/theme.css
 COPY --from=theme /theme/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js website/static/js/bootstrap.bundle.min.js
 
-CMD [ "/bin/sh", "-c", "flask db upgrade && gunicorn" ]
+# Note: The host's /etc/letsencrypt/ directory must be readable by the docker user if Postfix needs it.
+CMD [ "/bin/sh", "-c", "flask db upgrade && cp -R website/static/* /data/static/ && chown -R 1000:1000 /data/static && gunicorn" ]

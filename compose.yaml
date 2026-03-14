@@ -71,7 +71,9 @@ services:
       FLASK_ENV: "production"
     volumes:
       - uploads:/app/website/static/uploads
-      - proxy-conn-sock:/run/gunicorn
+      - ./shared_static:/data/static
+    ports:
+      - 127.0.0.1:5000:5000
     profiles:
       - prod
 
@@ -90,31 +92,6 @@ services:
     profiles:
       - prod
 
-  proxy:
-    build:
-      context: .
-      dockerfile: prod/nginx/Dockerfile
-    container_name: proxy
-    # nginx uses SIGQUIT for graceful shutdown, default SIGTERM is fast shutdown
-    stop_signal: SIGQUIT
-    depends_on:
-      - website-prod
-    env_file:
-      - prod/config.env
-    environment:
-      - NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
-    volumes:
-      - uploads:/data/static/uploads
-      - proxy-conn-sock:/run/gunicorn
-    secrets:
-      - chain
-      - fullchain
-      - privkey
-    network_mode: host
-    restart: on-failure
-    profiles:
-      - prod
-
   postfix:
     build:
       context: prod/mail/postfix
@@ -126,10 +103,9 @@ services:
       - prod/mail/config.env
     expose:
       - 25
-    secrets:
-      - chain
-      - fullchain
-      - privkey
+    volumes:
+      - /etc/letsencrypt/live/yourdomain.com/fullchain.pem:/run/secrets/fullchain:ro
+      - /etc/letsencrypt/live/yourdomain.com/privkey.pem:/run/secrets/privkey:ro
     networks:
       - mail
     profiles:
@@ -156,7 +132,6 @@ services:
 volumes:
   dbdata:
   uploads:
-  proxy-conn-sock:
   opendkim-keys:
 
 networks:
@@ -166,9 +141,3 @@ networks:
 secrets:
   website_secrets.py:
     file: website/secret.py
-  chain:
-    file: prod/nginx/certs/chain.pem
-  fullchain:
-    file: prod/nginx/certs/fullchain.pem
-  privkey:
-    file: prod/nginx/certs/privkey.pem
