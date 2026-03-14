@@ -54,9 +54,7 @@ def send_confirmation_mail(username: str, email_addr: str, url: str) -> None:
     msg["Subject"] = "Confirm your email address"
     msg["From"] = FROM_ADDR
     msg["To"] = addr
-    msg.set_content(
-        textwrap.dedent(
-            f"""\
+    msg.set_content(textwrap.dedent(f"""\
             Hello!
 
             Thank you for creating an OpenRoboticPlatform account. Before uploading your
@@ -68,12 +66,9 @@ def send_confirmation_mail(username: str, email_addr: str, url: str) -> None:
 
             Regards,
             OpenRoboticPlatform Team
-            """
-        )
-    )
+            """))
     msg.add_alternative(
-        textwrap.dedent(
-            f"""\
+        textwrap.dedent(f"""\
             <html>
                 <body>
                     <p>Hello!</p>
@@ -89,8 +84,7 @@ def send_confirmation_mail(username: str, email_addr: str, url: str) -> None:
                     </p>
                 </body>
             </html>
-            """
-        ),
+            """),
         subtype="html",
     )
 
@@ -102,9 +96,7 @@ def send_password_reset_mail(username: str, email_addr: str, url: str) -> None:
     msg["Subject"] = "Password reset link"
     msg["From"] = FROM_ADDR
     msg["To"] = Address(username, addr_spec=email_addr)
-    msg.set_content(
-        textwrap.dedent(
-            f"""\
+    msg.set_content(textwrap.dedent(f"""\
             Hello!
 
             To reset your password use the link below. The link is valid for 15 minutes.
@@ -115,12 +107,9 @@ def send_password_reset_mail(username: str, email_addr: str, url: str) -> None:
 
             Regards,
             OpenRoboticPlatform Team
-            """
-        )
-    )
+            """))
     msg.add_alternative(
-        textwrap.dedent(
-            f"""\
+        textwrap.dedent(f"""\
             <html>
                 <body>
                     <p>Hello!</p>
@@ -135,8 +124,7 @@ def send_password_reset_mail(username: str, email_addr: str, url: str) -> None:
                     </p>
                 </body>
             </html>
-            """
-        ),
+            """),
         subtype="html",
     )
 

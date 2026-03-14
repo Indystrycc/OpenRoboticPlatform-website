@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:current-slim as theme
+FROM node:current-slim AS theme
 
 WORKDIR /theme
 COPY /theme .
@@ -8,7 +8,7 @@ RUN --mount=type=cache,target=/root/.npm npm install
 
 RUN npm run build
 
-FROM nginx:mainline as final
+FROM nginx:stable AS final
 
 # Copy config files
 COPY prod/nginx /etc/nginx
@@ -18,6 +18,7 @@ COPY --chmod=644 website/static /data/static
 COPY --from=theme --chmod=644 /theme/dist/styles.css /data/static/css/theme.css
 COPY --from=theme --chmod=644 /theme/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js /data/static/js/bootstrap.bundle.min.js
 RUN find /data/static -type f -not -empty -exec sh -c "gzip -c -9 {} > {}.gz" \; && \
-    find /data/static -type d -exec chmod 755 "{}" \;
+    find /data/static -type d -exec chmod 755 "{}" \; && \
+    chmod 755 /data
 
 EXPOSE 80 443

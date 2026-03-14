@@ -65,8 +65,7 @@ def upgrade():
     )
     # update category ids in parts and create the foreign key
     with op.batch_alter_table("part", schema=None) as batch_op:
-        batch_op.execute(
-            """
+        batch_op.execute("""
             UPDATE part SET category =
                 CASE
                     WHEN category = 1 THEN 1
@@ -77,8 +76,7 @@ def upgrade():
                     WHEN category = 6 THEN 8
                     WHEN category = 7 THEN 11
                 END
-            """
-        )
+            """)
         batch_op.create_foreign_key(
             "part_fk_category", "category", ["category"], ["id"]
         )
@@ -92,8 +90,7 @@ def downgrade():
         batch_op.drop_constraint("part_fk_category", type_="foreignkey")
 
     # Restore previous category IDs (default to "Other")
-    op.execute(
-        """
+    op.execute("""
         UPDATE part SET category =
             CASE
                 WHEN category BETWEEN 1 AND 6 THEN 1
@@ -104,8 +101,7 @@ def downgrade():
                 WHEN category = 11 THEN 7
                 ELSE 3
             END
-        """
-    )
+        """)
 
     op.drop_table("category")
     # ### end Alembic commands ###

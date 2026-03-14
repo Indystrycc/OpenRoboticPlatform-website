@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:current-slim as theme
+FROM node:current-slim AS theme
 
 WORKDIR /theme
 COPY /theme .
@@ -8,7 +8,7 @@ RUN --mount=type=cache,target=/root/.npm npm install
 
 RUN npm run build
 
-FROM python:3.13-slim as build
+FROM python:3.14-slim AS build
 
 # install mysqlclient requirements
 RUN \
@@ -35,7 +35,7 @@ RUN \
 	pip install -r requirements.txt
 
 
-FROM python:3.13-slim as deploy
+FROM python:3.14-slim AS deploy
 
 # install mysqlclient without build-essential
 RUN \

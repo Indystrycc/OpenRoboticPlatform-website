@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM debian:stable-slim as builder
+FROM debian:stable-slim AS builder
 
 RUN \
 	--mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
@@ -15,7 +15,7 @@ RUN wget https://github.com/ossobv/syslog2stdout/archive/142793f15169fa01c0e1249
     cc -O3 -o syslog2stdout syslog2stdout.c
 
 
-FROM debian:stable-slim as deploy
+FROM debian:stable-slim AS deploy
 
 RUN \
 	--mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
