@@ -64,4 +64,8 @@ COPY website website/
 COPY --from=theme /theme/dist/styles.css website/static/css/theme.css
 COPY --from=theme /theme/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js website/static/js/bootstrap.bundle.min.js
 
-CMD [ "/bin/sh", "-c", "flask db upgrade && gunicorn" ]
+# gzip static files for the proxy, to be copied to bind mount on start
+RUN find website/static/ -type f -not -empty -exec sh -c "gzip -c -9 {} > {}.gz" \;
+
+# overwrite static files in host's website/static/ (mounted as /shared-static), migrate db and start the app
+CMD [ "/bin/sh", "-c", "cp -a website/static/. /shared-static/ && flask db upgrade && gunicorn" ]

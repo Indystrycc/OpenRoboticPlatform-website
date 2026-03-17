@@ -1,17 +1,24 @@
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+# HTTP -> HTTPS redirect should be done by the host with a server like the (commented) one below
+# server {
+#     listen 80 default_server;
+#     listen [::]:80 default_server;
+#
+#     location / {
+#         return 301 https://$host$request_uri;
+#     }
+# }
 
-    location / {
-        return 301 https://${DOMAIN}$request_uri;
-    }
-}
-
+# www.DOMAIN -> DOMAIN redirect
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
 
-    include conf.d/ssl_common.conf;
+    server_name www.${DOMAIN};
+
+    ssl_certificate ${FULLCHAIN_PATH};
+    ssl_certificate_key ${PRIVKEY_PATH};
+
+    include includes/orp_ssl_common.conf;
 
     location / {
         return 301 https://${DOMAIN}$request_uri;
@@ -29,7 +36,7 @@ types {
     image/vnd.dxf dxf;
 }
 
-map $sent_http_content_type $expires {
+map $sent_http_content_type $orp_expires {
     default                 off;
     application/javascript  10d;
     text/css                10d;
@@ -37,26 +44,26 @@ map $sent_http_content_type $expires {
     ~model/                 180d;
 }
 
-map $upstream_http_x_content_type_options $nosniff {
+map $upstream_http_x_content_type_options $orp_nosniff {
     '' "nosniff";
 }
-map $upstream_http_content_security_policy $csp {
+map $upstream_http_content_security_policy $orp_csp {
     '' "default-src 'none'; sandbox";
 }
-map $upstream_http_cross_origin_opener_policy $coop {
+map $upstream_http_cross_origin_opener_policy $orp_coop {
     '' "same-origin";
 }
-map $upstream_http_cross_origin_resource_policy $corp {
+map $upstream_http_cross_origin_resource_policy $orp_corp {
     '' "same-origin";
 }
-map $upstream_http_cross_origin_embedder_policy $coep_val {
+map $upstream_http_cross_origin_embedder_policy $orp_coep_val {
     '' "require-corp";
 }
-map $upstream_http___no_implicit_coep $coep {
-    default $coep_val;
+map $upstream_http___no_implicit_coep $orp_coep {
+    default $orp_coep_val;
     1       "";
 }
-map $upstream_http_permissions_policy $pp {
+map $upstream_http_permissions_policy $orp_pp {
     '' "accelerometer=(), camera=(), browsing-topics=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()";
 }
 
@@ -70,7 +77,10 @@ server {
 
     http2 on;
 
-    include conf.d/ssl_common.conf;
+    ssl_certificate ${FULLCHAIN_PATH};
+    ssl_certificate_key ${PRIVKEY_PATH};
+
+    include includes/orp_ssl_common.conf;
 
     # required for browsers to direct them into quic port
     add_header Alt-Svc 'h3=":443"; ma=86400';
@@ -79,12 +89,12 @@ server {
     # 1. Configure caching (make it longer for images and styles if we're going to use cache busting)
 
     # should be overwritten by the Python server; applies only to /static (other requests are served by upstream)
-    add_header X-Content-Type-Options $nosniff always;
-    add_header Content-Security-Policy $csp always;
-    add_header Cross-Origin-Opener-Policy $coop always;
-    add_header Cross-Origin-Resource-Policy $corp always;
-    add_header Cross-Origin-Embedder-Policy $coep always;
-    add_header Permissions-Policy $pp always;
+    add_header X-Content-Type-Options $orp_nosniff always;
+    add_header Content-Security-Policy $orp_csp always;
+    add_header Cross-Origin-Opener-Policy $orp_coop always;
+    add_header Cross-Origin-Resource-Policy $orp_corp always;
+    add_header Cross-Origin-Embedder-Policy $orp_coep always;
+    add_header Permissions-Policy $orp_pp always;
     proxy_hide_header  __No-Implicit-COEP;
 
     location / {
@@ -116,8 +126,8 @@ server {
     }
 
     location /static {
-        root /data;
+        root ${REPO_ROOT}/website;
         gzip_static on;
-        expires $expires;
+        expires $orp_expires;
     }
 }

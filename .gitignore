@@ -134,11 +134,13 @@ dmypy.json
 
 /website/static/uploads
 
+# Secrets and config files
 secret.py
 /scripts/secret
 /prod/nginx/certs
 *.pem
 /prod/**/config.env
+/prod/nginx/conf/orp.conf
 
 .vscode/*
 !/.vscode/extensions.json
@@ -146,3 +148,6 @@ secret.py
 # Theme build and dependencies
 **/node_modules
 **/dist
+
+# Static files in compressed formats
+*.gz

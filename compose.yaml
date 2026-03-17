@@ -31,7 +31,7 @@ x-website: &website-base
     DB_HOST: db
   secrets:
     - website_secrets.py
-  networks: &website-base-net
+  networks:
     dbnet:
     mail:
       aliases:
@@ -71,7 +71,8 @@ services:
       FLASK_ENV: "production"
     volumes:
       - uploads:/app/website/static/uploads
-      - proxy-conn-sock:/run/gunicorn
+      - /run/gunicorn:/run/gunicorn
+      - ./website/static:/shared-static
     profiles:
       - prod
 
@@ -87,31 +88,6 @@ services:
     <<: *db-base
     expose:
       - 3306
-    profiles:
-      - prod
-
-  proxy:
-    build:
-      context: .
-      dockerfile: prod/nginx/Dockerfile
-    container_name: proxy
-    # nginx uses SIGQUIT for graceful shutdown, default SIGTERM is fast shutdown
-    stop_signal: SIGQUIT
-    depends_on:
-      - website-prod
-    env_file:
-      - prod/config.env
-    environment:
-      - NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
-    volumes:
-      - uploads:/data/static/uploads
-      - proxy-conn-sock:/run/gunicorn
-    secrets:
-      - chain
-      - fullchain
-      - privkey
-    network_mode: host
-    restart: on-failure
     profiles:
       - prod
 
@@ -156,7 +132,6 @@ services:
 volumes:
   dbdata:
   uploads:
-  proxy-conn-sock:
   opendkim-keys:
 
 networks:
