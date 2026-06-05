@@ -70,7 +70,7 @@ services:
       TRUSTED_PROXIES: "1"
       FLASK_ENV: "production"
     volumes:
-      - uploads:/app/website/static/uploads
+      - ./website/static/uploads:/app/website/static/uploads
       - /run/gunicorn:/run/gunicorn
       - ./website/static:/shared-static
     profiles:
@@ -131,7 +131,7 @@ services:
 
 volumes:
   dbdata:
-  uploads:
+
   opendkim-keys:
 
 networks:
