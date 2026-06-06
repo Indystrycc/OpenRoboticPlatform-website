@@ -68,4 +68,4 @@ COPY --from=theme /theme/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js 
 RUN find website/static/ -type f -not -empty -exec sh -c "gzip -c -9 {} > {}.gz" \;
 
 # overwrite static files in host's website/static/ (mounted as /shared-static), migrate db and start the app
-CMD [ "/bin/sh", "-c", "cp -a website/static/. /shared-static/ && flask db upgrade && gunicorn" ]
+CMD [ "/bin/sh", "-c", "for d in 'assets' 'css' 'fa' 'js'; do cp -a \"website/static/$d\" /shared-static/.; done && flask db upgrade && gunicorn" ]

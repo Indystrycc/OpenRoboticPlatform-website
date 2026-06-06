@@ -70,9 +70,9 @@ services:
       TRUSTED_PROXIES: "1"
       FLASK_ENV: "production"
     volumes:
-      - ./website/static/uploads:/app/website/static/uploads
       - /run/gunicorn:/run/gunicorn
       - ./website/static:/shared-static
+      - ./website/static/uploads:/app/website/static/uploads
     profiles:
       - prod
 
